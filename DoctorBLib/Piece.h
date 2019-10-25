@@ -15,6 +15,7 @@ public:
 	static const std::uint8_t COLOR_BLACK = 1;
 
 	Piece();
+	Piece(uint8_t piece_value);
 	Piece(uint8_t piece_type, uint8_t piece_color);
 	~Piece();
 	uint8_t GetType() const;

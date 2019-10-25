@@ -23,12 +23,16 @@ public:
 	BitBoard GetPawnPushes(const Square square, uint8_t color) const;
 	BitBoard GetPawnCaptures(const Square square, uint8_t color) const;
 	BitBoard GetRay(const Square square, const int dir) const;
+	BitBoard GetCastlingSafeSquares(const int index) const;
+	BitBoard GetCastlingEmptySquares(const int index) const;
 private:
 	BitBoard king_moves[64];
 	BitBoard knight_moves[64];
 	BitBoard pawn_pushes[2][64];
 	BitBoard pawn_captures[2][64];
 	BitBoard rays[8][64];
+	BitBoard castling_safe_squares[4];
+	BitBoard castling_empty_squares[4];
 	MoveBoard();
 	void InitializeKingMoves();
 	void InitializeKnightMoves();
@@ -43,5 +47,6 @@ private:
 	void InitializeRayDownLeft();
 	void InitializeRayLeft();
 	void InitializeRayUpLeft();
+	void InitializeCastlingSquares();
 };
 

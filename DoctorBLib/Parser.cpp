@@ -5,6 +5,7 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/optional.hpp>
 #include "Piece.h"
+#include "Constants.h"
 
 using namespace std;
 
@@ -152,10 +153,10 @@ bool Parser::ParseFenActiveColor(string text, Position& position) {
 }
 
 bool Parser::ParseFenCastlingStatus(string text, Position & position) {
-	position.SetCastlingStatus(0, text.find('K') != string::npos);
-	position.SetCastlingStatus(1, text.find('Q') != string::npos);
-	position.SetCastlingStatus(2, text.find('k') != string::npos);
-	position.SetCastlingStatus(3, text.find('q') != string::npos);
+	position.SetCastlingStatus(Constants::CASTLING_WHITE_KINGSIDE, text.find('K') != string::npos);
+	position.SetCastlingStatus(Constants::CASTLING_WHITE_QUEENSIDE, text.find('Q') != string::npos);
+	position.SetCastlingStatus(Constants::CASTLING_BLACK_KINGSIDE, text.find('k') != string::npos);
+	position.SetCastlingStatus(Constants::CASTLING_BLACK_QUEENSIDE, text.find('q') != string::npos);
 	return true;
 }
 
@@ -302,10 +303,10 @@ void Parser::SetStartPos(Position& position) {
 
 	position.SetActiveColor(Piece::COLOR_WHITE);
 
-	position.SetCastlingStatus(0, true);
-	position.SetCastlingStatus(1, true);
-	position.SetCastlingStatus(2, true);
-	position.SetCastlingStatus(3, true);
+	position.SetCastlingStatus(Constants::CASTLING_WHITE_KINGSIDE, true);
+	position.SetCastlingStatus(Constants::CASTLING_WHITE_QUEENSIDE, true);
+	position.SetCastlingStatus(Constants::CASTLING_BLACK_KINGSIDE, true);
+	position.SetCastlingStatus(Constants::CASTLING_BLACK_QUEENSIDE, true);
 
 	position.ResetEpSquare();
 

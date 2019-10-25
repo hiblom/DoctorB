@@ -15,16 +15,22 @@ BitBoard::BitBoard(uint64_t bit_board_value) {
 BitBoard::~BitBoard() {
 }
 
-bool BitBoard::IsEmpty() {
+bool BitBoard::Empty() {
 	return value == 0Ui64;
 }
 
-void BitBoard::Set(uint8_t square_value) {
-	value |= 1Ui64 << square_value;
+bool BitBoard::NotEmpty() {
+	return value != 0Ui64;
 }
 
-void BitBoard::Clear(uint8_t square_value) {
+BitBoard& BitBoard::Set(uint8_t square_value) {
+	value |= 1Ui64 << square_value;
+	return *this;
+}
+
+BitBoard& BitBoard::Clear(uint8_t square_value) {
 	value &= ~(1Ui64 << square_value);
+	return *this;
 }
 
 bool BitBoard::Check(uint8_t square_value) const {

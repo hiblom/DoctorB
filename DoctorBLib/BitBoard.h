@@ -9,9 +9,10 @@ public:
 	BitBoard();
 	BitBoard(uint64_t bit_board_value);
 	~BitBoard();
-	bool IsEmpty();
-	void Set(uint8_t square_value);
-	void Clear(uint8_t square_value);
+	bool Empty();
+	bool NotEmpty();
+	BitBoard& Set(uint8_t square_value);
+	BitBoard& Clear(uint8_t square_value);
 	bool Check(uint8_t square_value) const;
 	BitBoard Clone() const;
 	BitBoard& Left();

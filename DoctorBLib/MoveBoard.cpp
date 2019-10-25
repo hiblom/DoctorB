@@ -2,6 +2,7 @@
 #include "MoveBoard.h"
 #include "BitBoard.h"
 #include "Piece.h"
+#include "Constants.h"
 
 MoveBoard::MoveBoard() {
 }
@@ -34,11 +35,8 @@ void MoveBoard::InitializeKnightMoves() {
 void MoveBoard::InitializePawnPushes() {
 	for (uint8_t s = 0; s < 64; s++) {
 		//double push will be handled in move generator
-		pawn_pushes[Piece::COLOR_WHITE][s].Set(s);
-		pawn_pushes[Piece::COLOR_WHITE][s].Up();
-
-		pawn_pushes[Piece::COLOR_BLACK][s].Set(s);
-		pawn_pushes[Piece::COLOR_BLACK][s].Down();
+		pawn_pushes[Piece::COLOR_WHITE][s].Set(s).Up();
+		pawn_pushes[Piece::COLOR_BLACK][s].Set(s).Down();
 	}
 }
 
@@ -67,11 +65,10 @@ void MoveBoard::InitializeRays() {
 
 void MoveBoard::InitializeRayUp() {
 	for (uint8_t s = 0; s < 64; s++) {
-		BitBoard board;
-		board.Set(s);
+		BitBoard board = BitBoard().Set(s);
 		while (true) {
 			board.Up();
-			if (board.IsEmpty())
+			if (board.Empty())
 				break;
 			rays[DIR_UP][s] |= board;
 		}
@@ -80,11 +77,10 @@ void MoveBoard::InitializeRayUp() {
 
 void MoveBoard::InitializeRayUpRight() {
 	for (uint8_t s = 0; s < 64; s++) {
-		BitBoard board;
-		board.Set(s);
+		BitBoard board = BitBoard().Set(s);
 		while (true) {
 			board.Up().Right();
-			if (board.IsEmpty())
+			if (board.Empty())
 				break;
 			rays[DIR_UP_RIGHT][s] |= board;
 		}
@@ -93,11 +89,10 @@ void MoveBoard::InitializeRayUpRight() {
 
 void MoveBoard::InitializeRayRight() {
 	for (uint8_t s = 0; s < 64; s++) {
-		BitBoard board;
-		board.Set(s);
+		BitBoard board = BitBoard().Set(s);
 		while (true) {
 			board.Right();
-			if (board.IsEmpty())
+			if (board.Empty())
 				break;
 			rays[DIR_RIGHT][s] |= board;
 		}
@@ -106,11 +101,10 @@ void MoveBoard::InitializeRayRight() {
 
 void MoveBoard::InitializeRayDownRight() {
 	for (uint8_t s = 0; s < 64; s++) {
-		BitBoard board;
-		board.Set(s);
+		BitBoard board = BitBoard().Set(s);
 		while (true) {
 			board.Down().Right();
-			if (board.IsEmpty())
+			if (board.Empty())
 				break;
 			rays[DIR_DOWN_RIGHT][s] |= board;
 		}
@@ -119,11 +113,10 @@ void MoveBoard::InitializeRayDownRight() {
 
 void MoveBoard::InitializeRayDown() {
 	for (uint8_t s = 0; s < 64; s++) {
-		BitBoard board;
-		board.Set(s);
+		BitBoard board = BitBoard().Set(s);
 		while (true) {
 			board.Down();
-			if (board.IsEmpty())
+			if (board.Empty())
 				break;
 			rays[DIR_DOWN][s] |= board;
 		}
@@ -132,11 +125,10 @@ void MoveBoard::InitializeRayDown() {
 
 void MoveBoard::InitializeRayDownLeft() {
 	for (uint8_t s = 0; s < 64; s++) {
-		BitBoard board;
-		board.Set(s);
+		BitBoard board = BitBoard().Set(s);
 		while (true) {
 			board.Down().Left();
-			if (board.IsEmpty())
+			if (board.Empty())
 				break;
 			rays[DIR_DOWN_LEFT][s] |= board;
 		}
@@ -145,11 +137,10 @@ void MoveBoard::InitializeRayDownLeft() {
 
 void MoveBoard::InitializeRayLeft() {
 	for (uint8_t s = 0; s < 64; s++) {
-		BitBoard board;
-		board.Set(s);
+		BitBoard board = BitBoard().Set(s);
 		while (true) {
 			board.Left();
-			if (board.IsEmpty())
+			if (board.Empty())
 				break;
 			rays[DIR_LEFT][s] |= board;
 		}
@@ -158,15 +149,27 @@ void MoveBoard::InitializeRayLeft() {
 
 void MoveBoard::InitializeRayUpLeft() {
 	for (uint8_t s = 0; s < 64; s++) {
-		BitBoard board;
-		board.Set(s);
+		BitBoard board = BitBoard().Set(s);
 		while (true) {
 			board.Up().Left();
-			if (board.IsEmpty())
+			if (board.Empty())
 				break;
 			rays[DIR_UP_LEFT][s] |= board;
 		}
 	}
+}
+
+void MoveBoard::InitializeCastlingSquares() {
+	castling_safe_squares[Constants::CASTLING_WHITE_KINGSIDE] = 0x0e00000000000000Ui64;
+	castling_safe_squares[Constants::CASTLING_WHITE_QUEENSIDE] = 0x3800000000000000Ui64;
+	castling_safe_squares[Constants::CASTLING_BLACK_KINGSIDE] = 0x000000000000000eUi64;
+	castling_safe_squares[Constants::CASTLING_BLACK_QUEENSIDE] = 0x0000000000000038Ui64;
+
+	castling_safe_squares[Constants::CASTLING_WHITE_KINGSIDE] = 0x0600000000000000Ui64;
+	castling_safe_squares[Constants::CASTLING_WHITE_QUEENSIDE] = 0x7000000000000000Ui64;
+	castling_safe_squares[Constants::CASTLING_BLACK_KINGSIDE] = 0x0000000000000006Ui64;
+	castling_safe_squares[Constants::CASTLING_BLACK_QUEENSIDE] = 0x0000000000000070Ui64;
+
 }
 
 MoveBoard& MoveBoard::GetInstance() {
@@ -200,6 +203,14 @@ BitBoard MoveBoard::GetPawnCaptures(const Square square, uint8_t color) const {
 
 BitBoard MoveBoard::GetRay(const Square square, const int dir) const {
 	return rays[dir][square.GetValue()];
+}
+
+BitBoard MoveBoard::GetCastlingEmptySquares(const int index) const {
+	return castling_empty_squares[index];
+}
+
+BitBoard MoveBoard::GetCastlingSafeSquares(const int index) const {
+	return castling_safe_squares[index];
 }
 
 MoveBoard::~MoveBoard() {

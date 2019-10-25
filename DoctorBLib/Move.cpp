@@ -12,7 +12,7 @@ Move::Move(const Square move_square_from, const Square move_square_to) {
 Move::Move(const Square move_square_from, const Square move_square_to, const Piece move_promo_piece) {
 	square_from = move_square_from;
 	square_to = move_square_to;
-	promo_piece = move_promo_piece;
+	status = MASK_PROMOTION | (move_promo_piece.GetValue() << 8);
 }
 
 Square Move::GetSquareFrom() const {
@@ -24,11 +24,10 @@ Square Move::GetSquareTo() const {
 }
 
 bool Move::GetPromoPiece(Piece& piece) const {
-	if (promo_piece.has_value()) {
-		piece = promo_piece.value();
+	if (status & MASK_PROMOTION) {
+		piece.SetValue((status & MASK_PROMO_PIECE) >> 8);
 		return true;
 	}
-	
 	return false;
 }
 
@@ -36,11 +35,56 @@ bool Move::operator==(const Move& that) const {
 	return
 		square_from == that.square_from &&
 		square_to == that.square_to &&
-		(!promo_piece.has_value() && !that.promo_piece.has_value() || promo_piece.has_value() && that.promo_piece.has_value() && promo_piece.value() == that.promo_piece.value());
+		status == that.status;
+}
+
+//inline bool Move::IsCapture() const {
+//	return status & MASK_CAPTURE;
+//}
+//
+//Move& Move::SetCapture() {
+//	status |= MASK_CAPTURE;
+//	return *this;
+//}
+
+inline bool Move::IsPromotion() const {
+	return status & MASK_PROMOTION;
+}
+
+inline bool Move::IsEpCapture() const {
+	return status & MASK_EP_CAPTURE;
+}
+
+Move& Move::SetEpCapture() {
+	status |= MASK_EP_CAPTURE;
+	return *this;
+}
+
+inline bool Move::IsCastling() const {
+	return status & MASK_CASTLING;
+}
+
+Move& Move::SetCastling() {
+	status |= MASK_CASTLING;
+	return *this;
+}
+
+bool Move::IsDoublePush() const {
+	return status & MASK_DOUBLE_PUSH;
+}
+
+Move& Move::SetDoublePush() {
+	status |= MASK_DOUBLE_PUSH;
+	return *this;
 }
 
 std::string Move::ToString() const {
-	return square_from.ToString() + square_to.ToString() + (promo_piece.has_value() ? promo_piece.value().ToString() : "");
+	Piece promo_piece;
+	if (GetPromoPiece(promo_piece)) {
+		square_from.ToString() + square_to.ToString() + promo_piece.ToString();
+	}
+
+	return square_from.ToString() + square_to.ToString();
 }
 
 Move::~Move() {

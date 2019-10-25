@@ -84,7 +84,7 @@ public:
 		//assert
 		Assert::AreEqual(2Ui64, moves.size());
 		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(11Ui8), Square(19Ui8))) != moves.end());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(11Ui8), Square(27Ui8))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(11Ui8), Square(27Ui8)).SetDoublePush()) != moves.end());
 	}
 
 
@@ -119,7 +119,7 @@ public:
 		//assert
 		Assert::AreEqual(2Ui64, moves.size());
 		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(55Ui8), Square(47Ui8))) != moves.end());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(55Ui8), Square(39Ui8))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(55Ui8), Square(39Ui8)).SetDoublePush()) != moves.end());
 	}
 
 	TEST_METHOD(TestMoveGeneratorGenerateBlackPawnCaptures) {
@@ -136,6 +136,47 @@ public:
 		//assert
 		Assert::AreEqual(1Ui64, moves.size());
 		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(55Ui8), Square(46Ui8))) != moves.end());
+	}
+
+	TEST_METHOD(TestMoveGeneratorGeneratePromotions) {
+		//arrange
+		vector<string> tokens = { "4n3/5P2/8/8/8/8/8/8", "w" };
+		Position pos;
+		Parser::ParseFen(tokens, pos);
+		vector<Move> moves;
+		MoveGenerator moveGen = MoveGenerator(pos);
+
+		//act
+		moveGen.GeneratePawnMoves(moves);
+
+		//assert
+		Assert::AreEqual(8Ui64, moves.size());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(53Ui8), Square(61Ui8), Piece(Piece::TYPE_QUEEN, Piece::COLOR_WHITE))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(53Ui8), Square(61Ui8), Piece(Piece::TYPE_KNIGHT, Piece::COLOR_WHITE))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(53Ui8), Square(61Ui8), Piece(Piece::TYPE_ROOK, Piece::COLOR_WHITE))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(53Ui8), Square(61Ui8), Piece(Piece::TYPE_BISHOP, Piece::COLOR_WHITE))) != moves.end());
+
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(53Ui8), Square(60Ui8), Piece(Piece::TYPE_QUEEN, Piece::COLOR_WHITE))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(53Ui8), Square(60Ui8), Piece(Piece::TYPE_KNIGHT, Piece::COLOR_WHITE))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(53Ui8), Square(60Ui8), Piece(Piece::TYPE_ROOK, Piece::COLOR_WHITE))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(53Ui8), Square(60Ui8), Piece(Piece::TYPE_BISHOP, Piece::COLOR_WHITE))) != moves.end());
+	}
+
+	TEST_METHOD(TestMoveGeneratorGenerateEpCapture) {
+		//arrange
+		vector<string> tokens = { "8/8/8/8/2Pp4/8/8/8", "b", "-", "c3" };
+		Position pos;
+		Parser::ParseFen(tokens, pos);
+		vector<Move> moves;
+		MoveGenerator moveGen = MoveGenerator(pos);
+
+		//act
+		moveGen.GeneratePawnMoves(moves);
+
+		//assert
+		Assert::AreEqual(2Ui64, moves.size());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(27Ui8), Square(19Ui8))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(27Ui8), Square(18Ui8)).SetEpCapture()) != moves.end());
 	}
 
 	TEST_METHOD(TestMoveGeneratorGenerateRookMoves) {

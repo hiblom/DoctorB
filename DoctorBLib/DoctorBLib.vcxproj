@@ -151,6 +151,7 @@
   <ItemGroup>
     <ClInclude Include="App.h" />
     <ClInclude Include="BitBoard.h" />
+    <ClInclude Include="Constants.h" />
     <ClInclude Include="Move.h" />
     <ClInclude Include="MoveBoard.h" />
     <ClInclude Include="MoveGenerator.h" />

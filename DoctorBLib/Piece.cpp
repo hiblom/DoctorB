@@ -6,6 +6,10 @@ using namespace std;
 Piece::Piece() {
 }
 
+Piece::Piece(uint8_t piece_value) {
+	value = piece_value;
+}
+
 Piece::Piece(uint8_t piece_type, uint8_t piece_color) {
 	value = piece_type | piece_color;
 }

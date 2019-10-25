@@ -6,6 +6,7 @@
 #include "Move.h"
 #include "Square.h"
 #include "Piece.h"
+#include "Constants.h"
 
 using namespace std;
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
@@ -91,10 +92,10 @@ public:
 
 		//assert
 		Assert::IsTrue(res);
-		Assert::IsTrue(pos.GetCastlingStatus(0));
-		Assert::IsFalse(pos.GetCastlingStatus(1));
-		Assert::IsFalse(pos.GetCastlingStatus(2));
-		Assert::IsTrue(pos.GetCastlingStatus(3));
+		Assert::IsTrue(pos.GetCastlingStatus(Constants::CASTLING_WHITE_KINGSIDE));
+		Assert::IsFalse(pos.GetCastlingStatus(Constants::CASTLING_WHITE_QUEENSIDE));
+		Assert::IsFalse(pos.GetCastlingStatus(Constants::CASTLING_BLACK_KINGSIDE));
+		Assert::IsTrue(pos.GetCastlingStatus(Constants::CASTLING_BLACK_QUEENSIDE));
 	}
 
 	TEST_METHOD(TestParserParseFenCastlingStatus2) {
@@ -106,10 +107,10 @@ public:
 
 		//assert
 		Assert::IsTrue(res);
-		Assert::IsFalse(pos.GetCastlingStatus(0));
-		Assert::IsFalse(pos.GetCastlingStatus(1));
-		Assert::IsFalse(pos.GetCastlingStatus(2));
-		Assert::IsFalse(pos.GetCastlingStatus(3));
+		Assert::IsFalse(pos.GetCastlingStatus(Constants::CASTLING_WHITE_KINGSIDE));
+		Assert::IsFalse(pos.GetCastlingStatus(Constants::CASTLING_WHITE_QUEENSIDE));
+		Assert::IsFalse(pos.GetCastlingStatus(Constants::CASTLING_BLACK_KINGSIDE));
+		Assert::IsFalse(pos.GetCastlingStatus(Constants::CASTLING_BLACK_QUEENSIDE));
 	}
 
 
