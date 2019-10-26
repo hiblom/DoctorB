@@ -160,16 +160,17 @@ void MoveBoard::InitializeRayUpLeft() {
 }
 
 void MoveBoard::InitializeCastlingSquares() {
-	castling_safe_squares[Constants::CASTLING_WHITE_KINGSIDE] = 0x0e00000000000000Ui64;
-	castling_safe_squares[Constants::CASTLING_WHITE_QUEENSIDE] = 0x3800000000000000Ui64;
-	castling_safe_squares[Constants::CASTLING_BLACK_KINGSIDE] = 0x000000000000000eUi64;
-	castling_safe_squares[Constants::CASTLING_BLACK_QUEENSIDE] = 0x0000000000000038Ui64;
+	castling_safe_squares[Constants::CASTLING_WHITE_KINGSIDE] =   0b00110000Ui64;
+	castling_empty_squares[Constants::CASTLING_WHITE_KINGSIDE] =  0b01100000Ui64;
+	
+	castling_safe_squares[Constants::CASTLING_WHITE_QUEENSIDE] =  0b00011000Ui64;
+	castling_empty_squares[Constants::CASTLING_WHITE_QUEENSIDE] = 0b00001110Ui64;
 
-	castling_safe_squares[Constants::CASTLING_WHITE_KINGSIDE] = 0x0600000000000000Ui64;
-	castling_safe_squares[Constants::CASTLING_WHITE_QUEENSIDE] = 0x7000000000000000Ui64;
-	castling_safe_squares[Constants::CASTLING_BLACK_KINGSIDE] = 0x0000000000000006Ui64;
-	castling_safe_squares[Constants::CASTLING_BLACK_QUEENSIDE] = 0x0000000000000070Ui64;
-
+	castling_safe_squares[Constants::CASTLING_BLACK_KINGSIDE] =   0b00110000Ui64 << 56;
+	castling_empty_squares[Constants::CASTLING_BLACK_KINGSIDE] =  0b01100000Ui64 << 56;
+	
+	castling_safe_squares[Constants::CASTLING_BLACK_QUEENSIDE] =  0b00011000Ui64 << 56;
+	castling_empty_squares[Constants::CASTLING_BLACK_QUEENSIDE] = 0b00001110Ui64 << 56;
 }
 
 MoveBoard& MoveBoard::GetInstance() {
@@ -183,6 +184,7 @@ void MoveBoard::Initialize() {
 	InitializePawnPushes();
 	InitializePawnCaptures();
 	InitializeRays();
+	InitializeCastlingSquares();
 }
 
 BitBoard MoveBoard::GetKingMoves(const Square square) const {

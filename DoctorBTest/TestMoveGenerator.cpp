@@ -44,6 +44,107 @@ public:
 		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(35Ui8), Square(44Ui8))) != moves.end());
 	}
 
+	TEST_METHOD(TestMoveGeneratorWhiteCastling) {
+		//arrange
+		vector<string> tokens = { "8/8/8/8/8/8/8/Q3K2R", "w", "KQkq"};
+		Position pos;
+		Parser::ParseFen(tokens, pos);
+		vector<Move> moves;
+		MoveGenerator moveGen = MoveGenerator(pos);
+
+		//act
+		moveGen.GenerateKingMoves(moves);
+
+		//assert
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(Square::E1), Square(Square::G1)).SetCastling()) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(Square::E1), Square(Square::C1)).SetCastling()) != moves.end());
+	}
+
+	TEST_METHOD(TestMoveGeneratorBlackCastling) {
+		//arrange
+		vector<string> tokens = { "r3k2r/8/8/8/8/8/8/8", "b", "KQkq"};
+		Position pos;
+		Parser::ParseFen(tokens, pos);
+		vector<Move> moves;
+		MoveGenerator moveGen = MoveGenerator(pos);
+
+		//act
+		moveGen.GenerateKingMoves(moves);
+
+		//assert
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(Square::E8), Square(Square::G8)).SetCastling()) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(Square::E8), Square(Square::C8)).SetCastling()) != moves.end());
+	}
+
+	TEST_METHOD(TestMoveGeneratorCannotCastle1) {
+		//white cannot castle queenside because of lacking queenside castling rights
+
+		//arrange
+		vector<string> tokens = { "8/8/8/8/8/8/8/Q3K2R", "w", "K" };
+		Position pos;
+		Parser::ParseFen(tokens, pos);
+		vector<Move> moves;
+		MoveGenerator moveGen = MoveGenerator(pos);
+
+		//act
+		moveGen.GenerateKingMoves(moves);
+
+		//assert
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(Square::E1), Square(Square::G1)).SetCastling()) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(Square::E1), Square(Square::C1)).SetCastling()) == moves.end());
+	}
+
+	TEST_METHOD(TestMoveGeneratorCannotCastle2) {
+		//white cannot castle queenside because there is a piece in between
+		//arrange
+		vector<string> tokens = { "8/8/8/8/8/8/8/RN2K2R", "w", "KQkq" };
+		Position pos;
+		Parser::ParseFen(tokens, pos);
+		vector<Move> moves;
+		MoveGenerator moveGen = MoveGenerator(pos);
+
+		//act
+		moveGen.GenerateKingMoves(moves);
+
+		//assert
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(Square::E1), Square(Square::G1)).SetCastling()) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(Square::E1), Square(Square::C1)).SetCastling()) == moves.end());
+	}
+
+	TEST_METHOD(TestMoveGeneratorCannotCastle3) {
+		//white cannot castle at all because of being in check
+		//arrange
+		vector<string> tokens = { "8/8/8/8/1b6/8/8/R3K2R", "w", "KQkq" };
+		Position pos;
+		Parser::ParseFen(tokens, pos);
+		vector<Move> moves;
+		MoveGenerator moveGen = MoveGenerator(pos);
+
+		//act
+		moveGen.GenerateKingMoves(moves);
+
+		//assert
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(Square::E1), Square(Square::G1)).SetCastling()) == moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(Square::E1), Square(Square::C1)).SetCastling()) == moves.end());
+	}
+
+	TEST_METHOD(TestMoveGeneratorCannotCastle4) {
+		//white cannot castle queenside because one of the squares the king passes through is attacked
+		//arrange
+		vector<string> tokens = { "8/8/8/8/6b1/8/8/R3K2R", "w", "KQkq" };
+		Position pos;
+		Parser::ParseFen(tokens, pos);
+		vector<Move> moves;
+		MoveGenerator moveGen = MoveGenerator(pos);
+
+		//act
+		moveGen.GenerateKingMoves(moves);
+
+		//assert
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(Square::E1), Square(Square::G1)).SetCastling()) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(Square::E1), Square(Square::C1)).SetCastling()) == moves.end());
+	}
+
 	TEST_METHOD(TestMoveGeneratorGenerateKnightMoves) {
 		//arrange
 		vector<string> tokens = { "8/8/8/3N4/8/8/8/8", "w" };

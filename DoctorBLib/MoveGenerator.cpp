@@ -276,7 +276,7 @@ bool MoveGenerator::IsSquareAttacked(const Square& square) const {
 }
 
 bool MoveGenerator::IsAttackedFromDirection(const Square& square, const int dir, bool(BitBoard::*find_nearest_square)(Square&) const, const uint8_t rook_or_bishop_type) const {
-	BitBoard forward_ray_board = MoveBoard::GetInstance().GetRay(square, dir);
+	BitBoard forward_ray_board = MoveBoard::GetInstance().GetRay(square.GetValue(), dir);
 	BitBoard forward_ray_intersect = forward_ray_board & combined_board;
 	
 	if (forward_ray_intersect.Empty())
@@ -288,7 +288,7 @@ bool MoveGenerator::IsAttackedFromDirection(const Square& square, const int dir,
 
 		uint8_t inactive_color = position.GetActiveColor() ^ 1Ui8;
 		BitBoard possible_attackers = position.GetBitBoard(Piece(Piece::TYPE_QUEEN, inactive_color)) | position.GetBitBoard(Piece(rook_or_bishop_type, inactive_color));
-		return (nearest_square_board | possible_attackers).NotEmpty();
+		return (nearest_square_board & possible_attackers).NotEmpty();
 	}
 	return false;
 }
@@ -299,7 +299,7 @@ bool MoveGenerator::CanCastle(const int castling_index) const {
 		return false;
 
 	//squares between empty king and rook must be empty
-	if ((MoveBoard::GetInstance().GetCastlingEmptySquares(castling_index) | combined_board).NotEmpty())
+	if ((MoveBoard::GetInstance().GetCastlingEmptySquares(castling_index) & combined_board).NotEmpty())
 		return false;
 	
 	//squares king passes through (including current position) may not be attacked by opponent
