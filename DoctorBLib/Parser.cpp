@@ -35,46 +35,12 @@ bool Parser::ParsePosition(const vector<string>& position_tokens, Position& posi
 }
 
 bool Parser::ParsePiece(char c, Piece& piece) {
-	switch (c) {
-	case 'P':
-		piece = Piece(Piece::TYPE_PAWN, Piece::COLOR_WHITE);
-		return true;
-	case 'p':
-		piece = Piece(Piece::TYPE_PAWN, Piece::COLOR_BLACK);
-		return true;
-	case 'K':
-		piece = Piece(Piece::TYPE_KING, Piece::COLOR_WHITE);
-		return true;
-	case 'k':
-		piece = Piece(Piece::TYPE_KING, Piece::COLOR_BLACK);
-		return true;
-	case 'Q':
-		piece = Piece(Piece::TYPE_QUEEN, Piece::COLOR_WHITE);
-		return true;
-	case 'q':
-		piece = Piece(Piece::TYPE_QUEEN, Piece::COLOR_BLACK);
-		return true;
-	case 'R':
-		piece = Piece(Piece::TYPE_ROOK, Piece::COLOR_WHITE);
-		return true;
-	case 'r':
-		piece = Piece(Piece::TYPE_ROOK, Piece::COLOR_BLACK);
-		return true;
-	case 'B':
-		piece = Piece(Piece::TYPE_BISHOP, Piece::COLOR_WHITE);
-		return true;
-	case 'b':
-		piece = Piece(Piece::TYPE_BISHOP, Piece::COLOR_BLACK);
-		return true;
-	case 'N':
-		piece = Piece(Piece::TYPE_KNIGHT, Piece::COLOR_WHITE);
-		return true;
-	case 'n':
-		piece = Piece(Piece::TYPE_KNIGHT, Piece::COLOR_BLACK);
-		return true;
-	default:
+	size_t value = Constants::PIECE_CHARS.find(c);
+	if (value == std::string::npos)
 		return false;
-	}
+
+	piece = Piece((uint8_t)value);
+	return true;
 }
 
 bool Parser::ParseFen(const vector<string>& position_tokens, Position& position) {

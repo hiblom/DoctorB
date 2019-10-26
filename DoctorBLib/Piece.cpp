@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Piece.h"
+#include "Constants.h"
 
 using namespace std;
 
@@ -42,35 +43,10 @@ void Piece::SetValue(uint8_t piece_value) {
 }
 
 char Piece::ToChar() const {
-	switch (value)
-	{
-	case TYPE_PAWN | COLOR_WHITE:
-		return 'P';
-	case TYPE_PAWN | COLOR_BLACK:
-		return 'p';
-	case TYPE_KING | COLOR_WHITE:
-		return 'K';
-	case TYPE_KING | COLOR_BLACK:
-		return 'k';
-	case TYPE_QUEEN | COLOR_WHITE:
-		return 'Q';
-	case TYPE_QUEEN | COLOR_BLACK:
-		return 'q';
-	case TYPE_ROOK| COLOR_WHITE:
-		return 'R';
-	case TYPE_ROOK | COLOR_BLACK:
-		return 'r';
-	case TYPE_BISHOP | COLOR_WHITE:
-		return 'B';
-	case TYPE_BISHOP | COLOR_BLACK:
-		return 'b';
-	case TYPE_KNIGHT | COLOR_WHITE:
-		return 'N';
-	case TYPE_KNIGHT | COLOR_BLACK:
-		return 'n';
-	default:
+	if (value > 11)
 		return '?';
-	}
+
+	return Constants::PIECE_CHARS[value];
 }
 
 string Piece::ToString() const {
