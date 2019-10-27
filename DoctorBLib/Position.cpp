@@ -45,11 +45,11 @@ uint8_t Position::GetActiveColor() const {
 }
 
 void Position::SetCastlingStatus(int index, bool value) {
-	castling_status[index] = value;
+	castling_status_bits = castling_status_bits & ~(1Ui8 << index) | ((uint8_t)value << index);
 }
 
 bool Position::GetCastlingStatus(int index) const {
-	return castling_status[index];
+	return castling_status_bits & (1Ui8 << index);
 }
 
 void Position::SetEpSquare(const Square& square) {
@@ -101,8 +101,9 @@ bool Position::ApplyMove(const Move& move) {
 
 	//get piece at square from
 	Piece piece;
-	if (!GetPiece(move.GetSquareFrom(), piece))
-		return false;
+	move.GetPiece(piece);
+	//if (!GetPiece(move.GetSquareFrom(), piece))
+	//	return false;
 
 	//clear square from
 	ClearSquare(move.GetSquareFrom(), piece);
@@ -203,6 +204,10 @@ bool Position::ApplyMove(const Move& move) {
 
 bool Position::GetPieceSquares(const Piece& piece, vector<Square>& squares) const {
 	return bit_boards[piece.GetValue()].GetSquares(squares);
+}
+
+bool Position::GetPieceSquare(const Piece & piece, Square& square) const {
+	return bit_boards[piece.GetValue()].GetLowestSquare(square);
 }
 
 BitBoard Position::GetBitBoard(const Piece& piece) const {

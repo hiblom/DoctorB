@@ -12,5 +12,6 @@ private:
 	const Position& position_;
 	int depth_;
 	uint64_t Count(const Position& position, const int remaining_depth) const;
+	uint64_t Count2(const Position & position, const int remaining_depth) const;
 };
 

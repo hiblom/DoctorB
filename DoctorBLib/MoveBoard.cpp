@@ -203,7 +203,7 @@ BitBoard MoveBoard::GetPawnCaptures(const Square square, uint8_t color) const {
 	return pawn_captures[color][square.GetValue()];
 }
 
-BitBoard MoveBoard::GetRay(const Square square, const int dir) const {
+BitBoard MoveBoard::GetRay(const Square square, const uint8_t dir) const {
 	return rays[dir][square.GetValue()];
 }
 

@@ -4,14 +4,17 @@
 class MoveBoard
 {
 public:
-	static const int DIR_UP = 0;
-	static const int DIR_UP_RIGHT = 1;
-	static const int DIR_RIGHT = 2;
-	static const int DIR_DOWN_RIGHT = 3;
-	static const int DIR_DOWN = 4;
-	static const int DIR_DOWN_LEFT = 5;
-	static const int DIR_LEFT = 6;
-	static const int DIR_UP_LEFT = 7;
+	static const uint8_t DIR_UP = 0Ui8;
+	static const uint8_t DIR_DOWN = 1Ui8;
+	
+	static const uint8_t DIR_RIGHT = 2Ui8;
+	static const uint8_t DIR_LEFT = 3Ui8;
+
+	static const uint8_t DIR_UP_RIGHT = 4Ui8;
+	static const uint8_t DIR_DOWN_LEFT = 5Ui8;
+
+	static const uint8_t DIR_UP_LEFT = 6Ui8;
+	static const uint8_t DIR_DOWN_RIGHT = 7Ui8;
 
 	~MoveBoard();
 	static MoveBoard& GetInstance();
@@ -22,7 +25,7 @@ public:
 	BitBoard GetKnightMoves(const Square square) const;
 	BitBoard GetPawnPushes(const Square square, uint8_t color) const;
 	BitBoard GetPawnCaptures(const Square square, uint8_t color) const;
-	BitBoard GetRay(const Square square, const int dir) const;
+	BitBoard GetRay(const Square square, const uint8_t dir) const;
 	BitBoard GetCastlingSafeSquares(const int index) const;
 	BitBoard GetCastlingEmptySquares(const int index) const;
 private:
