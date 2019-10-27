@@ -140,7 +140,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>$(VCInstallDir)UnitTest\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\DoctorBLib;$(SolutionDir)\packages\boost.1.70.0.0\lib\native\include;$(VCInstallDir)UnitTest\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <UseFullPaths>true</UseFullPaths>
     </ClCompile>
@@ -167,7 +167,9 @@
     <ClCompile Include="TestMove.cpp" />
     <ClCompile Include="TestMoveGenerator.cpp" />
     <ClCompile Include="TestParser.cpp" />
+    <ClCompile Include="TestPerft.cpp" />
     <ClCompile Include="TestPiece.cpp" />
+    <ClCompile Include="TestPosition.cpp" />
     <ClCompile Include="TestSquare.cpp" />
   </ItemGroup>
   <ItemGroup>

@@ -6,6 +6,7 @@
 #include <boost/optional.hpp>
 #include "Piece.h"
 #include "Constants.h"
+#include "MoveGenerator.h"
 
 using namespace std;
 
@@ -65,10 +66,6 @@ bool Parser::ParseFen(const vector<string>& position_tokens, Position& position)
 
 	string halfmove_clock = len < 5 ? "0" : position_tokens[4];
 	if (!ParseFenHalfmoveClock(halfmove_clock, position))
-		return false;
-
-	string fullmove_number = len < 6 ? "1" : position_tokens[5];
-	if (!ParseFenFullmoveNumber(fullmove_number, position))
 		return false;
 
 	return true;
@@ -155,20 +152,6 @@ bool Parser::ParseFenHalfmoveClock(string text, Position & position) {
 	}
 }
 
-bool Parser::ParseFenFullmoveNumber(string text, Position& position) {
-	try {
-		int value = stoi(text);
-		if (value < 0 || value > UINT16_MAX) {
-			return false;
-		}
-		position.SetFullmoveNumber(value);
-		return true;
-	}
-	catch (exception) {
-		return false;
-	}
-}
-
 bool Parser::ParseSquare(string text, Square& square) {
 	if (text.size() != 2)
 		return false;
@@ -196,6 +179,11 @@ bool Parser::ParsePositionMoves(const vector<string>& tokens, Position& position
 	for (string token : tokens) {
 		if (!ParseMove(token, move))
 			return false;
+
+		MoveGenerator move_gen(position);
+		if (!move_gen.SetMoveFlags(move))
+			return false;
+
 		if (!position.ApplyMove(move))
 			return false;
 	}
@@ -277,7 +265,5 @@ void Parser::SetStartPos(Position& position) {
 	position.ResetEpSquare();
 
 	position.SetHalfmoveClock(0);
-
-	position.SetFullmoveNumber(1);
 }
 

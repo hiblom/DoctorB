@@ -16,7 +16,6 @@ namespace Parser
 	bool ParseFenCastlingStatus(std::string text, Position& position);
 	bool ParseFenEpSquare(std::string text, Position& position);
 	bool ParseFenHalfmoveClock(std::string text, Position& position);
-	bool ParseFenFullmoveNumber(std::string text, Position& position);
 	bool ParseSquare(std::string text, Square& square);
 	bool ParsePositionMoves(const std::vector<std::string>& tokens, Position& position);
 	bool ParseMove(std::string text, Move& square);

@@ -6,7 +6,7 @@
 
 using namespace std;
 
-MoveGenerator::MoveGenerator(const Position& generator_position): position(generator_position) {
+MoveGenerator::MoveGenerator(const Position& generator_position) : position(generator_position) {
 	uint8_t active_color = position.GetActiveColor();
 	uint8_t inactive_color = position.GetActiveColor() ^ 1Ui8;
 	for (uint8_t piece_type = 0; piece_type <= 10; piece_type += 2) {
@@ -132,7 +132,7 @@ void MoveGenerator::GeneratePawnMoves(std::vector<Move>& moves) const {
 		//captures
 		to_board = MoveBoard::GetInstance().GetPawnCaptures(from_square, position.GetActiveColor());
 		BitBoard pawn_targets = BitBoard(inactive_board);
-		
+
 		//add EP square to list of targets for pawn captures
 		Square ep_square;
 		bool has_ep_square = position.GetEpSquare(ep_square);
@@ -212,6 +212,53 @@ void MoveGenerator::GenerateQueenMoves(std::vector<Move>& moves) const {
 	}
 }
 
+bool MoveGenerator::IsCheck(uint8_t color) {
+	vector<Square> squares;
+	if (position.GetPieceSquares(Piece(Piece::TYPE_KING, color), squares)) {
+		if (squares.size() != 1)
+			return false;
+
+		return IsSquareAttacked(squares[0], color ^ 1Ui8);
+	}
+	return false;
+}
+
+
+bool MoveGenerator::SetMoveFlags(Move& move) {
+	Piece piece;
+	if (!position.GetPiece(move.GetSquareFrom(), piece))
+		return false;
+
+	//castling
+	if (piece.GetType() == Piece::TYPE_KING) {
+		if (move.GetSquareFrom() == Square(Square::E1) && (move.GetSquareTo() == Square(Square::C1) || move.GetSquareTo() == Square(Square::G1)) ||
+			move.GetSquareFrom() == Square(Square::E8) && (move.GetSquareTo() == Square(Square::C8) || move.GetSquareTo() == Square(Square::G8))) {
+			move.SetCastling();
+			return true;
+		}
+	}
+	else if (piece.GetType() == Piece::TYPE_PAWN) {
+		//ep capture
+		Square ep_square;
+		if (position.GetEpSquare(ep_square)) {
+			if (ep_square == move.GetSquareTo()) {
+				move.SetEpCapture();
+				return true;
+			}
+		}
+
+		//double push
+		if (move.GetSquareFrom().GetY() == 1 && move.GetSquareTo().GetY() == 3 ||
+			move.GetSquareFrom().GetY() == 6 && move.GetSquareTo().GetY() == 4) {
+			move.SetDoublePush();
+			return true;
+		}
+	}
+
+	//note: promotion is set automatically when parsing the move string
+	return true;
+}
+
 void MoveGenerator::GenerateRayMoves(const Square& from_square, const int dir, bool(BitBoard::*find_nearest_square)(Square&) const, std::vector<Move>& moves) const {
 	BitBoard move_board;
 	BitBoard forward_ray_board = MoveBoard::GetInstance().GetRay(from_square, dir);
@@ -237,48 +284,47 @@ void MoveGenerator::GenerateRayMoves(const Square& from_square, const int dir, b
 	}
 }
 
-bool MoveGenerator::IsSquareAttacked(const Square& square) const {
-	uint8_t active_color = position.GetActiveColor();
-	uint8_t inactive_color = active_color ^ 1Ui8;
-	
+bool MoveGenerator::IsSquareAttacked(const Square& square, const uint8_t attacking_color) const {
+	uint8_t defending_color = attacking_color ^ 1Ui8;
+
 	//attacked by pawn
 	//pretend we are a pawn, can we capture opponent's pawn?
 	//note: does not take into account EP square
-	BitBoard pawn_capture_board = MoveBoard::GetInstance().GetPawnCaptures(square, active_color);
-	BitBoard inactive_pawn_board = position.GetBitBoard(Piece(Piece::TYPE_PAWN, inactive_color));
+	BitBoard pawn_capture_board = MoveBoard::GetInstance().GetPawnCaptures(square, defending_color);
+	BitBoard inactive_pawn_board = position.GetBitBoard(Piece(Piece::TYPE_PAWN, attacking_color));
 	if ((pawn_capture_board & inactive_pawn_board).NotEmpty())
 		return true;
 
 	//attacked by knight
 	//pretend we are a knight, can we capture opponent's knight?
 	BitBoard knight_capture_board = MoveBoard::GetInstance().GetKnightMoves(square);
-	BitBoard inactive_knight_board = position.GetBitBoard(Piece(Piece::TYPE_KNIGHT, inactive_color));
+	BitBoard inactive_knight_board = position.GetBitBoard(Piece(Piece::TYPE_KNIGHT, attacking_color));
 	if ((knight_capture_board & inactive_knight_board).NotEmpty())
 		return true;
 
 	//attacked by king
 	//pretend we are a king, can we capture opponent's king?
 	BitBoard king_capture_board = MoveBoard::GetInstance().GetKingMoves(square);
-	BitBoard inactive_king_board = position.GetBitBoard(Piece(Piece::TYPE_KING, inactive_color));
+	BitBoard inactive_king_board = position.GetBitBoard(Piece(Piece::TYPE_KING, attacking_color));
 	if ((king_capture_board & inactive_king_board).NotEmpty())
 		return true;
 
 	//attacked by sliding pieces?
 	return
-		IsAttackedFromDirection(square, MoveBoard::DIR_UP, &BitBoard::GetLowestSquare, Piece::TYPE_ROOK) ||
-		IsAttackedFromDirection(square, MoveBoard::DIR_UP_RIGHT, &BitBoard::GetLowestSquare, Piece::TYPE_BISHOP) ||
-		IsAttackedFromDirection(square, MoveBoard::DIR_RIGHT, &BitBoard::GetLowestSquare, Piece::TYPE_ROOK) ||
-		IsAttackedFromDirection(square, MoveBoard::DIR_DOWN_RIGHT, &BitBoard::GetHighestSquare, Piece::TYPE_BISHOP) ||
-		IsAttackedFromDirection(square, MoveBoard::DIR_DOWN, &BitBoard::GetHighestSquare, Piece::TYPE_ROOK) ||
-		IsAttackedFromDirection(square, MoveBoard::DIR_DOWN_LEFT, &BitBoard::GetHighestSquare, Piece::TYPE_BISHOP) ||
-		IsAttackedFromDirection(square, MoveBoard::DIR_LEFT, &BitBoard::GetHighestSquare, Piece::TYPE_ROOK) ||
-		IsAttackedFromDirection(square, MoveBoard::DIR_UP_LEFT, &BitBoard::GetLowestSquare, Piece::TYPE_BISHOP);
+		IsAttackedFromDirection(square, MoveBoard::DIR_UP, &BitBoard::GetLowestSquare, Piece::TYPE_ROOK, attacking_color) ||
+		IsAttackedFromDirection(square, MoveBoard::DIR_UP_RIGHT, &BitBoard::GetLowestSquare, Piece::TYPE_BISHOP, attacking_color) ||
+		IsAttackedFromDirection(square, MoveBoard::DIR_RIGHT, &BitBoard::GetLowestSquare, Piece::TYPE_ROOK, attacking_color) ||
+		IsAttackedFromDirection(square, MoveBoard::DIR_DOWN_RIGHT, &BitBoard::GetHighestSquare, Piece::TYPE_BISHOP, attacking_color) ||
+		IsAttackedFromDirection(square, MoveBoard::DIR_DOWN, &BitBoard::GetHighestSquare, Piece::TYPE_ROOK, attacking_color) ||
+		IsAttackedFromDirection(square, MoveBoard::DIR_DOWN_LEFT, &BitBoard::GetHighestSquare, Piece::TYPE_BISHOP, attacking_color) ||
+		IsAttackedFromDirection(square, MoveBoard::DIR_LEFT, &BitBoard::GetHighestSquare, Piece::TYPE_ROOK, attacking_color) ||
+		IsAttackedFromDirection(square, MoveBoard::DIR_UP_LEFT, &BitBoard::GetLowestSquare, Piece::TYPE_BISHOP, attacking_color);
 }
 
-bool MoveGenerator::IsAttackedFromDirection(const Square& square, const int dir, bool(BitBoard::*find_nearest_square)(Square&) const, const uint8_t rook_or_bishop_type) const {
+bool MoveGenerator::IsAttackedFromDirection(const Square& square, const int dir, bool(BitBoard::*find_nearest_square)(Square&) const, const uint8_t rook_or_bishop_type, const uint8_t attacking_color) const {
 	BitBoard forward_ray_board = MoveBoard::GetInstance().GetRay(square.GetValue(), dir);
 	BitBoard forward_ray_intersect = forward_ray_board & combined_board;
-	
+
 	if (forward_ray_intersect.Empty())
 		return false;
 
@@ -286,8 +332,7 @@ bool MoveGenerator::IsAttackedFromDirection(const Square& square, const int dir,
 	if ((forward_ray_intersect.*find_nearest_square)(nearest_square)) {
 		BitBoard nearest_square_board = BitBoard().Set(nearest_square.GetValue());
 
-		uint8_t inactive_color = position.GetActiveColor() ^ 1Ui8;
-		BitBoard possible_attackers = position.GetBitBoard(Piece(Piece::TYPE_QUEEN, inactive_color)) | position.GetBitBoard(Piece(rook_or_bishop_type, inactive_color));
+		BitBoard possible_attackers = position.GetBitBoard(Piece(Piece::TYPE_QUEEN, attacking_color)) | position.GetBitBoard(Piece(rook_or_bishop_type, attacking_color));
 		return (nearest_square_board & possible_attackers).NotEmpty();
 	}
 	return false;
@@ -301,12 +346,12 @@ bool MoveGenerator::CanCastle(const int castling_index) const {
 	//squares between empty king and rook must be empty
 	if ((MoveBoard::GetInstance().GetCastlingEmptySquares(castling_index) & combined_board).NotEmpty())
 		return false;
-	
+
 	//squares king passes through (including current position) may not be attacked by opponent
 	vector<Square> safe_squares;
 	MoveBoard::GetInstance().GetCastlingSafeSquares(castling_index).GetSquares(safe_squares);
 	for (Square square : safe_squares) {
-		if (IsSquareAttacked(square))
+		if (IsSquareAttacked(square, position.GetActiveColor() ^ 1Ui8))
 			return false;
 	}
 

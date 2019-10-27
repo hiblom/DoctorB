@@ -155,18 +155,6 @@ public:
 		Assert::AreEqual(42, (int)pos.GetHalfmoveClock());
 	}
 
-	TEST_METHOD(TestParserParseFullmoveNumber) {
-		//arrange
-		Position pos;
-
-		//act
-		bool parse_res = Parser::ParseFenFullmoveNumber("69", pos);
-
-		//assert
-		Assert::IsTrue(parse_res);
-		Assert::AreEqual(69, (int)pos.GetFullmoveNumber());
-	}
-
 	TEST_METHOD(TestParserParseFen) {
 		//arrange
 		Position pos;
@@ -193,14 +181,12 @@ public:
 		Assert::IsTrue(pos.GetCastlingStatus(3));
 		Assert::IsFalse(pos.GetEpSquare(ep_square));
 		Assert::AreEqual(0, (int)pos.GetHalfmoveClock());
-		Assert::AreEqual(6, (int)pos.GetFullmoveNumber());
 	}
 
 	TEST_METHOD(TestParserParsePosition) {
 		//arrange
 		Position pos;
 		vector<string> tokens = { "startpos", "moves", "b1c3", "e7e5", "g1f3", "b8c6", "d2d4", "e5d4", "f3d4", "g8f6", "c1f4", "f8b4", "d1d3" };
-		//r1bqk2r/pppp1ppp/2n2n2/8/1b1N1B2/2NQ4/PPP1PPPP/R3KB1R b KQkq - 4 6 
 		Square ep_square;
 
 		//act
@@ -217,13 +203,12 @@ public:
 		Assert::AreEqual(Piece(Piece::TYPE_QUEEN, Piece::COLOR_WHITE), piece_d3);
 		Assert::IsFalse(get_res_b1);
 		Assert::AreEqual(Piece::COLOR_BLACK, pos.GetActiveColor());
-		//Assert::IsTrue(pos.GetCastlingStatus(0)); TODO
-		//Assert::IsTrue(pos.GetCastlingStatus(1)); TODO
-		//Assert::IsTrue(pos.GetCastlingStatus(2)); TODO
-		//Assert::IsTrue(pos.GetCastlingStatus(3)); TODO
-		//Assert::IsFalse(pos.GetEpSquare(ep_square)); TODO
+		Assert::IsTrue(pos.GetCastlingStatus(Constants::CASTLING_WHITE_KINGSIDE));
+		Assert::IsTrue(pos.GetCastlingStatus(Constants::CASTLING_WHITE_QUEENSIDE));
+		Assert::IsTrue(pos.GetCastlingStatus(Constants::CASTLING_BLACK_KINGSIDE));
+		Assert::IsTrue(pos.GetCastlingStatus(Constants::CASTLING_BLACK_QUEENSIDE));
+		Assert::IsFalse(pos.GetEpSquare(ep_square));
 		Assert::AreEqual(4, (int)pos.GetHalfmoveClock());
-		Assert::AreEqual(6, (int)pos.GetFullmoveNumber());
 	}
 
 	};

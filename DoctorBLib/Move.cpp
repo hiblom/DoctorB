@@ -7,6 +7,7 @@ Move::Move() {
 Move::Move(const Square move_square_from, const Square move_square_to) {
 	square_from = move_square_from;
 	square_to = move_square_to;
+	status = 0Ui16;
 }
 
 Move::Move(const Square move_square_from, const Square move_square_to, const Piece move_promo_piece) {
@@ -47,11 +48,11 @@ bool Move::operator==(const Move& that) const {
 //	return *this;
 //}
 
-inline bool Move::IsPromotion() const {
+bool Move::IsPromotion() const {
 	return status & MASK_PROMOTION;
 }
 
-inline bool Move::IsEpCapture() const {
+bool Move::IsEpCapture() const {
 	return status & MASK_EP_CAPTURE;
 }
 
@@ -60,7 +61,7 @@ Move& Move::SetEpCapture() {
 	return *this;
 }
 
-inline bool Move::IsCastling() const {
+bool Move::IsCastling() const {
 	return status & MASK_CASTLING;
 }
 

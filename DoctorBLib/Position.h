@@ -15,6 +15,7 @@ public:
 	~Position();
 	void SetPiece(const Square& square, const Piece& piece);
 	void ClearSquare(const Square& square);
+	void ClearSquare(const Square& square, const Piece& piece);
 	bool GetPiece(const Square& square, Piece& piece) const;
 	void SetActiveColor(uint8_t color);
 	uint8_t GetActiveColor() const;
@@ -25,8 +26,6 @@ public:
 	bool GetEpSquare(Square& square) const;
 	void SetHalfmoveClock(uint16_t value);
 	uint16_t GetHalfmoveClock();
-	void SetFullmoveNumber(uint16_t value);
-	uint16_t GetFullmoveNumber();
 	std::string ToString() const;
 	bool ApplyMove(const Move& move);
 	bool GetPieceSquares(const Piece& piece, std::vector<Square>& squares) const;
@@ -37,6 +36,5 @@ private:
 	bool castling_status[4];
 	boost::optional<Square> ep_square;
 	uint16_t halfmove_clock;
-	uint16_t fullmove_number;
 };
 
