@@ -71,6 +71,10 @@ BitBoard BitBoard::operator&(const BitBoard& that) const {
 	return BitBoard(value & that.value);
 }
 
+BitBoard BitBoard::operator^(const BitBoard& that) const {
+	return BitBoard(value ^ that.value);
+}
+
 BitBoard& BitBoard::operator|=(const BitBoard& that) {
 	value |= that.value;
 	return *this;
@@ -78,6 +82,11 @@ BitBoard& BitBoard::operator|=(const BitBoard& that) {
 
 BitBoard& BitBoard::operator&=(const BitBoard& that) {
 	value &= that.value;
+	return *this;
+}
+
+BitBoard & BitBoard::operator^=(const BitBoard& that) {
+	value ^= that.value;
 	return *this;
 }
 

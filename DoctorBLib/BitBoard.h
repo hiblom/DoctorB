@@ -21,8 +21,10 @@ public:
 	BitBoard& Down();
 	BitBoard operator|(const BitBoard& that) const;
 	BitBoard operator&(const BitBoard& that) const;
+	BitBoard operator^(const BitBoard& that) const;
 	BitBoard& operator|=(const BitBoard& that);
 	BitBoard& operator&=(const BitBoard& that);
+	BitBoard& operator^=(const BitBoard& that);
 	BitBoard operator~() const;
 	bool GetSquares(std::vector<Square>& squares) const;
 	bool GetLowestSquare(Square& square) const;

@@ -36,6 +36,22 @@ MoveGenerator::~MoveGenerator() {
 }
 
 void MoveGenerator::GenerateMoves(vector<Move>& moves) const {
+	//generate "danger squares" => empty squares that are attacked by enemy when excluding own king
+	//king cannot move into these squares
+	//we can generate this danger board without serializing to a square vector
+
+	//seperate move generation for check evasion and double check evasion
+	//count number of pieces attacking the active king
+
+	//in case of double check the only legal moves are king moves
+	//in case of single check we can either move the king, capture the checker, or block the checker
+
+	//pinned pieces restricted in their moves
+
+	//keep into account some gotcha's like en passant discovered check
+
+
+
 	GeneratePawnMoves(moves);
 	GenerateKingMoves(moves);
 	GenerateQueenMoves(moves);
@@ -65,15 +81,15 @@ void MoveGenerator::GenerateKingMoves(std::vector<Move>& moves) const {
 	to_board.GetSquares(to_squares);
 
 	for (Square to_square : to_squares) {
-		moves.push_back(Move(from_square, to_square).SetPiece(active_piece));
+		moves.push_back(Move(active_piece, from_square, to_square));
 	}
 
 	//castling
 	if (CanCastle(CASTLING_KINGSIDE[active_color]))
-		moves.push_back(Move(Square(KING_SQUARE[active_color]), Square(ROOK_SQUARE_KINGSIDE[active_color])).SetPiece(active_piece).SetCastling());
+		moves.push_back(Move(active_piece, Square(KING_SQUARE[active_color]), Square(ROOK_SQUARE_KINGSIDE[active_color])).SetCastling());
 
 	if (CanCastle(CASTLING_QUEENSIDE[active_color]))
-		moves.push_back(Move(Square(KING_SQUARE[active_color]), Square(ROOK_SQUARE_QUEENSIDE[active_color])).SetPiece(active_piece).SetCastling());
+		moves.push_back(Move(active_piece, Square(KING_SQUARE[active_color]), Square(ROOK_SQUARE_QUEENSIDE[active_color])).SetCastling());
 }
 
 void MoveGenerator::GenerateKnightMoves(std::vector<Move>& moves) const {
@@ -94,7 +110,7 @@ void MoveGenerator::GenerateKnightMoves(std::vector<Move>& moves) const {
 		to_board.GetSquares(to_squares);
 
 		for (Square to_square : to_squares) {
-			moves.push_back(Move(from_square, to_square).SetPiece(active_piece));
+			moves.push_back(Move(active_piece, from_square, to_square));
 		}
 	}
 }
@@ -120,13 +136,13 @@ void MoveGenerator::GeneratePawnMoves(std::vector<Move>& moves) const {
 
 		if (to_board.GetLowestSquare(to_square)) {
 			if (from_square.GetY() == PROMOTION_RANKS[active_color]) {
-				moves.push_back(Move(from_square, to_square, Piece(Piece::TYPE_QUEEN, active_color)).SetPiece(active_piece));
-				moves.push_back(Move(from_square, to_square, Piece(Piece::TYPE_BISHOP, active_color)).SetPiece(active_piece));
-				moves.push_back(Move(from_square, to_square, Piece(Piece::TYPE_ROOK, active_color)).SetPiece(active_piece));
-				moves.push_back(Move(from_square, to_square, Piece(Piece::TYPE_KNIGHT, active_color)).SetPiece(active_piece));
+				moves.push_back(Move(active_piece, from_square, to_square, Piece(Piece::TYPE_QUEEN, active_color)));
+				moves.push_back(Move(active_piece, from_square, to_square, Piece(Piece::TYPE_BISHOP, active_color)));
+				moves.push_back(Move(active_piece, from_square, to_square, Piece(Piece::TYPE_ROOK, active_color)));
+				moves.push_back(Move(active_piece, from_square, to_square, Piece(Piece::TYPE_KNIGHT, active_color)));
 			}
 			else {
-				moves.push_back(Move(from_square, to_square).SetPiece(active_piece));
+				moves.push_back(Move(active_piece, from_square, to_square));
 
 				//double push
 				if (from_square.GetY() == DOUBLE_PUSH_RANKS[active_color]) {
@@ -134,7 +150,7 @@ void MoveGenerator::GeneratePawnMoves(std::vector<Move>& moves) const {
 					to_board_2 &= ~combined_board; //exclude all pieces: only silent moves
 
 					if (to_board_2.GetLowestSquare(to_square)) {
-						moves.push_back(Move(from_square, to_square).SetPiece(active_piece).SetDoublePush());
+						moves.push_back(Move(active_piece, from_square, to_square).SetDoublePush());
 					}
 				}
 			}
@@ -156,13 +172,13 @@ void MoveGenerator::GeneratePawnMoves(std::vector<Move>& moves) const {
 		to_board.GetSquares(to_squares);
 		for (Square to_square : to_squares) {
 			if (from_square.GetY() == PROMOTION_RANKS[active_color]) {
-				moves.push_back(Move(from_square, to_square, Piece(Piece::TYPE_QUEEN, active_color)).SetPiece(active_piece));
-				moves.push_back(Move(from_square, to_square, Piece(Piece::TYPE_BISHOP, active_color)).SetPiece(active_piece));
-				moves.push_back(Move(from_square, to_square, Piece(Piece::TYPE_ROOK, active_color)).SetPiece(active_piece));
-				moves.push_back(Move(from_square, to_square, Piece(Piece::TYPE_KNIGHT, active_color)).SetPiece(active_piece));
+				moves.push_back(Move(active_piece, from_square, to_square, Piece(Piece::TYPE_QUEEN, active_color)));
+				moves.push_back(Move(active_piece, from_square, to_square, Piece(Piece::TYPE_BISHOP, active_color)));
+				moves.push_back(Move(active_piece, from_square, to_square, Piece(Piece::TYPE_ROOK, active_color)));
+				moves.push_back(Move(active_piece, from_square, to_square, Piece(Piece::TYPE_KNIGHT, active_color)));
 			}
 			else {
-				Move move = Move(from_square, to_square).SetPiece(active_piece);
+				Move move = Move(active_piece, from_square, to_square);
 				if (has_ep_square && to_square == ep_square) {
 					move.SetEpCapture();
 				}
@@ -274,27 +290,22 @@ bool MoveGenerator::SetMoveFlags(Move& move) {
 }
 
 void MoveGenerator::GenerateRayMoves(const Square& from_square, const uint8_t dir, bool(BitBoard::*find_nearest_square)(Square&) const, const Piece active_piece , std::vector<Move>& moves) const {
-	BitBoard move_board;
-	BitBoard forward_ray_board = MoveBoard::GetInstance().GetRay(from_square, dir);
-	BitBoard forward_ray_intersect = forward_ray_board & combined_board;
-	if (forward_ray_intersect.NotEmpty()) {
+	//BitBoard move_board;
+	BitBoard move_board = MoveBoard::GetInstance().GetRay(from_square, dir);
+	BitBoard intersect_board = move_board & combined_board;
+
+	if (intersect_board.NotEmpty()) {
 		Square nearest_square;
-		if ((forward_ray_intersect.*find_nearest_square)(nearest_square)) {
-			int reverse_dir = dir ^ 1Ui8; //toggle last bit, the directions are grouped in opposing pairs
-			BitBoard reverse_ray_board = MoveBoard::GetInstance().GetRay(nearest_square, reverse_dir);
-			move_board |= forward_ray_board & reverse_ray_board;
-			BitBoard nearest_square_board = BitBoard().Set(nearest_square.GetValue());
-			move_board |= nearest_square_board & inactive_board; //add capture
-		}
-	}
-	else {
-		move_board = forward_ray_board;
+		(intersect_board.*find_nearest_square)(nearest_square);
+		//slight change after reading https://www.chessprogramming.org/Classical_Approach
+		move_board ^= MoveBoard::GetInstance().GetRay(nearest_square, dir);
+		move_board &= ~active_board; //subtract own pieces
 	}
 
 	vector<Square> to_squares;
 	move_board.GetSquares(to_squares);
 	for (Square to_square : to_squares) {
-		moves.push_back(Move(from_square, to_square).SetPiece(active_piece));
+		moves.push_back(Move(active_piece, from_square, to_square));
 	}
 }
 
@@ -342,12 +353,10 @@ bool MoveGenerator::IsAttackedFromDirection(const Square& square, const uint8_t 
 		return false;
 
 	Square nearest_square;
-	if ((forward_ray_intersect.*find_nearest_square)(nearest_square)) {
-		BitBoard nearest_square_board = BitBoard().Set(nearest_square.GetValue());
-		BitBoard possible_attackers = position.GetBitBoard(Piece(Piece::TYPE_QUEEN, attacking_color)) | position.GetBitBoard(Piece(rook_or_bishop_type, attacking_color));
-		return (nearest_square_board & possible_attackers).NotEmpty();
-	}
-	return false;
+	(forward_ray_intersect.*find_nearest_square)(nearest_square);
+	BitBoard nearest_square_board = BitBoard().Set(nearest_square.GetValue());
+	BitBoard possible_attackers = position.GetBitBoard(Piece(Piece::TYPE_QUEEN, attacking_color)) | position.GetBitBoard(Piece(rook_or_bishop_type, attacking_color));
+	return (nearest_square_board & possible_attackers).NotEmpty();
 }
 
 bool MoveGenerator::CanCastle(const int castling_index) const {
@@ -355,7 +364,7 @@ bool MoveGenerator::CanCastle(const int castling_index) const {
 	if (!position.GetCastlingStatus(castling_index))
 		return false;
 
-	//squares between empty king and rook must be empty
+	//squares between king and rook must be empty
 	if ((MoveBoard::GetInstance().GetCastlingEmptySquares(castling_index) & combined_board).NotEmpty())
 		return false;
 

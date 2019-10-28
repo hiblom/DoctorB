@@ -97,13 +97,13 @@ string Position::ToString() const {
 }
 
 bool Position::ApplyMove(const Move& move) {
+	static const uint8_t EP_RANK[2] = { 2Ui8, 5Ui8 };
+
 	uint8_t inactive_color = active_color ^ 1Ui8;
 
-	//get piece at square from
+	//get piece from move
 	Piece piece;
 	move.GetPiece(piece);
-	//if (!GetPiece(move.GetSquareFrom(), piece))
-	//	return false;
 
 	//clear square from
 	ClearSquare(move.GetSquareFrom(), piece);
@@ -111,17 +111,12 @@ bool Position::ApplyMove(const Move& move) {
 	//TODO put capture flag in move (?)
 	Piece captured_piece;
 	bool is_capture = GetPiece(move.GetSquareTo(), captured_piece);
-	//clear square to (the bitboard containing the captured piece is differs from the bitboard containing the moving piece)
-	if (is_capture) {
+	//clear square to (the bitboard containing the captured piece differs from the bitboard containing the moving piece)
+	if (is_capture) 
 		ClearSquare(move.GetSquareTo(), captured_piece);
-	}
 
-	//promo piece?
-	Piece promo_piece;
-	if (move.GetPromoPiece(promo_piece)) {
-		//make piece type the same as promo piece type
-		piece.SetType(promo_piece.GetType());
-	}
+	//if move is promo, piece type will be set to promo piece type
+	move.GetPromoOrMovingPieceType(piece);
 
 	//set square to
 	SetPiece(move.GetSquareTo(), piece);
@@ -161,32 +156,29 @@ bool Position::ApplyMove(const Move& move) {
 	}
 	else {
 		//reset castling status when king or rook moved or rook captured
-		if (GetCastlingStatus(Constants::CASTLING_WHITE_QUEENSIDE) && 
-			(move.GetSquareFrom() == Square(Square::E1) || move.GetSquareFrom() == Square(Square::A1) || move.GetSquareTo() == Square(Square::A1)))
-			SetCastlingStatus(Constants::CASTLING_WHITE_QUEENSIDE, false);
-		
-		if (GetCastlingStatus(Constants::CASTLING_WHITE_KINGSIDE) && 
-			(move.GetSquareFrom() == Square(Square::E1) || move.GetSquareFrom() == Square(Square::H1) || move.GetSquareTo() == Square(Square::H1)))
-			SetCastlingStatus(Constants::CASTLING_WHITE_KINGSIDE, false);
-		
-		if (GetCastlingStatus(Constants::CASTLING_BLACK_QUEENSIDE) && 
-			(move.GetSquareFrom() == Square(Square::E8) || move.GetSquareFrom() == Square(Square::A8) || move.GetSquareTo() == Square(Square::A8)))
-			SetCastlingStatus(Constants::CASTLING_BLACK_QUEENSIDE, false);
-		
-		if (GetCastlingStatus(Constants::CASTLING_BLACK_KINGSIDE) && 
-			(move.GetSquareFrom() == Square(Square::E8) || move.GetSquareFrom() == Square(Square::H8) || move.GetSquareTo() == Square(Square::H8)))
-			SetCastlingStatus(Constants::CASTLING_BLACK_KINGSIDE, false);
+		bool castling_status_wq = GetCastlingStatus(Constants::CASTLING_WHITE_QUEENSIDE) &&
+			!(move.GetSquareFrom() == Square(Square::E1) || move.GetSquareFrom() == Square(Square::A1) || move.GetSquareTo() == Square(Square::A1));
+		SetCastlingStatus(Constants::CASTLING_WHITE_QUEENSIDE, castling_status_wq);
+
+		bool castling_status_wk = GetCastlingStatus(Constants::CASTLING_WHITE_KINGSIDE) &&
+			!(move.GetSquareFrom() == Square(Square::E1) || move.GetSquareFrom() == Square(Square::A1) || move.GetSquareTo() == Square(Square::A1));
+		SetCastlingStatus(Constants::CASTLING_WHITE_KINGSIDE, castling_status_wk);
+
+		bool castling_status_bq =
+			GetCastlingStatus(Constants::CASTLING_BLACK_QUEENSIDE) &&
+			!(move.GetSquareFrom() == Square(Square::E8) || move.GetSquareFrom() == Square(Square::A8) || move.GetSquareTo() == Square(Square::A8));
+		SetCastlingStatus(Constants::CASTLING_BLACK_QUEENSIDE, castling_status_bq);
+
+		bool castling_status_bk =
+			GetCastlingStatus(Constants::CASTLING_BLACK_KINGSIDE) &&
+			!(move.GetSquareFrom() == Square(Square::E8) || move.GetSquareFrom() == Square(Square::H8) || move.GetSquareTo() == Square(Square::H8));
+		SetCastlingStatus(Constants::CASTLING_BLACK_KINGSIDE, castling_status_bk);
 	}
 
-	if (move.IsDoublePush()) {
-		if (active_color == Piece::COLOR_WHITE)
-			ep_square = Square(move.GetSquareFrom().GetX(), 2Ui8);
-		else
-			ep_square = Square(move.GetSquareFrom().GetX(), 5Ui8);
-	}
-	else {
+	if (move.IsDoublePush())
+		ep_square = Square(move.GetSquareFrom().GetX(), EP_RANK[active_color]);
+	else
 		ep_square.reset();
-	}
 
 	//TODO hash codes
 

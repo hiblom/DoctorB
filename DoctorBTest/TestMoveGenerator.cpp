@@ -26,22 +26,23 @@ public:
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
 		MoveGenerator moveGen = MoveGenerator(pos);
+		Piece piece(Piece::TYPE_KING, Piece::COLOR_WHITE);
 
 		//act
 		moveGen.GenerateKingMoves(moves);
 
 		//assert
 		Assert::AreEqual(8Ui64, moves.size());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(35Ui8), Square(26Ui8))) != moves.end());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(35Ui8), Square(27Ui8))) != moves.end());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(35Ui8), Square(28Ui8))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(35Ui8), Square(26Ui8))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(35Ui8), Square(27Ui8))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(35Ui8), Square(28Ui8))) != moves.end());
 
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(35Ui8), Square(34Ui8))) != moves.end());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(35Ui8), Square(36Ui8))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(35Ui8), Square(34Ui8))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(35Ui8), Square(36Ui8))) != moves.end());
 
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(35Ui8), Square(42Ui8))) != moves.end());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(35Ui8), Square(43Ui8))) != moves.end());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(35Ui8), Square(44Ui8))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(35Ui8), Square(42Ui8))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(35Ui8), Square(43Ui8))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(35Ui8), Square(44Ui8))) != moves.end());
 	}
 
 	TEST_METHOD(TestMoveGeneratorWhiteCastling) {
@@ -51,13 +52,14 @@ public:
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
 		MoveGenerator moveGen = MoveGenerator(pos);
+		Piece piece(Piece::TYPE_KING, Piece::COLOR_WHITE);
 
 		//act
 		moveGen.GenerateKingMoves(moves);
 
 		//assert
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(Square::E1), Square(Square::G1)).SetCastling()) != moves.end());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(Square::E1), Square(Square::C1)).SetCastling()) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(Square::E1), Square(Square::G1)).SetCastling()) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(Square::E1), Square(Square::C1)).SetCastling()) != moves.end());
 	}
 
 	TEST_METHOD(TestMoveGeneratorBlackCastling) {
@@ -67,13 +69,14 @@ public:
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
 		MoveGenerator moveGen = MoveGenerator(pos);
+		Piece piece(Piece::TYPE_KING, Piece::COLOR_BLACK);
 
 		//act
 		moveGen.GenerateKingMoves(moves);
 
 		//assert
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(Square::E8), Square(Square::G8)).SetCastling()) != moves.end());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(Square::E8), Square(Square::C8)).SetCastling()) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(Square::E8), Square(Square::G8)).SetCastling()) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(Square::E8), Square(Square::C8)).SetCastling()) != moves.end());
 	}
 
 	TEST_METHOD(TestMoveGeneratorCannotCastle1) {
@@ -85,13 +88,14 @@ public:
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
 		MoveGenerator moveGen = MoveGenerator(pos);
+		Piece piece(Piece::TYPE_KING, Piece::COLOR_WHITE);
 
 		//act
 		moveGen.GenerateKingMoves(moves);
 
 		//assert
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(Square::E1), Square(Square::G1)).SetCastling()) != moves.end());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(Square::E1), Square(Square::C1)).SetCastling()) == moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(Square::E1), Square(Square::G1)).SetCastling()) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(Square::E1), Square(Square::C1)).SetCastling()) == moves.end());
 	}
 
 	TEST_METHOD(TestMoveGeneratorCannotCastle2) {
@@ -102,13 +106,14 @@ public:
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
 		MoveGenerator moveGen = MoveGenerator(pos);
+		Piece piece(Piece::TYPE_KING, Piece::COLOR_WHITE);
 
 		//act
 		moveGen.GenerateKingMoves(moves);
 
 		//assert
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(Square::E1), Square(Square::G1)).SetCastling()) != moves.end());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(Square::E1), Square(Square::C1)).SetCastling()) == moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(Square::E1), Square(Square::G1)).SetCastling()) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(Square::E1), Square(Square::C1)).SetCastling()) == moves.end());
 	}
 
 	TEST_METHOD(TestMoveGeneratorCannotCastle3) {
@@ -119,13 +124,14 @@ public:
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
 		MoveGenerator moveGen = MoveGenerator(pos);
+		Piece piece(Piece::TYPE_KING, Piece::COLOR_WHITE);
 
 		//act
 		moveGen.GenerateKingMoves(moves);
 
 		//assert
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(Square::E1), Square(Square::G1)).SetCastling()) == moves.end());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(Square::E1), Square(Square::C1)).SetCastling()) == moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(Square::E1), Square(Square::G1)).SetCastling()) == moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(Square::E1), Square(Square::C1)).SetCastling()) == moves.end());
 	}
 
 	TEST_METHOD(TestMoveGeneratorCannotCastle4) {
@@ -136,13 +142,14 @@ public:
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
 		MoveGenerator moveGen = MoveGenerator(pos);
+		Piece piece(Piece::TYPE_KING, Piece::COLOR_WHITE);
 
 		//act
 		moveGen.GenerateKingMoves(moves);
 
 		//assert
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(Square::E1), Square(Square::G1)).SetCastling()) != moves.end());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(Square::E1), Square(Square::C1)).SetCastling()) == moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(Square::E1), Square(Square::G1)).SetCastling()) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(Square::E1), Square(Square::C1)).SetCastling()) == moves.end());
 	}
 
 	TEST_METHOD(TestMoveGeneratorGenerateKnightMoves) {
@@ -152,23 +159,24 @@ public:
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
 		MoveGenerator moveGen = MoveGenerator(pos);
+		Piece piece(Piece::TYPE_KNIGHT, Piece::COLOR_WHITE);
 
 		//act
 		moveGen.GenerateKnightMoves(moves);
 
 		//assert
 		Assert::AreEqual(8Ui64, moves.size());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(35Ui8), Square(18Ui8))) != moves.end());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(35Ui8), Square(20Ui8))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(35Ui8), Square(18Ui8))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(35Ui8), Square(20Ui8))) != moves.end());
 		
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(35Ui8), Square(25Ui8))) != moves.end());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(35Ui8), Square(29Ui8))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(35Ui8), Square(25Ui8))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(35Ui8), Square(29Ui8))) != moves.end());
 
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(35Ui8), Square(41Ui8))) != moves.end());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(35Ui8), Square(45Ui8))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(35Ui8), Square(41Ui8))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(35Ui8), Square(45Ui8))) != moves.end());
 
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(35Ui8), Square(50Ui8))) != moves.end());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(35Ui8), Square(52Ui8))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(35Ui8), Square(50Ui8))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(35Ui8), Square(52Ui8))) != moves.end());
 	}
 
 	TEST_METHOD(TestMoveGeneratorGenerateWhitePawnPushes) {
@@ -213,14 +221,15 @@ public:
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
 		MoveGenerator moveGen = MoveGenerator(pos);
+		Piece piece(Piece::TYPE_PAWN, Piece::COLOR_BLACK);
 
 		//act
 		moveGen.GeneratePawnMoves(moves);
 
 		//assert
 		Assert::AreEqual(2Ui64, moves.size());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(55Ui8), Square(47Ui8))) != moves.end());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(55Ui8), Square(39Ui8)).SetDoublePush()) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(55Ui8), Square(47Ui8))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(55Ui8), Square(39Ui8)).SetDoublePush()) != moves.end());
 	}
 
 	TEST_METHOD(TestMoveGeneratorGenerateBlackPawnCaptures) {
@@ -230,13 +239,14 @@ public:
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
 		MoveGenerator moveGen = MoveGenerator(pos);
+		Piece piece(Piece::TYPE_PAWN, Piece::COLOR_BLACK);
 
 		//act
 		moveGen.GeneratePawnMoves(moves);
 
 		//assert
 		Assert::AreEqual(1Ui64, moves.size());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(55Ui8), Square(46Ui8))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(55Ui8), Square(46Ui8))) != moves.end());
 	}
 
 	TEST_METHOD(TestMoveGeneratorGeneratePromotions) {
@@ -246,21 +256,22 @@ public:
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
 		MoveGenerator moveGen = MoveGenerator(pos);
+		Piece piece(Piece::TYPE_PAWN, Piece::COLOR_WHITE);
 
 		//act
 		moveGen.GeneratePawnMoves(moves);
 
 		//assert
 		Assert::AreEqual(8Ui64, moves.size());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(53Ui8), Square(61Ui8), Piece(Piece::TYPE_QUEEN, Piece::COLOR_WHITE))) != moves.end());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(53Ui8), Square(61Ui8), Piece(Piece::TYPE_KNIGHT, Piece::COLOR_WHITE))) != moves.end());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(53Ui8), Square(61Ui8), Piece(Piece::TYPE_ROOK, Piece::COLOR_WHITE))) != moves.end());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(53Ui8), Square(61Ui8), Piece(Piece::TYPE_BISHOP, Piece::COLOR_WHITE))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(53Ui8), Square(61Ui8), Piece(Piece::TYPE_QUEEN, Piece::COLOR_WHITE))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(53Ui8), Square(61Ui8), Piece(Piece::TYPE_KNIGHT, Piece::COLOR_WHITE))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(53Ui8), Square(61Ui8), Piece(Piece::TYPE_ROOK, Piece::COLOR_WHITE))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(53Ui8), Square(61Ui8), Piece(Piece::TYPE_BISHOP, Piece::COLOR_WHITE))) != moves.end());
 
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(53Ui8), Square(60Ui8), Piece(Piece::TYPE_QUEEN, Piece::COLOR_WHITE))) != moves.end());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(53Ui8), Square(60Ui8), Piece(Piece::TYPE_KNIGHT, Piece::COLOR_WHITE))) != moves.end());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(53Ui8), Square(60Ui8), Piece(Piece::TYPE_ROOK, Piece::COLOR_WHITE))) != moves.end());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(53Ui8), Square(60Ui8), Piece(Piece::TYPE_BISHOP, Piece::COLOR_WHITE))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(53Ui8), Square(60Ui8), Piece(Piece::TYPE_QUEEN, Piece::COLOR_WHITE))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(53Ui8), Square(60Ui8), Piece(Piece::TYPE_KNIGHT, Piece::COLOR_WHITE))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(53Ui8), Square(60Ui8), Piece(Piece::TYPE_ROOK, Piece::COLOR_WHITE))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(53Ui8), Square(60Ui8), Piece(Piece::TYPE_BISHOP, Piece::COLOR_WHITE))) != moves.end());
 	}
 
 	TEST_METHOD(TestMoveGeneratorGenerateEpCapture) {
@@ -270,14 +281,15 @@ public:
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
 		MoveGenerator moveGen = MoveGenerator(pos);
+		Piece piece(Piece::TYPE_PAWN, Piece::COLOR_BLACK);
 
 		//act
 		moveGen.GeneratePawnMoves(moves);
 
 		//assert
 		Assert::AreEqual(2Ui64, moves.size());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(27Ui8), Square(19Ui8))) != moves.end());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(27Ui8), Square(18Ui8)).SetEpCapture()) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(27Ui8), Square(19Ui8))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(27Ui8), Square(18Ui8)).SetEpCapture()) != moves.end());
 	}
 
 	TEST_METHOD(TestMoveGeneratorGenerateRookMoves) {
@@ -287,27 +299,28 @@ public:
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
 		MoveGenerator moveGen = MoveGenerator(pos);
+		Piece piece(Piece::TYPE_ROOK, Piece::COLOR_WHITE);
 
 		//act
 		moveGen.GenerateRookMoves(moves);
 
 		//assert
 		Assert::AreEqual(14Ui64, moves.size());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(25Ui8), Square(1Ui8))) != moves.end());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(25Ui8), Square(9Ui8))) != moves.end());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(25Ui8), Square(17Ui8))) != moves.end());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(25Ui8), Square(33Ui8))) != moves.end());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(25Ui8), Square(41i8))) != moves.end());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(25Ui8), Square(49i8))) != moves.end());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(25Ui8), Square(57i8))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(25Ui8), Square(1Ui8))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(25Ui8), Square(9Ui8))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(25Ui8), Square(17Ui8))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(25Ui8), Square(33Ui8))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(25Ui8), Square(41i8))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(25Ui8), Square(49i8))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(25Ui8), Square(57i8))) != moves.end());
 
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(25Ui8), Square(24i8))) != moves.end());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(25Ui8), Square(26i8))) != moves.end());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(25Ui8), Square(27i8))) != moves.end());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(25Ui8), Square(28i8))) != moves.end());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(25Ui8), Square(29i8))) != moves.end());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(25Ui8), Square(30i8))) != moves.end());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(25Ui8), Square(31i8))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(25Ui8), Square(24i8))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(25Ui8), Square(26i8))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(25Ui8), Square(27i8))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(25Ui8), Square(28i8))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(25Ui8), Square(29i8))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(25Ui8), Square(30i8))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(25Ui8), Square(31i8))) != moves.end());
 	}
 
 	TEST_METHOD(TestMoveGeneratorGenerateRookMoves2) {
@@ -317,16 +330,17 @@ public:
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
 		MoveGenerator moveGen = MoveGenerator(pos);
+		Piece piece(Piece::TYPE_ROOK, Piece::COLOR_WHITE);
 
 		//act
 		moveGen.GenerateRookMoves(moves);
 
 		//assert
 		Assert::AreEqual(4Ui64, moves.size());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(25Ui8), Square(24Ui8))) != moves.end());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(25Ui8), Square(33Ui8))) != moves.end());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(25Ui8), Square(41Ui8))) != moves.end());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(25Ui8), Square(49Ui8))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(25Ui8), Square(24Ui8))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(25Ui8), Square(33Ui8))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(25Ui8), Square(41Ui8))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(25Ui8), Square(49Ui8))) != moves.end());
 	}
 
 	TEST_METHOD(TestMoveGeneratorGenerateBishopMoves) {
@@ -336,22 +350,23 @@ public:
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
 		MoveGenerator moveGen = MoveGenerator(pos);
+		Piece piece(Piece::TYPE_BISHOP, Piece::COLOR_BLACK);
 
 		//act
 		moveGen.GenerateBishopMoves(moves);
 
 		//assert
 		Assert::AreEqual(9Ui64, moves.size());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(52Ui8), Square(59Ui8))) != moves.end());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(52Ui8), Square(45Ui8))) != moves.end());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(52Ui8), Square(38Ui8))) != moves.end());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(52Ui8), Square(31Ui8))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(52Ui8), Square(59Ui8))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(52Ui8), Square(45Ui8))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(52Ui8), Square(38Ui8))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(52Ui8), Square(31Ui8))) != moves.end());
 		
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(52Ui8), Square(16Ui8))) != moves.end());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(52Ui8), Square(25Ui8))) != moves.end());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(52Ui8), Square(34Ui8))) != moves.end());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(52Ui8), Square(43Ui8))) != moves.end());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(52Ui8), Square(61Ui8))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(52Ui8), Square(16Ui8))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(52Ui8), Square(25Ui8))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(52Ui8), Square(34Ui8))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(52Ui8), Square(43Ui8))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(52Ui8), Square(61Ui8))) != moves.end());
 	}
 
 	TEST_METHOD(TestMoveGeneratorGenerateBishopMoves2) {
@@ -361,15 +376,16 @@ public:
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
 		MoveGenerator moveGen = MoveGenerator(pos);
+		Piece piece(Piece::TYPE_BISHOP, Piece::COLOR_BLACK);
 
 		//act
 		moveGen.GenerateBishopMoves(moves);
 
 		//assert
 		Assert::AreEqual(3Ui64, moves.size());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(52Ui8), Square(45Ui8))) != moves.end());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(52Ui8), Square(38Ui8))) != moves.end());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(52Ui8), Square(61Ui8))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(52Ui8), Square(45Ui8))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(52Ui8), Square(38Ui8))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(52Ui8), Square(61Ui8))) != moves.end());
 	}
 
 	TEST_METHOD(TestMoveGeneratorGenerateQueenMoves) {
