@@ -15,9 +15,9 @@ Move::Move(const Piece piece, const Square square_from, const Square square_to) 
 Move::Move(const Piece piece, const Square square_from, const Square square_to, const Piece promo_piece) {
 	square_from_ = square_from;
 	square_to_ = square_to;
-	status_bits_ = 0Ui8;
+	status_bits_ = MASK_PROMOTION;
 	piece_ = piece;
-	promo_piece_ = piece; //set promo piece to moving piece when no promo
+	promo_piece_ = promo_piece;
 }
 
 
@@ -102,7 +102,7 @@ Move& Move::SetDoublePush() {
 
 std::string Move::ToString() const {
 	if (status_bits_ & MASK_PROMOTION) {
-		square_from_.ToString() + square_to_.ToString() + promo_piece_.ToString();
+		return square_from_.ToString() + square_to_.ToString() + promo_piece_.ToString();
 	}
 
 	return square_from_.ToString() + square_to_.ToString();

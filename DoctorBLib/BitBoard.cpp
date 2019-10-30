@@ -4,6 +4,8 @@
 #pragma intrinsic(_BitScanForward64)
 #pragma intrinsic(_BitScanReverse64)
 
+using namespace std;
+
 BitBoard::BitBoard() {
 	value = 0Ui64;
 }
@@ -21,6 +23,10 @@ bool BitBoard::Empty() {
 
 bool BitBoard::NotEmpty() {
 	return value != 0Ui64;
+}
+
+uint8_t BitBoard::PopCount(){
+	return (uint8_t)(__popcnt64(value));
 }
 
 BitBoard& BitBoard::Set(uint8_t square_value) {
@@ -104,6 +110,16 @@ bool BitBoard::GetSquares(std::vector<Square>& squares) const {
 	return true;
 }
 
+bool BitBoard::ConsumeLowestSquare(Square& square) {
+	unsigned long index;
+	if (_BitScanForward64(&index, value)) {
+		square.SetValue((uint8_t)index);
+		value &= ~(1Ui64 << index);
+		return true;
+	}
+	return false;
+}
+
 bool BitBoard::GetLowestSquare(Square& square) const {
 	unsigned long index;
 	if (_BitScanForward64(&index, value)) {
@@ -120,5 +136,20 @@ bool BitBoard::GetHighestSquare(Square& square) const {
 		return true;
 	}
 	return false;
+}
+
+string BitBoard::ToString() const {
+	string result = "";
+	for (uint8_t y = 7; 0 <= y && y <= 7; y--) {
+		for (uint8_t x = 0; x <= 7; x++) {
+			if (value & (1Ui64 << (y << 3 | x)))
+				result += "X";
+			else
+				result += ".";
+		}
+		result += "\n";
+	}
+
+	return result;
 }
 

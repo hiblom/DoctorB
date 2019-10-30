@@ -21,7 +21,7 @@ public:
 
 	TEST_METHOD(TestMoveGeneratorGenerateKingMoves) {
 		//arrange
-		vector<string> tokens = {"8/8/8/3K4/8/8/8/8", "w"};
+		vector<string> tokens = {"4k3/8/8/3K4/8/8/8/8", "w"};
 		Position pos;
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
@@ -47,7 +47,7 @@ public:
 
 	TEST_METHOD(TestMoveGeneratorWhiteCastling) {
 		//arrange
-		vector<string> tokens = { "8/8/8/8/8/8/8/Q3K2R", "w", "KQkq"};
+		vector<string> tokens = { "4k3/8/8/8/8/8/8/Q3K2R", "w", "KQkq"};
 		Position pos;
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
@@ -64,7 +64,7 @@ public:
 
 	TEST_METHOD(TestMoveGeneratorBlackCastling) {
 		//arrange
-		vector<string> tokens = { "r3k2r/8/8/8/8/8/8/8", "b", "KQkq"};
+		vector<string> tokens = { "r3k2r/8/8/8/8/8/8/4K3", "b", "KQkq"};
 		Position pos;
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
@@ -83,7 +83,7 @@ public:
 		//white cannot castle queenside because of lacking queenside castling rights
 
 		//arrange
-		vector<string> tokens = { "8/8/8/8/8/8/8/Q3K2R", "w", "K" };
+		vector<string> tokens = { "4k3/8/8/8/8/8/8/Q3K2R", "w", "K" };
 		Position pos;
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
@@ -101,7 +101,7 @@ public:
 	TEST_METHOD(TestMoveGeneratorCannotCastle2) {
 		//white cannot castle queenside because there is a piece in between
 		//arrange
-		vector<string> tokens = { "8/8/8/8/8/8/8/RN2K2R", "w", "KQkq" };
+		vector<string> tokens = { "4k3/8/8/8/8/8/8/RN2K2R", "w", "KQkq" };
 		Position pos;
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
@@ -119,7 +119,7 @@ public:
 	TEST_METHOD(TestMoveGeneratorCannotCastle3) {
 		//white cannot castle at all because of being in check
 		//arrange
-		vector<string> tokens = { "8/8/8/8/1b6/8/8/R3K2R", "w", "KQkq" };
+		vector<string> tokens = { "4k3/8/8/8/1b6/8/8/R3K2R", "w", "KQkq" };
 		Position pos;
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
@@ -137,7 +137,7 @@ public:
 	TEST_METHOD(TestMoveGeneratorCannotCastle4) {
 		//white cannot castle queenside because one of the squares the king passes through is attacked
 		//arrange
-		vector<string> tokens = { "8/8/8/8/6b1/8/8/R3K2R", "w", "KQkq" };
+		vector<string> tokens = { "4k3/8/8/8/6b1/8/8/R3K2R", "w", "KQkq" };
 		Position pos;
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
@@ -154,7 +154,7 @@ public:
 
 	TEST_METHOD(TestMoveGeneratorGenerateKnightMoves) {
 		//arrange
-		vector<string> tokens = { "8/8/8/3N4/8/8/8/8", "w" };
+		vector<string> tokens = { "4k3/8/8/3N4/8/8/8/4K3", "w" };
 		Position pos;
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
@@ -181,7 +181,7 @@ public:
 
 	TEST_METHOD(TestMoveGeneratorGenerateWhitePawnPushes) {
 		//arrange
-		vector<string> tokens = { "8/8/8/8/8/8/3P4/8", "w" };
+		vector<string> tokens = { "4k3/8/8/8/8/8/3P4/4K3", "w" };
 		Position pos;
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
@@ -199,7 +199,7 @@ public:
 
 	TEST_METHOD(TestMoveGeneratorGenerateWhitePawnCaptures) {
 		//arrange
-		vector<string> tokens = { "8/8/8/8/8/2nBp3/3P4/8", "w" };
+		vector<string> tokens = { "4k3/8/8/8/8/2nBp3/3P4/4K3", "w" };
 		Position pos;
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
@@ -216,7 +216,7 @@ public:
 
 	TEST_METHOD(TestMoveGeneratorGenerateBlackPawnPushes) {
 		//arrange
-		vector<string> tokens = { "8/7p/8/8/8/8/8/8", "b" };
+		vector<string> tokens = { "4k3/7p/8/8/8/8/8/4K3", "b" };
 		Position pos;
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
@@ -234,7 +234,7 @@ public:
 
 	TEST_METHOD(TestMoveGeneratorGenerateBlackPawnCaptures) {
 		//arrange
-		vector<string> tokens = { "8/7p/6Rq/8/8/8/8/8", "b" };
+		vector<string> tokens = { "4k3/7p/6Rq/8/8/8/8/4K3", "b" };
 		Position pos;
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
@@ -251,7 +251,7 @@ public:
 
 	TEST_METHOD(TestMoveGeneratorGeneratePromotions) {
 		//arrange
-		vector<string> tokens = { "4n3/5P2/8/8/8/8/8/8", "w" };
+		vector<string> tokens = { "2k1n3/5P2/8/8/8/8/8/4K3", "w" };
 		Position pos;
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
@@ -276,7 +276,7 @@ public:
 
 	TEST_METHOD(TestMoveGeneratorGenerateEpCapture) {
 		//arrange
-		vector<string> tokens = { "8/8/8/8/2Pp4/8/8/8", "b", "-", "c3" };
+		vector<string> tokens = { "4k3/8/8/8/2Pp4/8/8/4K3", "b", "-", "c3" };
 		Position pos;
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
@@ -294,7 +294,7 @@ public:
 
 	TEST_METHOD(TestMoveGeneratorGenerateRookMoves) {
 		//arrange
-		vector<string> tokens = { "8/8/8/8/1R6/8/8/8", "w" };
+		vector<string> tokens = { "4k3/8/8/8/1R6/8/8/4K3", "w" };
 		Position pos;
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
@@ -325,7 +325,7 @@ public:
 
 	TEST_METHOD(TestMoveGeneratorGenerateRookMoves2) {
 		//arrange
-		vector<string> tokens = { "8/1q6/8/8/1RN5/1P6/8/8", "w" };
+		vector<string> tokens = { "4k3/1q6/8/8/1RN5/1P6/8/4K3", "w" };
 		Position pos;
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
@@ -345,7 +345,7 @@ public:
 
 	TEST_METHOD(TestMoveGeneratorGenerateBishopMoves) {
 		//arrange
-		vector<string> tokens = { "8/4b3/8/8/8/8/8/8", "b" };
+		vector<string> tokens = { "2k5/4b3/8/8/8/8/8/4K3", "b" };
 		Position pos;
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
@@ -371,7 +371,7 @@ public:
 
 	TEST_METHOD(TestMoveGeneratorGenerateBishopMoves2) {
 		//arrange
-		vector<string> tokens = { "3k4/4b3/3p4/6R1/8/8/8/8", "b" };
+		vector<string> tokens = { "3k4/4b3/3p4/6R1/8/8/8/4K3", "b" };
 		Position pos;
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
@@ -390,7 +390,7 @@ public:
 
 	TEST_METHOD(TestMoveGeneratorGenerateQueenMoves) {
 		//arrange
-		vector<string> tokens = { "8/8/8/8/5Q2/8/8/8", "w" };
+		vector<string> tokens = { "4k3/8/8/8/5Q2/8/8/4K3", "w" };
 		Position pos;
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
@@ -406,7 +406,7 @@ public:
 
 	TEST_METHOD(TestMoveGeneratorGenerateQueenMoves2) {
 		//arrange
-		vector<string> tokens = { "8/8/3n1n2/8/4PQR1/8/8/8", "w" };
+		vector<string> tokens = { "4k3/8/3n1n2/8/4PQR1/8/8/4K3", "w" };
 		Position pos;
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
@@ -432,6 +432,72 @@ public:
 		//assert
 		Assert::AreEqual(20Ui64, moves.size());
 	}
+
+	//TEST_METHOD(TestMoveGeneratorLegalKingMoves) {
+	//	//arrange
+	//	vector<string> tokens = { "8/5k2/8/5R2/8/8/8/4K3", "b" };
+	//	Position pos;
+	//	Parser::ParseFen(tokens, pos);
+	//	vector<Move> moves;
+	//	MoveGenerator moveGen = MoveGenerator(pos);
+	//	Piece piece(Piece::TYPE_KING, Piece::COLOR_BLACK);
+
+	//	//act
+	//	moveGen.GenerateKingMoves(moves);
+
+	//	//assert
+	//	Assert::AreEqual(6Ui64, moves.size());
+	//	Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(Square::F7), Square(Square::E6))) != moves.end());
+	//	Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(Square::F7), Square(Square::E7))) != moves.end());
+	//	Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(Square::F7), Square(Square::E8))) != moves.end());
+
+	//	Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(Square::F7), Square(Square::G6))) != moves.end());
+	//	Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(Square::F7), Square(Square::G7))) != moves.end());
+	//	Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(Square::F7), Square(Square::G8))) != moves.end());
+	//}
+
+	//TEST_METHOD(TestMoveGeneratorCheckerCount) {
+	//	//arrange
+	//	vector<string> tokens = { "4k3/6N1/5b2/4R3/8/8/8/4K3", "b" };
+	//	Position pos;
+	//	Parser::ParseFen(tokens, pos);
+
+	//	//act
+	//	MoveGenerator moveGen = MoveGenerator(pos);
+
+	//	//assert
+	//	Assert::AreEqual(2Ui8, moveGen.GetCheckerCount());
+	//}
+
+	//TEST_METHOD(TestMoveGeneratorCheckEvasion1) {
+	//	//arrange
+	//	vector<string> tokens = { "4k3/8/6n1/4R3/8/8/8/4K3", "b" };
+	//	Position pos;
+	//	Parser::ParseFen(tokens, pos);
+	//	MoveGenerator moveGen = MoveGenerator(pos);
+	//	vector<Move> moves;
+	//	Piece king = Piece(Piece::TYPE_KING, Piece::COLOR_BLACK);
+	//	Piece horse = Piece(Piece::TYPE_KNIGHT, Piece::COLOR_BLACK);
+
+	//	//act
+	//	moveGen.GenerateMoves(moves);
+
+	//	//assert
+	//	Assert::AreEqual(6Ui64, moves.size());
+
+	//	//king moves x 4
+	//	Assert::IsTrue(find(moves.begin(), moves.end(), Move(king, Square(Square::E8), Square(Square::D8))) != moves.end());
+	//	Assert::IsTrue(find(moves.begin(), moves.end(), Move(king, Square(Square::E8), Square(Square::D7))) != moves.end());
+	//	Assert::IsTrue(find(moves.begin(), moves.end(), Move(king, Square(Square::E8), Square(Square::F8))) != moves.end());
+	//	Assert::IsTrue(find(moves.begin(), moves.end(), Move(king, Square(Square::E8), Square(Square::F7))) != moves.end());
+
+	//	//block by knight
+	//	Assert::IsTrue(find(moves.begin(), moves.end(), Move(horse, Square(Square::G6), Square(Square::E7))) != moves.end());
+
+	//	//capture rook by knight
+	//	Assert::IsTrue(find(moves.begin(), moves.end(), Move(horse, Square(Square::G6), Square(Square::E5))) != moves.end());
+	//}
+
 
 
 	};

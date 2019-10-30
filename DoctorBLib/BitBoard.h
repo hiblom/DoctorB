@@ -1,6 +1,7 @@
 #pragma once
 #include <cstdint>
 #include <vector>
+#include <string>
 #include "Square.h"
 
 class BitBoard
@@ -11,6 +12,7 @@ public:
 	~BitBoard();
 	bool Empty();
 	bool NotEmpty();
+	uint8_t PopCount();
 	BitBoard& Set(uint8_t square_value);
 	BitBoard& Clear(uint8_t square_value);
 	bool Check(uint8_t square_value) const;
@@ -27,8 +29,10 @@ public:
 	BitBoard& operator^=(const BitBoard& that);
 	BitBoard operator~() const;
 	bool GetSquares(std::vector<Square>& squares) const;
+	bool ConsumeLowestSquare(Square & square);
 	bool GetLowestSquare(Square& square) const;
 	bool GetHighestSquare(Square& square) const;
+	std::string ToString() const;
 private:
 	static const uint64_t A_FILE = 0x0101010101010101;
 	static const uint64_t H_FILE = 0x8080808080808080;

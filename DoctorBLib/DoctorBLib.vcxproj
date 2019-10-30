@@ -156,6 +156,7 @@
     <ClInclude Include="Move.h" />
     <ClInclude Include="MoveBoard.h" />
     <ClInclude Include="MoveGenerator.h" />
+    <ClInclude Include="MoveGenerator2.h" />
     <ClInclude Include="Parser.h" />
     <ClInclude Include="Perft.h" />
     <ClInclude Include="Piece.h" />
@@ -170,6 +171,7 @@
     <ClCompile Include="Move.cpp" />
     <ClCompile Include="MoveBoard.cpp" />
     <ClCompile Include="MoveGenerator.cpp" />
+    <ClCompile Include="MoveGenerator2.cpp" />
     <ClCompile Include="Parser.cpp" />
     <ClCompile Include="Perft.cpp" />
     <ClCompile Include="Piece.cpp" />

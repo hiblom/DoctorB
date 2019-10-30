@@ -7,6 +7,7 @@
 using namespace std;
 
 Position::Position() {
+	castling_status_bits = 0Ui8;
 }
 
 Position::~Position() {
@@ -45,7 +46,7 @@ uint8_t Position::GetActiveColor() const {
 }
 
 void Position::SetCastlingStatus(int index, bool value) {
-	castling_status_bits = castling_status_bits & ~(1Ui8 << index) | ((uint8_t)value << index);
+	castling_status_bits = (castling_status_bits & ~(1Ui8 << index)) | ((uint8_t)value << index);
 }
 
 bool Position::GetCastlingStatus(int index) const {
@@ -161,7 +162,7 @@ bool Position::ApplyMove(const Move& move) {
 		SetCastlingStatus(Constants::CASTLING_WHITE_QUEENSIDE, castling_status_wq);
 
 		bool castling_status_wk = GetCastlingStatus(Constants::CASTLING_WHITE_KINGSIDE) &&
-			!(move.GetSquareFrom() == Square(Square::E1) || move.GetSquareFrom() == Square(Square::A1) || move.GetSquareTo() == Square(Square::A1));
+			!(move.GetSquareFrom() == Square(Square::E1) || move.GetSquareFrom() == Square(Square::H1) || move.GetSquareTo() == Square(Square::H1));
 		SetCastlingStatus(Constants::CASTLING_WHITE_KINGSIDE, castling_status_wk);
 
 		bool castling_status_bq =
@@ -195,6 +196,7 @@ bool Position::ApplyMove(const Move& move) {
 }
 
 bool Position::GetPieceSquares(const Piece& piece, vector<Square>& squares) const {
+	squares.clear();
 	return bit_boards[piece.GetValue()].GetSquares(squares);
 }
 

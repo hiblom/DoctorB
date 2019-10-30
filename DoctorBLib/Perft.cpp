@@ -89,8 +89,10 @@ uint64_t Perft::Count2(const Position& position, const int remaining_depth) cons
 	}
 
 	for (int i = 0; i < moves[depth_].size(); i++) {
-		cout << moves[depth_][i].ToString() << ": " << results[i] << endl;
-		result += results[i];
+		if (results[i]) {
+			cout << moves[depth_][i].ToString() << ": " << results[i] << endl;
+			result += results[i];
+		}
 	}
 
 	return result;

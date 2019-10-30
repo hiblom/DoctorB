@@ -160,16 +160,16 @@ void MoveBoard::InitializeRayUpLeft() {
 }
 
 void MoveBoard::InitializeCastlingSquares() {
-	castling_safe_squares[Constants::CASTLING_WHITE_KINGSIDE] =   0b00110000Ui64;
+	castling_safe_squares[Constants::CASTLING_WHITE_KINGSIDE] =   0b01110000Ui64;
 	castling_empty_squares[Constants::CASTLING_WHITE_KINGSIDE] =  0b01100000Ui64;
 	
-	castling_safe_squares[Constants::CASTLING_WHITE_QUEENSIDE] =  0b00011000Ui64;
+	castling_safe_squares[Constants::CASTLING_WHITE_QUEENSIDE] =  0b00011100Ui64;
 	castling_empty_squares[Constants::CASTLING_WHITE_QUEENSIDE] = 0b00001110Ui64;
 
-	castling_safe_squares[Constants::CASTLING_BLACK_KINGSIDE] =   0b00110000Ui64 << 56;
+	castling_safe_squares[Constants::CASTLING_BLACK_KINGSIDE] =   0b01110000Ui64 << 56;
 	castling_empty_squares[Constants::CASTLING_BLACK_KINGSIDE] =  0b01100000Ui64 << 56;
 	
-	castling_safe_squares[Constants::CASTLING_BLACK_QUEENSIDE] =  0b00011000Ui64 << 56;
+	castling_safe_squares[Constants::CASTLING_BLACK_QUEENSIDE] =  0b00011100Ui64 << 56;
 	castling_empty_squares[Constants::CASTLING_BLACK_QUEENSIDE] = 0b00001110Ui64 << 56;
 }
 
