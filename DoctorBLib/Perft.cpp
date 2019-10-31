@@ -3,7 +3,7 @@
 #include <vector>
 #include <iostream>
 #include "Move.h"
-#include "MoveGenerator.h"
+#include "MoveGenerator2.h"
 
 using namespace std;
 
@@ -23,7 +23,7 @@ uint64_t Perft::Go() {
 
 //Count function using recursion
 uint64_t Perft::Count(const Position& position, const int remaining_depth) const {
-	MoveGenerator move_gen(position);
+	MoveGenerator2 move_gen(position);
 	if (move_gen.IsCheck(position.GetActiveColor() ^ 1Ui8))
 		return 0Ui64;
 
@@ -59,20 +59,33 @@ uint64_t Perft::Count2(const Position& position, const int remaining_depth) cons
 	
 	while (current_depth <= depth_) {
 		if (move_indices[current_depth] == -1) {
-			MoveGenerator move_gen(positions[current_depth]);
-			if (move_gen.IsCheck(positions[current_depth].GetActiveColor() ^ 1Ui8)) {
-				current_depth++;
-				continue;
-			}
+			MoveGenerator2 move_gen(positions[current_depth]);
+			//if (move_gen.IsCheck(positions[current_depth].GetActiveColor() ^ 1Ui8)) {
+			//	current_depth++;
+			//	continue;
+			//}
 
-			if (current_depth == 0) {
-				results[move_indices[depth_]]++;
-				current_depth++;
-				continue;
-			}
+			//if (current_depth == 0) {
+			//	results[move_indices[depth_]]++;
+			//	current_depth++;
+			//	continue;
+			//}
 
 			moves[current_depth].clear();
 			move_gen.GenerateMoves(moves[current_depth]);
+			if (current_depth == 1) {
+				if (depth_ == 1) {
+					for (int i = 0; i < moves[current_depth].size(); i++) {
+						results[i] = 1;
+					}
+					break;
+				}
+
+				results[move_indices[depth_]] += moves[current_depth].size();
+				current_depth++;
+				continue;
+
+			}
 		}
 
 		move_indices[current_depth]++;

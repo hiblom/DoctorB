@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <map>
 #include "Position.h"
 #include "Move.h"
 
@@ -30,13 +31,16 @@ private:
 	uint8_t inactive_color;
 	uint8_t checker_count;
 	BitBoard block_board;
+	BitBoard pinned_board;
+	std::map<uint8_t, BitBoard> pin_rays;
 
-	void GenerateRayMoves(const Square& from_square, const uint8_t dir, bool(BitBoard::*find_nearest_square)(Square&) const, const Piece active_piece, std::vector<Move>& moves) const;
+	void GenerateRayMoves(const Square& from_square, const uint8_t dir, bool(BitBoard::*find_nearest_square)(Square&) const, const Piece active_piece, const BitBoard pin_ray_board, std::vector<Move>& moves) const;
 	bool IsSquareAttacked(const Square& square, const uint8_t attacking_color) const;
 	BitBoard GetCheckRayBoard(const Square king_square, const uint8_t dir, bool(BitBoard::* find_nearest_square)(Square &) const, const uint8_t rook_or_bishop_type) const;
 	bool IsAttackedFromDirection(const Square square, const uint8_t dir, bool(BitBoard::*find_nearest_square)(Square&) const, const uint8_t rook_or_bishop_type, const uint8_t attacking_color) const;
 	bool CanCastle(const int castling_index) const;
 	BitBoard GenerateDangerRayBoard(const Square from_square, const uint8_t dir, bool(BitBoard::* find_nearest_square)(Square &) const, const BitBoard exclude_board) const;
-	BitBoard GetPinBoard(const Square square);
+	void GeneratePinInfo();
+	void GeneratePinRayInfo(const Square king_square, const uint8_t dir, bool(BitBoard::*find_nearest_square)(Square&) const, const uint8_t rook_or_bishop_type);
 };
 

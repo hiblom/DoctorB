@@ -36,20 +36,6 @@ MoveGenerator::~MoveGenerator() {
 }
 
 void MoveGenerator::GenerateMoves(vector<Move>& moves) {
-	//generate "danger squares" => empty squares that are attacked by enemy when excluding own king
-	//king cannot move into these squares
-	//we can generate this danger board without serializing to a square vector
-
-	//seperate move generation for check evasion and double check evasion
-	//count number of pieces attacking the active king
-
-	//in case of double check the only legal moves are king moves
-	//in case of single check we can either move the king, capture the checker, or block the checker
-
-	//pinned pieces restricted in their moves
-
-	//keep into account some gotcha's like en passant discovered check
-
 	GenerateKingMoves(moves);
 	GeneratePawnMoves(moves);
 	GenerateQueenMoves(moves);

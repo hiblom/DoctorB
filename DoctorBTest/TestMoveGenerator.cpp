@@ -3,7 +3,7 @@
 #include <algorithm>
 #include "CppUnitTest.h"
 #include "ToStringSpecializations.h"
-#include "MoveGenerator.h"
+#include "MoveGenerator2.h"
 #include "Parser.h"
 #include "MoveBoard.h"
 #include "Move.h"
@@ -25,7 +25,7 @@ public:
 		Position pos;
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
-		MoveGenerator moveGen = MoveGenerator(pos);
+		MoveGenerator2 moveGen = MoveGenerator2(pos);
 		Piece piece(Piece::TYPE_KING, Piece::COLOR_WHITE);
 
 		//act
@@ -51,7 +51,7 @@ public:
 		Position pos;
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
-		MoveGenerator moveGen = MoveGenerator(pos);
+		MoveGenerator2 moveGen = MoveGenerator2(pos);
 		Piece piece(Piece::TYPE_KING, Piece::COLOR_WHITE);
 
 		//act
@@ -68,7 +68,7 @@ public:
 		Position pos;
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
-		MoveGenerator moveGen = MoveGenerator(pos);
+		MoveGenerator2 moveGen = MoveGenerator2(pos);
 		Piece piece(Piece::TYPE_KING, Piece::COLOR_BLACK);
 
 		//act
@@ -87,7 +87,7 @@ public:
 		Position pos;
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
-		MoveGenerator moveGen = MoveGenerator(pos);
+		MoveGenerator2 moveGen = MoveGenerator2(pos);
 		Piece piece(Piece::TYPE_KING, Piece::COLOR_WHITE);
 
 		//act
@@ -105,7 +105,7 @@ public:
 		Position pos;
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
-		MoveGenerator moveGen = MoveGenerator(pos);
+		MoveGenerator2 moveGen = MoveGenerator2(pos);
 		Piece piece(Piece::TYPE_KING, Piece::COLOR_WHITE);
 
 		//act
@@ -123,7 +123,7 @@ public:
 		Position pos;
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
-		MoveGenerator moveGen = MoveGenerator(pos);
+		MoveGenerator2 moveGen = MoveGenerator2(pos);
 		Piece piece(Piece::TYPE_KING, Piece::COLOR_WHITE);
 
 		//act
@@ -141,7 +141,7 @@ public:
 		Position pos;
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
-		MoveGenerator moveGen = MoveGenerator(pos);
+		MoveGenerator2 moveGen = MoveGenerator2(pos);
 		Piece piece(Piece::TYPE_KING, Piece::COLOR_WHITE);
 
 		//act
@@ -158,7 +158,7 @@ public:
 		Position pos;
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
-		MoveGenerator moveGen = MoveGenerator(pos);
+		MoveGenerator2 moveGen = MoveGenerator2(pos);
 		Piece piece(Piece::TYPE_KNIGHT, Piece::COLOR_WHITE);
 
 		//act
@@ -185,7 +185,7 @@ public:
 		Position pos;
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
-		MoveGenerator moveGen = MoveGenerator(pos);
+		MoveGenerator2 moveGen = MoveGenerator2(pos);
 
 		//act
 		moveGen.GeneratePawnMoves(moves);
@@ -203,7 +203,7 @@ public:
 		Position pos;
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
-		MoveGenerator moveGen = MoveGenerator(pos);
+		MoveGenerator2 moveGen = MoveGenerator2(pos);
 
 		//act
 		moveGen.GeneratePawnMoves(moves);
@@ -220,7 +220,7 @@ public:
 		Position pos;
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
-		MoveGenerator moveGen = MoveGenerator(pos);
+		MoveGenerator2 moveGen = MoveGenerator2(pos);
 		Piece piece(Piece::TYPE_PAWN, Piece::COLOR_BLACK);
 
 		//act
@@ -238,7 +238,7 @@ public:
 		Position pos;
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
-		MoveGenerator moveGen = MoveGenerator(pos);
+		MoveGenerator2 moveGen = MoveGenerator2(pos);
 		Piece piece(Piece::TYPE_PAWN, Piece::COLOR_BLACK);
 
 		//act
@@ -255,7 +255,7 @@ public:
 		Position pos;
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
-		MoveGenerator moveGen = MoveGenerator(pos);
+		MoveGenerator2 moveGen = MoveGenerator2(pos);
 		Piece piece(Piece::TYPE_PAWN, Piece::COLOR_WHITE);
 
 		//act
@@ -280,7 +280,7 @@ public:
 		Position pos;
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
-		MoveGenerator moveGen = MoveGenerator(pos);
+		MoveGenerator2 moveGen = MoveGenerator2(pos);
 		Piece piece(Piece::TYPE_PAWN, Piece::COLOR_BLACK);
 
 		//act
@@ -298,7 +298,7 @@ public:
 		Position pos;
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
-		MoveGenerator moveGen = MoveGenerator(pos);
+		MoveGenerator2 moveGen = MoveGenerator2(pos);
 		Piece piece(Piece::TYPE_ROOK, Piece::COLOR_WHITE);
 
 		//act
@@ -329,7 +329,7 @@ public:
 		Position pos;
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
-		MoveGenerator moveGen = MoveGenerator(pos);
+		MoveGenerator2 moveGen = MoveGenerator2(pos);
 		Piece piece(Piece::TYPE_ROOK, Piece::COLOR_WHITE);
 
 		//act
@@ -349,7 +349,7 @@ public:
 		Position pos;
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
-		MoveGenerator moveGen = MoveGenerator(pos);
+		MoveGenerator2 moveGen = MoveGenerator2(pos);
 		Piece piece(Piece::TYPE_BISHOP, Piece::COLOR_BLACK);
 
 		//act
@@ -375,7 +375,7 @@ public:
 		Position pos;
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
-		MoveGenerator moveGen = MoveGenerator(pos);
+		MoveGenerator2 moveGen = MoveGenerator2(pos);
 		Piece piece(Piece::TYPE_BISHOP, Piece::COLOR_BLACK);
 
 		//act
@@ -394,7 +394,7 @@ public:
 		Position pos;
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
-		MoveGenerator moveGen = MoveGenerator(pos);
+		MoveGenerator2 moveGen = MoveGenerator2(pos);
 
 		//act
 		moveGen.GenerateQueenMoves(moves);
@@ -410,7 +410,7 @@ public:
 		Position pos;
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
-		MoveGenerator moveGen = MoveGenerator(pos);
+		MoveGenerator2 moveGen = MoveGenerator2(pos);
 
 		//act
 		moveGen.GenerateQueenMoves(moves);
@@ -424,7 +424,7 @@ public:
 		Position pos;
 		Parser::ParsePosition({ "startpos" }, pos);
 		vector<Move> moves;
-		MoveGenerator moveGen = MoveGenerator(pos);
+		MoveGenerator2 moveGen = MoveGenerator2(pos);
 
 		//act
 		moveGen.GenerateMoves(moves);
@@ -433,71 +433,134 @@ public:
 		Assert::AreEqual(20Ui64, moves.size());
 	}
 
-	//TEST_METHOD(TestMoveGeneratorLegalKingMoves) {
-	//	//arrange
-	//	vector<string> tokens = { "8/5k2/8/5R2/8/8/8/4K3", "b" };
-	//	Position pos;
-	//	Parser::ParseFen(tokens, pos);
-	//	vector<Move> moves;
-	//	MoveGenerator moveGen = MoveGenerator(pos);
-	//	Piece piece(Piece::TYPE_KING, Piece::COLOR_BLACK);
+	TEST_METHOD(TestMoveGeneratorLegalKingMoves) {
+		//arrange
+		vector<string> tokens = { "8/5k2/8/5R2/8/8/8/4K3", "b" };
+		Position pos;
+		Parser::ParseFen(tokens, pos);
+		vector<Move> moves;
+		MoveGenerator2 moveGen = MoveGenerator2(pos);
+		Piece piece(Piece::TYPE_KING, Piece::COLOR_BLACK);
 
-	//	//act
-	//	moveGen.GenerateKingMoves(moves);
+		//act
+		moveGen.GenerateKingMoves(moves);
 
-	//	//assert
-	//	Assert::AreEqual(6Ui64, moves.size());
-	//	Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(Square::F7), Square(Square::E6))) != moves.end());
-	//	Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(Square::F7), Square(Square::E7))) != moves.end());
-	//	Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(Square::F7), Square(Square::E8))) != moves.end());
+		//assert
+		Assert::AreEqual(6Ui64, moves.size());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(Square::F7), Square(Square::E6))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(Square::F7), Square(Square::E7))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(Square::F7), Square(Square::E8))) != moves.end());
 
-	//	Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(Square::F7), Square(Square::G6))) != moves.end());
-	//	Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(Square::F7), Square(Square::G7))) != moves.end());
-	//	Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(Square::F7), Square(Square::G8))) != moves.end());
-	//}
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(Square::F7), Square(Square::G6))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(Square::F7), Square(Square::G7))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(Square::F7), Square(Square::G8))) != moves.end());
+	}
 
-	//TEST_METHOD(TestMoveGeneratorCheckerCount) {
-	//	//arrange
-	//	vector<string> tokens = { "4k3/6N1/5b2/4R3/8/8/8/4K3", "b" };
-	//	Position pos;
-	//	Parser::ParseFen(tokens, pos);
+	TEST_METHOD(TestMoveGeneratorCheckerCount) {
+		//arrange
+		vector<string> tokens = { "4k3/6N1/5b2/4R3/8/8/8/4K3", "b" };
+		Position pos;
+		Parser::ParseFen(tokens, pos);
 
-	//	//act
-	//	MoveGenerator moveGen = MoveGenerator(pos);
+		//act
+		MoveGenerator2 moveGen = MoveGenerator2(pos);
 
-	//	//assert
-	//	Assert::AreEqual(2Ui8, moveGen.GetCheckerCount());
-	//}
+		//assert
+		Assert::AreEqual(2Ui8, moveGen.GetCheckerCount());
+	}
 
-	//TEST_METHOD(TestMoveGeneratorCheckEvasion1) {
-	//	//arrange
-	//	vector<string> tokens = { "4k3/8/6n1/4R3/8/8/8/4K3", "b" };
-	//	Position pos;
-	//	Parser::ParseFen(tokens, pos);
-	//	MoveGenerator moveGen = MoveGenerator(pos);
-	//	vector<Move> moves;
-	//	Piece king = Piece(Piece::TYPE_KING, Piece::COLOR_BLACK);
-	//	Piece horse = Piece(Piece::TYPE_KNIGHT, Piece::COLOR_BLACK);
+	TEST_METHOD(TestMoveGeneratorCheckEvasion1) {
+		//arrange
+		vector<string> tokens = { "4k3/8/6n1/4R3/8/8/8/4K3", "b" };
+		Position pos;
+		Parser::ParseFen(tokens, pos);
+		MoveGenerator2 moveGen = MoveGenerator2(pos);
+		vector<Move> moves;
+		Piece king = Piece(Piece::TYPE_KING, Piece::COLOR_BLACK);
+		Piece horse = Piece(Piece::TYPE_KNIGHT, Piece::COLOR_BLACK);
 
-	//	//act
-	//	moveGen.GenerateMoves(moves);
+		//act
+		moveGen.GenerateMoves(moves);
 
-	//	//assert
-	//	Assert::AreEqual(6Ui64, moves.size());
+		//assert
+		Assert::AreEqual(6Ui64, moves.size());
 
-	//	//king moves x 4
-	//	Assert::IsTrue(find(moves.begin(), moves.end(), Move(king, Square(Square::E8), Square(Square::D8))) != moves.end());
-	//	Assert::IsTrue(find(moves.begin(), moves.end(), Move(king, Square(Square::E8), Square(Square::D7))) != moves.end());
-	//	Assert::IsTrue(find(moves.begin(), moves.end(), Move(king, Square(Square::E8), Square(Square::F8))) != moves.end());
-	//	Assert::IsTrue(find(moves.begin(), moves.end(), Move(king, Square(Square::E8), Square(Square::F7))) != moves.end());
+		//king moves x 4
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(king, Square(Square::E8), Square(Square::D8))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(king, Square(Square::E8), Square(Square::D7))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(king, Square(Square::E8), Square(Square::F8))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(king, Square(Square::E8), Square(Square::F7))) != moves.end());
 
-	//	//block by knight
-	//	Assert::IsTrue(find(moves.begin(), moves.end(), Move(horse, Square(Square::G6), Square(Square::E7))) != moves.end());
+		//block by knight
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(horse, Square(Square::G6), Square(Square::E7))) != moves.end());
 
-	//	//capture rook by knight
-	//	Assert::IsTrue(find(moves.begin(), moves.end(), Move(horse, Square(Square::G6), Square(Square::E5))) != moves.end());
-	//}
+		//capture rook by knight
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(horse, Square(Square::G6), Square(Square::E5))) != moves.end());
+	}
 
+	//8/8/8/2k5/3Pp3/8/8/4K3 w - - 0 2 
+
+	TEST_METHOD(TestMoveGeneratorCheckEvasionEnPassant) {
+		//arrange
+		vector<string> tokens = { "8/8/8/2k5/3Pp3/8/8/4K3", "b", "", "d3" };
+		Position pos;
+		Parser::ParseFen(tokens, pos);
+		MoveGenerator2 moveGen = MoveGenerator2(pos);
+		vector<Move> moves;
+		Piece pawn = Piece(Piece::TYPE_PAWN, Piece::COLOR_BLACK);
+
+		//act
+		moveGen.GeneratePawnMoves(moves);
+
+		//assert
+		Assert::AreEqual(1Ui64, moves.size());
+
+		//ep capture is possible
+		Move expected = Move(pawn, Square(Square::E4), Square(Square::D3)).SetEpCapture();
+		Assert::IsTrue(find(moves.begin(), moves.end(), expected) != moves.end());
+
+	}
+
+	TEST_METHOD(TestMoveGeneratorPinnedPiece1) {
+		//arrange
+		vector<string> tokens = { "4k3/4r3/8/8/8/8/4R3/4K3", "b" };
+		Position pos;
+		Parser::ParseFen(tokens, pos);
+		MoveGenerator2 moveGen = MoveGenerator2(pos);
+		vector<Move> moves;
+		Piece tower = Piece(Piece::TYPE_ROOK, Piece::COLOR_BLACK);
+
+		//act
+		moveGen.GenerateRookMoves(moves);
+
+		//assert
+		Assert::AreEqual(5Ui64, moves.size());
+
+		//rook moves x 4 along pin ray
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(tower, Square(Square::E7), Square(Square::E6))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(tower, Square(Square::E7), Square(Square::E5))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(tower, Square(Square::E7), Square(Square::E4))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(tower, Square(Square::E7), Square(Square::E3))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(tower, Square(Square::E7), Square(Square::E2))) != moves.end());
+	}
+
+	TEST_METHOD(TestMoveGeneratorPinnedPiece2) {
+		//arrange
+		vector<string> tokens = { "4k3/8/8/4p3/5P2/8/4R3/4K3", "b" };
+		Position pos;
+		Parser::ParseFen(tokens, pos);
+		MoveGenerator2 moveGen = MoveGenerator2(pos);
+		vector<Move> moves;
+		Piece pawn = Piece(Piece::TYPE_PAWN, Piece::COLOR_BLACK);
+
+		//act
+		moveGen.GeneratePawnMoves(moves);
+
+		//assert
+		Assert::AreEqual(1Ui64, moves.size());
+		
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(pawn, Square(Square::E5), Square(Square::E4))) != moves.end());
+	}
 
 
 	};

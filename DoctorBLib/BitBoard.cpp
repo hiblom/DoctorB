@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "BitBoard.h"
 #include <intrin.h>
+
 #pragma intrinsic(_BitScanForward64)
 #pragma intrinsic(_BitScanReverse64)
 
@@ -111,13 +112,14 @@ bool BitBoard::GetSquares(std::vector<Square>& squares) const {
 }
 
 bool BitBoard::ConsumeLowestSquare(Square& square) {
+	if (!value)
+		return false;
+	
 	unsigned long index;
-	if (_BitScanForward64(&index, value)) {
-		square.SetValue((uint8_t)index);
-		value &= ~(1Ui64 << index);
-		return true;
-	}
-	return false;
+	_BitScanForward64(&index, value);
+	square.SetValue((uint8_t)index);
+	value &= ~(1Ui64 << index);
+	return true;
 }
 
 bool BitBoard::GetLowestSquare(Square& square) const {

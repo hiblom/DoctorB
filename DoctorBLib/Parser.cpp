@@ -6,7 +6,7 @@
 #include <boost/optional.hpp>
 #include "Piece.h"
 #include "Constants.h"
-#include "MoveGenerator.h"
+#include "MoveGenerator2.h"
 
 using namespace std;
 
@@ -180,7 +180,7 @@ bool Parser::ParsePositionMoves(const vector<string>& tokens, Position& position
 		if (!ParseMove(token, move))
 			return false;
 
-		MoveGenerator move_gen(position);
+		MoveGenerator2 move_gen(position);
 		if (!move_gen.SetMoveFlags(move))
 			return false;
 
