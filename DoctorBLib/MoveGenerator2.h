@@ -42,5 +42,6 @@ private:
 	BitBoard GenerateDangerRayBoard(const Square from_square, const uint8_t dir, bool(BitBoard::* find_nearest_square)(Square &) const, const BitBoard exclude_board) const;
 	void GeneratePinInfo();
 	void GeneratePinRayInfo(const Square king_square, const uint8_t dir, bool(BitBoard::*find_nearest_square)(Square&) const, const uint8_t rook_or_bishop_type);
+	bool CheckEpDiscoveredCheck(const Square ep_square, const Square capturing_square) const;
 };
 

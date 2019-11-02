@@ -28,6 +28,7 @@ public:
 	BitBoard GetRay(const Square square, const uint8_t dir) const;
 	BitBoard GetCastlingSafeSquares(const int index) const;
 	BitBoard GetCastlingEmptySquares(const int index) const;
+	BitBoard&(BitBoard::*Forward[2])();
 private:
 	BitBoard king_moves[64];
 	BitBoard knight_moves[64];

@@ -562,6 +562,22 @@ public:
 		Assert::IsTrue(find(moves.begin(), moves.end(), Move(pawn, Square(Square::E5), Square(Square::E4))) != moves.end());
 	}
 
+	TEST_METHOD(TestMoveGeneratorDiscoveredEnPassant) {
+		//arrange
+		vector<string> tokens = { "8/2p5/3p4/KP5r/1R2Pp1k/8/6P1/8", "b", "-", "e3" };
+		Position pos;
+		Parser::ParseFen(tokens, pos);
+		MoveGenerator2 moveGen = MoveGenerator2(pos);
+		vector<Move> moves;
+		Piece pawn = Piece(Piece::TYPE_PAWN, Piece::COLOR_BLACK);
+
+		//act
+		moveGen.GeneratePawnMoves(moves);
+
+		//assert
+		//plack pawn cannot capture E.P., because of discovered check from rook on b4
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(pawn, Square(Square::F4), Square(Square::E3)).SetEpCapture()) == moves.end());
+	}
 
 	};
 }

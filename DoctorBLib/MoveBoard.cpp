@@ -185,6 +185,9 @@ void MoveBoard::Initialize() {
 	InitializePawnCaptures();
 	InitializeRays();
 	InitializeCastlingSquares();
+	
+	Forward[0] = &BitBoard::Up;
+	Forward[1] = &BitBoard::Down;
 }
 
 BitBoard MoveBoard::GetKingMoves(const Square square) const {
