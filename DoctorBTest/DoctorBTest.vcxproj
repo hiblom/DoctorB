@@ -170,6 +170,7 @@
     <ClCompile Include="TestPerft.cpp" />
     <ClCompile Include="TestPiece.cpp" />
     <ClCompile Include="TestPosition.cpp" />
+    <ClCompile Include="TestSearcher.cpp" />
     <ClCompile Include="TestSquare.cpp" />
   </ItemGroup>
   <ItemGroup>

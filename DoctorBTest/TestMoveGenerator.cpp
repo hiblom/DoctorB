@@ -3,7 +3,7 @@
 #include <algorithm>
 #include "CppUnitTest.h"
 #include "ToStringSpecializations.h"
-#include "MoveGenerator2.h"
+#include "MoveGenerator.h"
 #include "Parser.h"
 #include "MoveBoard.h"
 #include "Move.h"
@@ -25,7 +25,7 @@ public:
 		Position pos;
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
-		MoveGenerator2 moveGen = MoveGenerator2(pos);
+		MoveGenerator moveGen = MoveGenerator(pos);
 		Piece piece(Piece::TYPE_KING, Piece::COLOR_WHITE);
 
 		//act
@@ -51,7 +51,7 @@ public:
 		Position pos;
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
-		MoveGenerator2 moveGen = MoveGenerator2(pos);
+		MoveGenerator moveGen = MoveGenerator(pos);
 		Piece piece(Piece::TYPE_KING, Piece::COLOR_WHITE);
 
 		//act
@@ -68,7 +68,7 @@ public:
 		Position pos;
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
-		MoveGenerator2 moveGen = MoveGenerator2(pos);
+		MoveGenerator moveGen = MoveGenerator(pos);
 		Piece piece(Piece::TYPE_KING, Piece::COLOR_BLACK);
 
 		//act
@@ -87,7 +87,7 @@ public:
 		Position pos;
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
-		MoveGenerator2 moveGen = MoveGenerator2(pos);
+		MoveGenerator moveGen = MoveGenerator(pos);
 		Piece piece(Piece::TYPE_KING, Piece::COLOR_WHITE);
 
 		//act
@@ -105,7 +105,7 @@ public:
 		Position pos;
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
-		MoveGenerator2 moveGen = MoveGenerator2(pos);
+		MoveGenerator moveGen = MoveGenerator(pos);
 		Piece piece(Piece::TYPE_KING, Piece::COLOR_WHITE);
 
 		//act
@@ -123,7 +123,7 @@ public:
 		Position pos;
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
-		MoveGenerator2 moveGen = MoveGenerator2(pos);
+		MoveGenerator moveGen = MoveGenerator(pos);
 		Piece piece(Piece::TYPE_KING, Piece::COLOR_WHITE);
 
 		//act
@@ -141,7 +141,7 @@ public:
 		Position pos;
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
-		MoveGenerator2 moveGen = MoveGenerator2(pos);
+		MoveGenerator moveGen = MoveGenerator(pos);
 		Piece piece(Piece::TYPE_KING, Piece::COLOR_WHITE);
 
 		//act
@@ -158,7 +158,7 @@ public:
 		Position pos;
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
-		MoveGenerator2 moveGen = MoveGenerator2(pos);
+		MoveGenerator moveGen = MoveGenerator(pos);
 		Piece piece(Piece::TYPE_KNIGHT, Piece::COLOR_WHITE);
 
 		//act
@@ -185,7 +185,7 @@ public:
 		Position pos;
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
-		MoveGenerator2 moveGen = MoveGenerator2(pos);
+		MoveGenerator moveGen = MoveGenerator(pos);
 
 		//act
 		moveGen.GeneratePawnMoves(moves);
@@ -203,7 +203,7 @@ public:
 		Position pos;
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
-		MoveGenerator2 moveGen = MoveGenerator2(pos);
+		MoveGenerator moveGen = MoveGenerator(pos);
 
 		//act
 		moveGen.GeneratePawnMoves(moves);
@@ -220,7 +220,7 @@ public:
 		Position pos;
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
-		MoveGenerator2 moveGen = MoveGenerator2(pos);
+		MoveGenerator moveGen = MoveGenerator(pos);
 		Piece piece(Piece::TYPE_PAWN, Piece::COLOR_BLACK);
 
 		//act
@@ -238,7 +238,7 @@ public:
 		Position pos;
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
-		MoveGenerator2 moveGen = MoveGenerator2(pos);
+		MoveGenerator moveGen = MoveGenerator(pos);
 		Piece piece(Piece::TYPE_PAWN, Piece::COLOR_BLACK);
 
 		//act
@@ -255,7 +255,7 @@ public:
 		Position pos;
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
-		MoveGenerator2 moveGen = MoveGenerator2(pos);
+		MoveGenerator moveGen = MoveGenerator(pos);
 		Piece piece(Piece::TYPE_PAWN, Piece::COLOR_WHITE);
 
 		//act
@@ -280,7 +280,7 @@ public:
 		Position pos;
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
-		MoveGenerator2 moveGen = MoveGenerator2(pos);
+		MoveGenerator moveGen = MoveGenerator(pos);
 		Piece piece(Piece::TYPE_PAWN, Piece::COLOR_BLACK);
 
 		//act
@@ -298,7 +298,7 @@ public:
 		Position pos;
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
-		MoveGenerator2 moveGen = MoveGenerator2(pos);
+		MoveGenerator moveGen = MoveGenerator(pos);
 		Piece piece(Piece::TYPE_ROOK, Piece::COLOR_WHITE);
 
 		//act
@@ -329,7 +329,7 @@ public:
 		Position pos;
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
-		MoveGenerator2 moveGen = MoveGenerator2(pos);
+		MoveGenerator moveGen = MoveGenerator(pos);
 		Piece piece(Piece::TYPE_ROOK, Piece::COLOR_WHITE);
 
 		//act
@@ -349,7 +349,7 @@ public:
 		Position pos;
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
-		MoveGenerator2 moveGen = MoveGenerator2(pos);
+		MoveGenerator moveGen = MoveGenerator(pos);
 		Piece piece(Piece::TYPE_BISHOP, Piece::COLOR_BLACK);
 
 		//act
@@ -375,7 +375,7 @@ public:
 		Position pos;
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
-		MoveGenerator2 moveGen = MoveGenerator2(pos);
+		MoveGenerator moveGen = MoveGenerator(pos);
 		Piece piece(Piece::TYPE_BISHOP, Piece::COLOR_BLACK);
 
 		//act
@@ -394,7 +394,7 @@ public:
 		Position pos;
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
-		MoveGenerator2 moveGen = MoveGenerator2(pos);
+		MoveGenerator moveGen = MoveGenerator(pos);
 
 		//act
 		moveGen.GenerateQueenMoves(moves);
@@ -410,7 +410,7 @@ public:
 		Position pos;
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
-		MoveGenerator2 moveGen = MoveGenerator2(pos);
+		MoveGenerator moveGen = MoveGenerator(pos);
 
 		//act
 		moveGen.GenerateQueenMoves(moves);
@@ -424,7 +424,7 @@ public:
 		Position pos;
 		Parser::ParsePosition({ "startpos" }, pos);
 		vector<Move> moves;
-		MoveGenerator2 moveGen = MoveGenerator2(pos);
+		MoveGenerator moveGen = MoveGenerator(pos);
 
 		//act
 		moveGen.GenerateMoves(moves);
@@ -439,7 +439,7 @@ public:
 		Position pos;
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
-		MoveGenerator2 moveGen = MoveGenerator2(pos);
+		MoveGenerator moveGen = MoveGenerator(pos);
 		Piece piece(Piece::TYPE_KING, Piece::COLOR_BLACK);
 
 		//act
@@ -463,7 +463,7 @@ public:
 		Parser::ParseFen(tokens, pos);
 
 		//act
-		MoveGenerator2 moveGen = MoveGenerator2(pos);
+		MoveGenerator moveGen = MoveGenerator(pos);
 
 		//assert
 		Assert::AreEqual(2Ui8, moveGen.GetCheckerCount());
@@ -474,7 +474,7 @@ public:
 		vector<string> tokens = { "4k3/8/6n1/4R3/8/8/8/4K3", "b" };
 		Position pos;
 		Parser::ParseFen(tokens, pos);
-		MoveGenerator2 moveGen = MoveGenerator2(pos);
+		MoveGenerator moveGen = MoveGenerator(pos);
 		vector<Move> moves;
 		Piece king = Piece(Piece::TYPE_KING, Piece::COLOR_BLACK);
 		Piece horse = Piece(Piece::TYPE_KNIGHT, Piece::COLOR_BLACK);
@@ -505,7 +505,7 @@ public:
 		vector<string> tokens = { "8/8/8/2k5/3Pp3/8/8/4K3", "b", "", "d3" };
 		Position pos;
 		Parser::ParseFen(tokens, pos);
-		MoveGenerator2 moveGen = MoveGenerator2(pos);
+		MoveGenerator moveGen = MoveGenerator(pos);
 		vector<Move> moves;
 		Piece pawn = Piece(Piece::TYPE_PAWN, Piece::COLOR_BLACK);
 
@@ -526,7 +526,7 @@ public:
 		vector<string> tokens = { "4k3/4r3/8/8/8/8/4R3/4K3", "b" };
 		Position pos;
 		Parser::ParseFen(tokens, pos);
-		MoveGenerator2 moveGen = MoveGenerator2(pos);
+		MoveGenerator moveGen = MoveGenerator(pos);
 		vector<Move> moves;
 		Piece tower = Piece(Piece::TYPE_ROOK, Piece::COLOR_BLACK);
 
@@ -549,7 +549,7 @@ public:
 		vector<string> tokens = { "4k3/8/8/4p3/5P2/8/4R3/4K3", "b" };
 		Position pos;
 		Parser::ParseFen(tokens, pos);
-		MoveGenerator2 moveGen = MoveGenerator2(pos);
+		MoveGenerator moveGen = MoveGenerator(pos);
 		vector<Move> moves;
 		Piece pawn = Piece(Piece::TYPE_PAWN, Piece::COLOR_BLACK);
 
@@ -567,7 +567,7 @@ public:
 		vector<string> tokens = { "8/2p5/3p4/KP5r/1R2Pp1k/8/6P1/8", "b", "-", "e3" };
 		Position pos;
 		Parser::ParseFen(tokens, pos);
-		MoveGenerator2 moveGen = MoveGenerator2(pos);
+		MoveGenerator moveGen = MoveGenerator(pos);
 		vector<Move> moves;
 		Piece pawn = Piece(Piece::TYPE_PAWN, Piece::COLOR_BLACK);
 

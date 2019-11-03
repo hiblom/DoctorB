@@ -3,7 +3,7 @@
 #include <vector>
 #include <iostream>
 #include "Move.h"
-#include "MoveGenerator2.h"
+#include "MoveGenerator.h"
 
 using namespace std;
 
@@ -23,7 +23,7 @@ uint64_t Perft::Go() {
 
 //Count function using recursion
 uint64_t Perft::Count(const Position& position, const int remaining_depth) const {
-	MoveGenerator2 move_gen(position);
+	MoveGenerator move_gen(position);
 	if (move_gen.IsCheck(position.GetActiveColor() ^ 1Ui8))
 		return 0Ui64;
 
@@ -59,7 +59,7 @@ uint64_t Perft::Count2(const Position& position, const int remaining_depth) cons
 	
 	while (current_depth <= depth_) {
 		if (move_indices[current_depth] == -1) {
-			MoveGenerator2 move_gen(positions[current_depth]);
+			MoveGenerator move_gen(positions[current_depth]);
 			//if (move_gen.IsCheck(positions[current_depth].GetActiveColor() ^ 1Ui8)) {
 			//	current_depth++;
 			//	continue;

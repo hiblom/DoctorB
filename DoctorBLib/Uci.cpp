@@ -9,6 +9,7 @@
 #include "Position.h"
 #include "Parser.h"
 #include "Perft.h"
+#include "Searcher.h"
 
 using namespace std;
 using namespace boost::algorithm;
@@ -92,12 +93,42 @@ void Uci::executeGo(const std::vector<std::string>& command_parts) {
 	}
 
 	vector<string> tokens(command_parts.begin() + 1, command_parts.end());
-	if (command_parts[1] == "perft") {
+
+	if (command_parts[1] == "depth") {
+		goDepth(tokens);
+	}
+	else if (command_parts[1] == "perft") {
 		goPerft(tokens);
 	}
 }
 
+void Uci::goDepth(const vector<string>& tokens) {
+	if (!position.has_value()) {
+		cout << "No position set" << endl;
+		return;
+	}
+
+	if (tokens.size() != 2) {
+		cout << "Number of depth parameters must be 1" << endl;
+		return;
+	}
+
+	int depth = stoi(tokens[1]);
+	if (depth < 1) {
+		cout << "Depth must be greater than 1" << endl;
+		return;
+	}
+
+	Searcher search(position.value());
+	search.GoDepth(depth);
+}
+
 void Uci::goPerft(const vector<string>& tokens) {
+	if (!position.has_value()) {
+		cout << "No position set" << endl;
+		return;
+	}
+
 	if (tokens.size() != 2) {
 		cout << "Number of perft parameters must be 1" << endl;
 		return;
@@ -106,11 +137,6 @@ void Uci::goPerft(const vector<string>& tokens) {
 	int depth = stoi(tokens[1]);
 	if (depth < 1 || depth > 20) {
 		cout << "Perft depth must be between 1 and 20" << endl;
-		return;
-	}
-
-	if (!position.has_value()) {
-		cout << "Position must be set for perft" << endl;
 		return;
 	}
 	

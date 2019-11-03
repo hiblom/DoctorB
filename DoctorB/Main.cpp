@@ -1,6 +1,8 @@
 ﻿#include <iostream>
 #include <string>
 #include <cstdio>
+#include <stdlib.h>
+#include <time.h>
 #include <Windows.h>
 #include "Uci.h"
 #include "MoveBoard.h"
@@ -16,6 +18,7 @@ int main() {
 	cout << "Input UCI command" << endl;
 
 	//initialize engine
+	srand(time(NULL));
 	MoveBoard::GetInstance().Initialize();
 	Uci uci;
 	

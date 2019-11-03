@@ -16,6 +16,7 @@ private:
 	void executeIsReady();
 	void executePosition(const std::vector<std::string>& command_parts);
 	void executeGo(const std::vector<std::string>& command_parts);
-	void goPerft(const std::vector<std::string>& command_parts);
+	void goDepth(const std::vector<std::string>& tokens);
+	void goPerft(const std::vector<std::string>& tokens);
 	void executeD();
 };
