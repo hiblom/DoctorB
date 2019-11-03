@@ -101,6 +101,9 @@ Move& Move::SetDoublePush() {
 }
 
 std::string Move::ToString() const {
+	if (square_from_.GetValue() == 0 && square_to_.GetValue() == 0)
+		return "-";
+
 	if (status_bits_ & MASK_PROMOTION) {
 		return square_from_.ToString() + square_to_.ToString() + promo_piece_.ToString();
 	}
