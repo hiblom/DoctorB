@@ -9,13 +9,14 @@ class Searcher
 public:
 	Searcher(Position base_position);
 	void GoDepth(int depth);
-	void GoTime(int wtime, int btime, int winc, int binc);
+	void GoTime(uint64_t wtime, uint64_t btime, uint64_t winc, uint64_t binc, uint64_t movestogo);
 	~Searcher();
 private:
 	uint64_t node_count;
 	const Position base_position_;
-	Move MinMaxDepth(uint32_t max_depth);
-	Move MinMaxTime(int wtime, int btime, int winc, int binc);
-	void MinMaxRecurse(const uint32_t remaining_depth, const Position& position, Score& score, std::vector<Move>& pv);
+	Move AlphaBetaTime(uint64_t max_duration);
+	void AlphaBetaTop(const uint32_t remaining_depth, const Position& position, Score& score, std::vector<Move>& pv);
+	void AlphaBetaRecurse(const uint32_t remaining_depth, const Position& position, const Score best_white, const Score best_black, Score& score, std::vector<Move>& pv);
+	uint64_t GetMaxDuration(uint64_t wtime, uint64_t btime, uint64_t winc, uint64_t binc, uint64_t movestogo);
 };
 

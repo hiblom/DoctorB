@@ -31,7 +31,7 @@ string Score::ToString(uint8_t engine_color, uint32_t depth) {
 
 	mult *= (value_ > 0) ? 1 : -1;
 
-	int moves_to_mate = depth / 2;
+	int moves_to_mate = (depth - 1) / 2;
 	return "mate " + to_string(mult * moves_to_mate);
 }
 

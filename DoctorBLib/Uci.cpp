@@ -131,24 +131,25 @@ void Uci::goTime(const vector<string>& tokens) {
 	int btime = 0;
 	int winc = 0;
 	int binc = 0;
+	int movestogo = 0;
 
 	int i = 0;
 	while (i < tokens.size()) {
-		if (tokens[i] == "wtime") {
+		if (tokens[i] == "wtime") 
 			wtime = stoi(tokens[++i]);
-		}
-		else if (tokens[i] == "btime") {
+		else if (tokens[i] == "btime")
 			btime = stoi(tokens[++i]);
-		}
 		else if (tokens[i] == "winc")
 			winc = stoi(tokens[++i]);
 		else if (tokens[i] == "binc")
 			binc = stoi(tokens[++i]);
+		else if (tokens[i] == "movestogo")
+			movestogo = stoi(tokens[++i]);
 		i++;
 	}
 
 	Searcher search(position.value());
-	search.GoTime(wtime, btime, winc, binc);
+	search.GoTime(wtime, btime, winc, binc, movestogo);
 }
 
 void Uci::goPerft(const vector<string>& tokens) {

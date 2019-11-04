@@ -60,16 +60,6 @@ uint64_t Perft::Count2(const Position& position, const int remaining_depth) cons
 	while (current_depth <= depth_) {
 		if (move_indices[current_depth] == -1) {
 			MoveGenerator move_gen(positions[current_depth]);
-			//if (move_gen.IsCheck(positions[current_depth].GetActiveColor() ^ 1Ui8)) {
-			//	current_depth++;
-			//	continue;
-			//}
-
-			//if (current_depth == 0) {
-			//	results[move_indices[depth_]]++;
-			//	current_depth++;
-			//	continue;
-			//}
 
 			moves[current_depth].clear();
 			move_gen.GenerateMoves(moves[current_depth]);

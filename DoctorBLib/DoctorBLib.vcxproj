@@ -154,6 +154,7 @@
     <ClInclude Include="BitBoard.h" />
     <ClInclude Include="Constants.h" />
     <ClInclude Include="Evaluator.h" />
+    <ClInclude Include="MiniMax.h" />
     <ClInclude Include="Move.h" />
     <ClInclude Include="MoveBoard.h" />
     <ClInclude Include="MoveGenerator.h" />
@@ -171,6 +172,7 @@
   <ItemGroup>
     <ClCompile Include="BitBoard.cpp" />
     <ClCompile Include="Evaluator.cpp" />
+    <ClCompile Include="MiniMax.cpp" />
     <ClCompile Include="Move.cpp" />
     <ClCompile Include="MoveBoard.cpp" />
     <ClCompile Include="MoveGenerator.cpp" />
