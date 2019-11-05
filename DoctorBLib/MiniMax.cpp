@@ -9,14 +9,13 @@
 
 using namespace std;
 
-MiniMax::MiniMax(Position base_position) : base_position_(base_position) {
+MiniMax::MiniMax(const Position& base_position) : SearchAlgorithm(base_position) {
 }
-
 
 MiniMax::~MiniMax() {
 }
 
-Move MiniMax::GoDepth(uint32_t max_depth) {
+Move MiniMax::GoDepth(uint64_t max_depth) {
 	node_count_ = 0Ui64;
 	auto start_time = chrono::system_clock::now();
 	Move best_move;
@@ -89,7 +88,7 @@ Move MiniMax::GoTime(uint64_t max_duration) {
 		best_move = pv[iteration_depth];
 
 		iteration_depth++;
-	} while ((duration * 40) < max_duration);
+	} while ((duration * 30) < max_duration); //TODO implement game modes like CCRL 40/4
 
 
 	return best_move;
@@ -177,8 +176,9 @@ void MiniMax::Loop(const uint32_t iteration_depth, Score& score, std::vector<Mov
 			MoveGenerator move_gen(position_stack[depth]);
 			moves_stack[depth].clear();
 			move_gen.GenerateMoves(moves_stack[depth]);
-			score_stack[depth] = Score(START_SCORE[position_stack[depth].GetActiveColor()]);
+			score_stack[depth] = Score(START_SCORE[position_stack[depth].GetActiveColor()]); //TODO stale-mate???
 			variation_stack[depth] = vector<Move>(iteration_depth - depth);
+			score_depth = depth;
 			index_stack[depth] = 0;
 			moves_depth = depth;
 		}

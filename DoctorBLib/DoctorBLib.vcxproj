@@ -150,6 +150,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="AlphaBeta.h" />
     <ClInclude Include="App.h" />
     <ClInclude Include="BitBoard.h" />
     <ClInclude Include="Constants.h" />
@@ -163,6 +164,7 @@
     <ClInclude Include="Piece.h" />
     <ClInclude Include="Position.h" />
     <ClInclude Include="Score.h" />
+    <ClInclude Include="SearchAlgorithm.h" />
     <ClInclude Include="Searcher.h" />
     <ClInclude Include="Square.h" />
     <ClInclude Include="stdafx.h" />
@@ -170,6 +172,7 @@
     <ClInclude Include="Uci.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AlphaBeta.cpp" />
     <ClCompile Include="BitBoard.cpp" />
     <ClCompile Include="Evaluator.cpp" />
     <ClCompile Include="MiniMax.cpp" />
