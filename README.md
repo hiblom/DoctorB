@@ -9,16 +9,18 @@ DoctorB is named after a character in *Schachnovelle* by Stefan Zweig. Dr B play
 * Legal move generator
 * Simple board evaluation purely based on piece value
 * Minimax search strategy with iterative deepening
-* Note: DoctorB can now play a game of chess (although not so good)
+* Alpha beta search strategy
 
 ## Next up
-* Alpha beta search strategy
+* Piece square board evaluation
 * Hashing / transposition table
-* Advanced board evaluation
+* Repetation detection
+* Move ordering
 * Support opening books
 * Threaded search to implement quit and stop commands properly
 
 ## Down the road
+* Advanced board evaluation
 * Quiesence search
 * End game tables
 * Multi-threaded search
