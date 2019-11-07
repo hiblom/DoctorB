@@ -18,7 +18,7 @@ int main() {
 	cout << "Input UCI command" << endl;
 
 	//initialize engine
-	srand(time(NULL));
+	srand((uint32_t)time(NULL));
 	MoveBoard::GetInstance().Initialize();
 	Uci uci;
 	

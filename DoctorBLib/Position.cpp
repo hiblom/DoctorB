@@ -3,6 +3,7 @@
 #include "Piece.h"
 #include "Move.h"
 #include "Constants.h"
+#include "Zobrist.h"
 
 using namespace std;
 
@@ -98,6 +99,8 @@ string Position::ToString() const {
 }
 
 bool Position::ApplyMove(const Move& move) {
+	//TODO calculate hash key changes during apply move
+
 	static const uint8_t EP_RANK[2] = { 2Ui8, 5Ui8 };
 
 	uint8_t inactive_color = active_color ^ 1Ui8;
@@ -206,4 +209,30 @@ bool Position::GetPieceSquare(const Piece & piece, Square& square) const {
 
 BitBoard Position::GetBitBoard(const Piece& piece) const {
 	return bit_boards[piece.GetValue()];
+}
+
+void Position::GenerateHashKey() {
+	hash_key = 0Ui64;
+	for (uint8_t p = 0; p < 12; p++) {
+		BitBoard b = GetBitBoard(p);
+		Square s;
+		while (b.ConsumeLowestSquare(s)) 
+			hash_key ^= Zobrist::GetInstance().SQUARE_PIECE_KEY[p][s.GetValue()];
+	}
+
+	if (GetActiveColor() == Piece::COLOR_BLACK)
+		hash_key ^= Zobrist::GetInstance().BLACK_TURN_KEY;
+
+	for (int i = 0; i < 4; i++) {
+		if (GetCastlingStatus(i))
+			hash_key ^= Zobrist::GetInstance().CASTLING_KEY[i];
+	}
+
+	Square ep_square;
+	if (GetEpSquare(ep_square))
+		hash_key ^= Zobrist::GetInstance().EP_FILE_KEY[ep_square.GetY()];
+}
+
+uint64_t Position::GetHashKey() {
+	return hash_key;
 }

@@ -8,6 +8,8 @@
 #include "Piece.h"
 #include "Parser.h"
 #include "Constants.h"
+#include "Parser.h"
+#include "Zobrist.h"
 
 using namespace std;
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
@@ -151,5 +153,19 @@ public:
 		Assert::IsTrue(find(actual_squares.begin(), actual_squares.end(), square1) != actual_squares.end());
 		Assert::IsTrue(find(actual_squares.begin(), actual_squares.end(), square2) != actual_squares.end());
 	}
+
+	TEST_METHOD(TestPositionGenerateHashKey) {
+		//arrange
+		Position pos;
+		Parser::ParsePosition({ "startpos" }, pos);
+
+		//act
+		pos.GenerateHashKey();
+		uint64_t actual_hash_key = pos.GetHashKey();
+
+		//assert
+		Assert::AreEqual(18168730260585560166Ui64, actual_hash_key); //hashkey should always be the same, unless the seed changes
+	}
+
 	};
 }
