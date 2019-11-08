@@ -12,9 +12,6 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 namespace DoctorBTest {
 	TEST_CLASS(TestSearcher) {
 public:
-	TEST_CLASS_INITIALIZE(setup) {
-		MoveBoard::GetInstance().Initialize();
-	}
 	TEST_METHOD(TestPieceSearcherGo) {
 		//arrange
 		Position pos;

@@ -13,10 +13,6 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 namespace DoctorBTest {
 	TEST_CLASS(TestPerft) {
 public:
-	TEST_CLASS_INITIALIZE(setup) {
-		MoveBoard::GetInstance().Initialize();
-	}
-
 	TEST_METHOD(TestPerftStartpos1) {
 		//arrange
 		Position pos;

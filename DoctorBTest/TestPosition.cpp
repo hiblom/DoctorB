@@ -160,11 +160,27 @@ public:
 		Parser::ParsePosition({ "startpos" }, pos);
 
 		//act
-		pos.GenerateHashKey();
-		uint64_t actual_hash_key = pos.GetHashKey();
+		uint64_t pos_hash_key = pos.GetHashKey();
+		pos.RecalculateHashKey();
+		uint64_t generated_hash_key = pos.GetHashKey();
 
 		//assert
-		Assert::AreEqual(18168730260585560166Ui64, actual_hash_key); //hashkey should always be the same, unless the seed changes
+		Assert::AreEqual(pos_hash_key, generated_hash_key);
+	}
+
+	TEST_METHOD(TestPositionGenerateHashKey2) {
+		//arrange
+		Position pos;
+		vector<string> tokens = { "startpos", "moves", "b1c3", "e7e5", "g1f3", "b8c6", "d2d4", "e5d4", "f3d4", "g8f6", "c1f4", "f8b4", "d1d3" };
+		Parser::ParsePosition(tokens, pos);
+
+		//act
+		uint64_t pos_hash_key = pos.GetHashKey();
+		pos.RecalculateHashKey();
+		uint64_t generated_hash_key = pos.GetHashKey();
+
+		//assert
+		Assert::AreEqual(pos_hash_key, generated_hash_key);
 	}
 
 	};

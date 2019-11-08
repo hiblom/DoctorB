@@ -15,10 +15,6 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 namespace DoctorBTest {
 	TEST_CLASS(TestMoveGenerator) {
 public:
-	TEST_CLASS_INITIALIZE(setup) {
-		MoveBoard::GetInstance().Initialize();
-	}
-
 	TEST_METHOD(TestMoveGeneratorGenerateKingMoves) {
 		//arrange
 		vector<string> tokens = {"4k3/8/8/3K4/8/8/8/8", "w"};

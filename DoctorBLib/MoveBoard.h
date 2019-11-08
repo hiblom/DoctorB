@@ -18,7 +18,6 @@ public:
 
 	~MoveBoard();
 	static MoveBoard& GetInstance();
-	void Initialize();
 	MoveBoard(const MoveBoard&) = delete;
 	void operator=(const MoveBoard&) = delete;
 	BitBoard GetKingMoves(const Square square) const;
@@ -37,7 +36,9 @@ private:
 	BitBoard rays[8][64];
 	BitBoard castling_safe_squares[4];
 	BitBoard castling_empty_squares[4];
+
 	MoveBoard();
+	void Initialize();
 	void InitializeKingMoves();
 	void InitializeKnightMoves();
 	void InitializePawnPushes();

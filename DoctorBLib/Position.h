@@ -18,6 +18,7 @@ public:
 	void ClearSquare(const Square& square, const Piece& piece);
 	bool GetPiece(const Square& square, Piece& piece) const;
 	void SetActiveColor(uint8_t color);
+	void ToggleActiveColor();
 	uint8_t GetActiveColor() const;
 	void SetCastlingStatus(int index, bool value);
 	bool GetCastlingStatus(int index) const;
@@ -25,13 +26,14 @@ public:
 	void ResetEpSquare();
 	bool GetEpSquare(Square& square) const;
 	void SetHalfmoveClock(uint16_t value);
+	void IncHalfmoveClock();
 	uint16_t GetHalfmoveClock();
 	std::string ToString() const;
 	bool ApplyMove(const Move& move);
 	bool GetPieceSquares(const Piece& piece, std::vector<Square>& squares) const;
 	bool GetPieceSquare(const Piece& piece, Square& square) const;
 	BitBoard GetBitBoard(const Piece& piece) const;
-	void GenerateHashKey();
+	void RecalculateHashKey();
 	uint64_t GetHashKey();
 private:
 	BitBoard bit_boards[12];

@@ -4,7 +4,7 @@
 class Zobrist
 {
 public:
-	uint64_t SQUARE_PIECE_KEY[12][64];
+	uint64_t PIECE_SQUARE_KEY[12][64];
 	uint64_t BLACK_TURN_KEY;
 	uint64_t CASTLING_KEY[4];
 	uint64_t EP_FILE_KEY[8];

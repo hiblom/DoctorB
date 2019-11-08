@@ -5,6 +5,7 @@
 #include "Constants.h"
 
 MoveBoard::MoveBoard() {
+	Initialize();
 }
 
 void MoveBoard::InitializeKingMoves() {

@@ -19,7 +19,6 @@ int main() {
 
 	//initialize engine
 	srand((uint32_t)time(NULL));
-	MoveBoard::GetInstance().Initialize();
 	Uci uci;
 	
 	//main loop to receive commands

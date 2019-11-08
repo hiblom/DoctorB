@@ -8,7 +8,10 @@
 using namespace std;
 
 Position::Position() {
+	//empty board equals hash_key = 0, so no castling status, white to move, no pieces
 	castling_status_bits = 0Ui8;
+	active_color = Piece::COLOR_WHITE;
+	hash_key = 0Ui64;
 }
 
 Position::~Position() {
@@ -16,22 +19,30 @@ Position::~Position() {
 
 void Position::SetPiece(const Square& square, const Piece& piece) {
 	bit_boards[piece.GetValue()].Set(square.GetValue());
+	hash_key ^= Zobrist::GetInstance().PIECE_SQUARE_KEY[piece.GetValue()][square.GetValue()];
 }
 
 void Position::ClearSquare(const Square& square) {
-	for (uint8_t i = 0; i <= 11; i++) {
-		bit_boards[i].Clear(square.GetValue());
+	for (uint8_t p = 0; p <= 11; p++) {
+		if (bit_boards[p].Check(square.GetValue())) {
+			bit_boards[p].Clear(square.GetValue());
+			hash_key ^= Zobrist::GetInstance().PIECE_SQUARE_KEY[p][square.GetValue()];
+			break;
+		}
 	}
 }
 
 void Position::ClearSquare(const Square& square, const Piece& piece) {
-	bit_boards[piece.GetValue()].Clear(square.GetValue());
+	if (bit_boards[piece.GetValue()].Check(square.GetValue())) {
+		bit_boards[piece.GetValue()].Clear(square.GetValue());
+		hash_key ^= Zobrist::GetInstance().PIECE_SQUARE_KEY[piece.GetValue()][square.GetValue()];
+	}
 }
 
 bool Position::GetPiece(const Square & square, Piece& piece) const {
-	for (uint8_t i = 0; i <= 11; i++) {
-		if (bit_boards[i].Check(square.GetValue())) {
-			piece.SetValue(i);
+	for (uint8_t p = 0; p <= 11; p++) {
+		if (bit_boards[p].Check(square.GetValue())) {
+			piece.SetValue(p);
 			return true;
 		}
 	}
@@ -39,7 +50,15 @@ bool Position::GetPiece(const Square & square, Piece& piece) const {
 }
 
 void Position::SetActiveColor(uint8_t color) {
-	active_color = color;
+	if (color != active_color) {
+		active_color = color;
+		hash_key ^= Zobrist::GetInstance().BLACK_TURN_KEY;
+	}
+}
+
+void Position::ToggleActiveColor() {
+	active_color ^= 1Ui8;
+	hash_key ^= Zobrist::GetInstance().BLACK_TURN_KEY;
 }
 
 uint8_t Position::GetActiveColor() const {
@@ -47,7 +66,11 @@ uint8_t Position::GetActiveColor() const {
 }
 
 void Position::SetCastlingStatus(int index, bool value) {
-	castling_status_bits = (castling_status_bits & ~(1Ui8 << index)) | ((uint8_t)value << index);
+	bool current_status = GetCastlingStatus(index);
+	if (value != current_status) {
+		castling_status_bits = (castling_status_bits & ~(1Ui8 << index)) | ((uint8_t)value << index);
+		hash_key ^= Zobrist::GetInstance().CASTLING_KEY[index];
+	}
 }
 
 bool Position::GetCastlingStatus(int index) const {
@@ -55,10 +78,17 @@ bool Position::GetCastlingStatus(int index) const {
 }
 
 void Position::SetEpSquare(const Square& square) {
+	if (ep_square.has_value()) {
+		hash_key ^= Zobrist::GetInstance().EP_FILE_KEY[ep_square.value().GetX()];
+	}
 	ep_square = square;
+	hash_key ^= Zobrist::GetInstance().EP_FILE_KEY[square.GetX()];
 }
 
 void Position::ResetEpSquare() {
+	if (ep_square.has_value()) {
+		hash_key ^= Zobrist::GetInstance().EP_FILE_KEY[ep_square.value().GetX()];
+	}
 	ep_square.reset();
 }
 
@@ -73,6 +103,10 @@ bool Position::GetEpSquare(Square& square) const {
 
 void Position::SetHalfmoveClock(uint16_t value) {
 	halfmove_clock = value;
+}
+
+void Position::IncHalfmoveClock() {
+	halfmove_clock++;
 }
 
 uint16_t Position::GetHalfmoveClock() {
@@ -99,8 +133,6 @@ string Position::ToString() const {
 }
 
 bool Position::ApplyMove(const Move& move) {
-	//TODO calculate hash key changes during apply move
-
 	static const uint8_t EP_RANK[2] = { 2Ui8, 5Ui8 };
 
 	uint8_t inactive_color = active_color ^ 1Ui8;
@@ -112,12 +144,12 @@ bool Position::ApplyMove(const Move& move) {
 	//clear square from
 	ClearSquare(move.GetSquareFrom(), piece);
 
-	//TODO put capture flag in move (?)
 	Piece captured_piece;
 	bool is_capture = GetPiece(move.GetSquareTo(), captured_piece);
 	//clear square to (the bitboard containing the captured piece differs from the bitboard containing the moving piece)
-	if (is_capture) 
+	if (is_capture) {
 		ClearSquare(move.GetSquareTo(), captured_piece);
+	}
 
 	//if move is promo, piece type will be set to promo piece type
 	move.GetPromoOrMovingPieceType(piece);
@@ -180,20 +212,17 @@ bool Position::ApplyMove(const Move& move) {
 	}
 
 	if (move.IsDoublePush())
-		ep_square = Square(move.GetSquareFrom().GetX(), EP_RANK[active_color]);
+		SetEpSquare(Square(move.GetSquareFrom().GetX(), EP_RANK[active_color]));
 	else
-		ep_square.reset();
-
-	//TODO hash codes
+		ResetEpSquare();
 
 	//increase/reset halfmove clock (reset when pawn moves or capture)
 	if (is_capture || move.IsPromotion() || piece.GetType() == Piece::TYPE_PAWN)
-		halfmove_clock = 0;
+		SetHalfmoveClock(0);
 	else
-		halfmove_clock++;
+		IncHalfmoveClock();
 
-	//toggle active color
-	active_color ^= 1Ui8;
+	ToggleActiveColor();
 
 	return true;
 }
@@ -211,13 +240,14 @@ BitBoard Position::GetBitBoard(const Piece& piece) const {
 	return bit_boards[piece.GetValue()];
 }
 
-void Position::GenerateHashKey() {
+//for debugging purposes
+void Position::RecalculateHashKey() {
 	hash_key = 0Ui64;
 	for (uint8_t p = 0; p < 12; p++) {
 		BitBoard b = GetBitBoard(p);
 		Square s;
 		while (b.ConsumeLowestSquare(s)) 
-			hash_key ^= Zobrist::GetInstance().SQUARE_PIECE_KEY[p][s.GetValue()];
+			hash_key ^= Zobrist::GetInstance().PIECE_SQUARE_KEY[p][s.GetValue()];
 	}
 
 	if (GetActiveColor() == Piece::COLOR_BLACK)
@@ -230,7 +260,7 @@ void Position::GenerateHashKey() {
 
 	Square ep_square;
 	if (GetEpSquare(ep_square))
-		hash_key ^= Zobrist::GetInstance().EP_FILE_KEY[ep_square.GetY()];
+		hash_key ^= Zobrist::GetInstance().EP_FILE_KEY[ep_square.GetX()];
 }
 
 uint64_t Position::GetHashKey() {

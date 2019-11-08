@@ -21,7 +21,7 @@ void Zobrist::Initialize() {
 
 	for (int p = 0; p < 12; p++) {
 		for (int s = 0; s < 64; s++) {
-			SQUARE_PIECE_KEY[p][s] = gen();
+			PIECE_SQUARE_KEY[p][s] = gen();
 		}
 	}
 
