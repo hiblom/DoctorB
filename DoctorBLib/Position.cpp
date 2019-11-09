@@ -263,6 +263,6 @@ void Position::RecalculateHashKey() {
 		hash_key ^= Zobrist::GetInstance().EP_FILE_KEY[ep_square.GetX()];
 }
 
-uint64_t Position::GetHashKey() {
+uint64_t Position::GetHashKey() const {
 	return hash_key;
 }

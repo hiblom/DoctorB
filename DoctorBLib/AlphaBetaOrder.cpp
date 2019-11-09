@@ -1,20 +1,22 @@
 #include "stdafx.h"
-#include "AlphaBeta.h"
+#include "AlphaBetaOrder.h"
 #include <iostream>
 #include <chrono>
 #include <algorithm>
 #include "MoveGenerator.h"
 #include "Evaluator.h"
+#include "TranspositionTable.h"
 
 using namespace std;
 
-AlphaBeta::AlphaBeta(const Position& base_position) : SearchAlgorithm(base_position) {
+AlphaBetaOrder::AlphaBetaOrder(const Position & base_position) : SearchAlgorithm(base_position) {
 }
 
-AlphaBeta::~AlphaBeta() {
+
+AlphaBetaOrder::~AlphaBetaOrder() {
 }
 
-Move AlphaBeta::GoDepth(uint64_t max_depth) {
+Move AlphaBetaOrder::GoDepth(uint64_t max_depth) {
 	node_count_ = 0Ui64;
 	auto start_time = chrono::system_clock::now();
 	Move best_move;
@@ -44,19 +46,20 @@ Move AlphaBeta::GoDepth(uint64_t max_depth) {
 
 	}
 
+	TranspositionTable::GetInstance().Clear(); //TODO TT maintenance (in thread)
 	return best_move;
 }
 
-Move AlphaBeta::GoTime(uint64_t max_duration) {
+Move AlphaBetaOrder::GoTime(uint64_t max_duration) {
 	node_count_ = 0Ui64;
 	auto start_time = chrono::system_clock::now();
 	Move best_move;
 	uint32_t iteration_depth = 1;
 	int duration = 0;
 	string pv_string;
-	
+
 	do {
-	//for (uint32_t iteration_depth = 1; iteration_depth <= max_depth; iteration_depth++) {
+		//for (uint32_t iteration_depth = 1; iteration_depth <= max_depth; iteration_depth++) {
 		vector<Move> pv(iteration_depth);
 		Score score;
 		Loop(iteration_depth, score, pv);
@@ -80,13 +83,16 @@ Move AlphaBeta::GoTime(uint64_t max_duration) {
 			break;
 
 		iteration_depth++;
-	} while ((duration * 20) < max_duration); //TODO implement game modes like CCRL 40/4
+	} while ((duration * 12) < max_duration); //TODO implement game modes like CCRL 40/4
 
+	TranspositionTable::GetInstance().Clear(); //TODO TT maintenance (in thread)
 	return best_move;
 }
 
-//use a loop (no recursion) to calculate the best move using the AlphaBeta algorithm
-void AlphaBeta::Loop(const uint64_t iteration_depth, Score& score, std::vector<Move>& pv) {
+//use a loop (no recursion) to calculate the best move using the AlphaBeta algorithm with move ordering
+void AlphaBetaOrder::Loop(const uint64_t iteration_depth, Score & score, std::vector<Move>& pv) {
+	static const int64_t START_SCORE[2] = { Score::WHITE_START_SCORE, Score::BLACK_START_SCORE };
+
 	vector<Position> depth_position(iteration_depth + 1);
 	vector<vector<Move>> depth_moves(iteration_depth, vector<Move>(128));
 	vector<int> depth_index(iteration_depth);
@@ -111,6 +117,8 @@ void AlphaBeta::Loop(const uint64_t iteration_depth, Score& score, std::vector<M
 		//compare scores
 		if (score_depth > depth) {
 			if (Evaluator::CompareScore(depth_position[depth].GetActiveColor(), depth_score[score_depth], depth_score[depth]) > 0) {
+				//store move in TT
+				TranspositionTable::GetInstance().AddEntry(depth_position[depth].GetHashKey(), TranspositionTable::Entry(depth_moves[depth][depth_index[depth]]));
 
 				//alphabeta-cutoff? (by picking this move, the score would be worse than the current move from the parent's perspective, so the parent would never pick it)
 				if (depth > 0) {
@@ -134,6 +142,7 @@ void AlphaBeta::Loop(const uint64_t iteration_depth, Score& score, std::vector<M
 			MoveGenerator move_gen(depth_position[depth]);
 			depth_moves[depth].clear();
 			move_gen.GenerateMoves(depth_moves[depth]);
+			OrderMoves(depth_position[depth], depth_moves[depth]);
 			
 			if (depth_moves[depth].size() == 0)
 				if (move_gen.IsCheck(depth_position[depth].GetActiveColor()))
@@ -168,4 +177,22 @@ void AlphaBeta::Loop(const uint64_t iteration_depth, Score& score, std::vector<M
 
 	pv.assign(depth_variation[0].begin(), depth_variation[0].end());
 	score.SetValue(depth_score[0].GetValue());
+}
+
+
+//if position is in TT, but best move at first position
+void AlphaBetaOrder::OrderMoves(const Position& position, std::vector<Move>& moves) {
+	if (moves.size() < 2)
+		return;
+
+	TranspositionTable::Entry entry;
+	if (TranspositionTable::GetInstance().FindEntry(position.GetHashKey(), entry)) {
+		std::vector<Move>::iterator pos = find(moves.begin(), moves.end(), entry.best_move);
+		if (pos != moves.begin() && pos != moves.end()) {
+			//swap first move and best move
+			Move best_move = *pos;
+			*pos = moves[0];
+			moves[0] = best_move;
+		}
+	}
 }

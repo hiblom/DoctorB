@@ -34,7 +34,7 @@ public:
 	bool GetPieceSquare(const Piece& piece, Square& square) const;
 	BitBoard GetBitBoard(const Piece& piece) const;
 	void RecalculateHashKey();
-	uint64_t GetHashKey();
+	uint64_t GetHashKey() const;
 private:
 	BitBoard bit_boards[12];
 	uint8_t active_color;

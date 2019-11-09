@@ -24,7 +24,6 @@ Move MiniMax::GoDepth(uint64_t max_depth) {
 	for (uint32_t iteration_depth = 1; iteration_depth <= max_depth; iteration_depth++) {
 		vector<Move> pv(iteration_depth);
 		Score score;
-		//Recurse(iteration_depth, base_position_, score, pv);
 		Loop(iteration_depth, score, pv);
 
 		auto end_time = chrono::system_clock::now();
@@ -32,22 +31,17 @@ Move MiniMax::GoDepth(uint64_t max_depth) {
 		int nps = elapsed_seconds.count() > 0 ? (int)(node_count_ / elapsed_seconds.count()) : 0;
 
 		cout << "info depth " << iteration_depth << " score " << score.ToString(base_position_.GetActiveColor(), iteration_depth) << " nodes " << node_count_ << " nps " << nps;
-		if (score.IsMate()) {
-			cout << pv_string << endl;
-			break;
-		}
 
 		pv_string = " pv";
 		for (Move move: pv) {
 			pv_string += " " + move.ToString();
 		}
-		//for (int i = iteration_depth; i > 0; i--) {
-		//	pv_string += " " + pv[i].ToString();
-		//}
 
 		cout << pv_string << endl;
 		best_move = pv[0];
-		//best_move = pv[iteration_depth];
+
+		if (score.IsMate())
+			break;
 	}
 
 	return best_move;
@@ -63,9 +57,9 @@ Move MiniMax::GoTime(uint64_t max_duration) {
 	string pv_string;
 
 	do {
-		vector<Move> pv(iteration_depth + 1);
+		vector<Move> pv(iteration_depth);
 		Score score;
-		Recurse(iteration_depth, base_position_, score, pv);
+		Loop(iteration_depth, score, pv);
 
 		auto end_time = chrono::system_clock::now();
 		chrono::duration<double> elapsed_seconds = end_time - start_time;
@@ -74,10 +68,6 @@ Move MiniMax::GoTime(uint64_t max_duration) {
 		int nps = elapsed_seconds.count() > 0 ? (int)(node_count_ / elapsed_seconds.count()) : 0;
 
 		cout << "info depth " << iteration_depth << " score " << score.ToString(base_position_.GetActiveColor(), iteration_depth) << " nodes " << node_count_ << " nps " << nps;
-		if (score.IsMate()) {
-			cout << pv_string << endl;
-			break;
-		}
 
 		pv_string = " pv";
 		for (int i = iteration_depth; i > 0; i--) {
@@ -86,6 +76,8 @@ Move MiniMax::GoTime(uint64_t max_duration) {
 		cout << pv_string << endl;
 
 		best_move = pv[iteration_depth];
+		if (score.IsMate())
+			break;
 
 		iteration_depth++;
 	} while ((duration * 30) < max_duration); //TODO implement game modes like CCRL 40/4
@@ -94,47 +86,8 @@ Move MiniMax::GoTime(uint64_t max_duration) {
 	return best_move;
 }
 
-//use recursion to calculate the best move using the MiniMax algorithm
-void MiniMax::Recurse(const uint32_t remaining_depth, const Position& position, Score& score, std::vector<Move>& pv) {
-	static const int64_t START_SCORE[2] = { Score::WHITE_START_SCORE, Score::BLACK_START_SCORE };
-
-	if (remaining_depth == 0) {
-		Evaluator eval(position);
-		eval.Evaluate(score);
-		return;
-	}
-
-	vector<Move> moves;
-	vector<Move> child_variant(remaining_depth + 1);
-	MoveGenerator move_generator(position);
-	move_generator.GenerateMoves(moves);
-	Score best_score;
-	Move best_move;
-
-	score.SetValue(START_SCORE[position.GetActiveColor()]);
-
-	for (Move move : moves) {
-		Position new_position(position);
-		new_position.ApplyMove(move);
-		node_count_++;
-		Score new_score;
-		Recurse(remaining_depth - 1, new_position, new_score, child_variant);
-		if (Evaluator::CompareScore(position.GetActiveColor(), new_score, score) > 0) {
-			score.SetValue(new_score.GetValue());
-			pv[remaining_depth] = move;
-			//variant array has the moves in reverse order; pv[1] is the last move; pv[remaining_depth] is the first move
-			//element at [0] is not used
-			//copy moves after the current move
-			if (remaining_depth > 1)
-				copy(child_variant.begin() + 1, child_variant.begin() + remaining_depth, pv.begin() + 1);
-		}
-	}
-}
-
 //use a loop (no recursion) to calculate the best move using the MiniMax algorithm
 void MiniMax::Loop(const uint32_t iteration_depth, Score& score, std::vector<Move>& pv) {
-	static const int64_t START_SCORE[2] = { Score::WHITE_START_SCORE, Score::BLACK_START_SCORE };
-
 	vector<Position> position_stack(iteration_depth + 1);
 	position_stack[0] = base_position_;
 
@@ -153,11 +106,8 @@ void MiniMax::Loop(const uint32_t iteration_depth, Score& score, std::vector<Mov
 		//evaluate
 		if (depth == iteration_depth) {
 			Evaluator eval(position_stack[depth]);
-
 			eval.Evaluate(score_stack[depth]);
-			//variation_stack[depth].clear();
 			score_depth = depth;
-
 			depth--;
 		}
 
@@ -176,7 +126,15 @@ void MiniMax::Loop(const uint32_t iteration_depth, Score& score, std::vector<Mov
 			MoveGenerator move_gen(position_stack[depth]);
 			moves_stack[depth].clear();
 			move_gen.GenerateMoves(moves_stack[depth]);
-			score_stack[depth] = Score(START_SCORE[position_stack[depth].GetActiveColor()]); //TODO stale-mate???
+
+			if (moves_stack[depth].size() == 0)
+				if (move_gen.IsCheck(position_stack[depth].GetActiveColor()))
+					score_stack[depth] = Score::GetMateScore(position_stack[depth].GetActiveColor(), depth); //mate
+				else
+					score_stack[depth] = Score(0Ui64); //stale-mate
+			else
+				score_stack[depth] = Score::GetStartScore(position_stack[depth].GetActiveColor());
+			
 			variation_stack[depth] = vector<Move>(iteration_depth - depth);
 			score_depth = depth;
 			index_stack[depth] = 0;

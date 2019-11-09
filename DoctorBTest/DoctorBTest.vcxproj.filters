@@ -56,5 +56,8 @@
     <ClCompile Include="TestSearcher.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TestTranspositionTable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

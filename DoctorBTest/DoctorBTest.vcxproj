@@ -172,6 +172,7 @@
     <ClCompile Include="TestPosition.cpp" />
     <ClCompile Include="TestSearcher.cpp" />
     <ClCompile Include="TestSquare.cpp" />
+    <ClCompile Include="TestTranspositionTable.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DoctorBLib\DoctorBLib.vcxproj">

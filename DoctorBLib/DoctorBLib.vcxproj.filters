@@ -78,6 +78,15 @@
     <ClInclude Include="Zobrist.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TranspositionTable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AlphaBetaOrder.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Options.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -129,6 +138,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Zobrist.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TranspositionTable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AlphaBetaOrder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Options.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

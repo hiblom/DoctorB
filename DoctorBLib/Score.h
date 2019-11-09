@@ -10,6 +10,8 @@ public:
 	static const int64_t BLACK_MATE_SCORE = -32768;
 	static const int64_t WHITE_MATE_SCORE = 32768;
 
+	static Score GetStartScore(uint8_t color);
+	static Score GetMateScore(uint8_t color_against, uint32_t depth);
 	Score();
 	Score(int64_t value);
 	int64_t GetValue();
