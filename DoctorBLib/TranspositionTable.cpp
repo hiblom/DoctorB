@@ -7,7 +7,7 @@ using namespace std;
 bool TranspositionTable::AddEntry(const uint64_t key, const Entry entry) {
 	auto it = map.find(key);
 	if (it == map.end()) {
-		if (map.size() == max_size)
+		if (map.size() >= max_size)
 			return false;
 
 		map.insert(pair<uint64_t, Entry>(key, entry));

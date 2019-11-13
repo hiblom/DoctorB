@@ -36,6 +36,8 @@ Move SearchAlgorithm::GoDepth(uint64_t max_depth) {
 
 	}
 
+	AfterSearch();
+
 	return best_move;
 }
 
@@ -71,7 +73,7 @@ Move SearchAlgorithm::GoTime(uint64_t max_duration) {
 			break;
 
 		iteration_depth++;
-	} while ((duration * 20) < max_duration); //TODO implement game modes like CCRL 40/4
+	} while ((duration * 15) < max_duration); //TODO implement game modes like CCRL 40/4
 
 	return best_move;
 }

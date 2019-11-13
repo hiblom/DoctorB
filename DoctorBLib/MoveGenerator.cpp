@@ -88,7 +88,7 @@ void MoveGenerator::GenerateKingMoves(std::vector<Move>& moves) const {
 
 	Square to_square;
 	while (to_board.ConsumeLowestSquare(to_square)) {
-		moves.push_back(Move(active_piece, from_square, to_square));
+		moves.push_back(Move(active_piece, from_square, to_square).SetCapture(IsCapture(to_square)));
 	}
 
 	//castling
@@ -120,7 +120,7 @@ void MoveGenerator::GenerateKnightMoves(std::vector<Move>& moves) const {
 
 		Square to_square;
 		while (to_board.ConsumeLowestSquare(to_square)) {
-			moves.push_back(Move(active_piece, from_square, to_square));
+			moves.push_back(Move(active_piece, from_square, to_square).SetCapture(IsCapture(to_square)));
 		}
 	}
 }
@@ -204,10 +204,10 @@ void MoveGenerator::GeneratePawnMoves(std::vector<Move>& moves) const {
 
 		while (to_board.ConsumeLowestSquare(to_square)) {
 			if (from_square.GetY() == PROMOTION_RANKS[active_color]) {
-				moves.push_back(Move(active_piece, from_square, to_square, Piece(Piece::TYPE_QUEEN, active_color)));
-				moves.push_back(Move(active_piece, from_square, to_square, Piece(Piece::TYPE_BISHOP, active_color)));
-				moves.push_back(Move(active_piece, from_square, to_square, Piece(Piece::TYPE_ROOK, active_color)));
-				moves.push_back(Move(active_piece, from_square, to_square, Piece(Piece::TYPE_KNIGHT, active_color)));
+				moves.push_back(Move(active_piece, from_square, to_square, Piece(Piece::TYPE_QUEEN, active_color)).SetCapture(true));
+				moves.push_back(Move(active_piece, from_square, to_square, Piece(Piece::TYPE_BISHOP, active_color)).SetCapture(true));
+				moves.push_back(Move(active_piece, from_square, to_square, Piece(Piece::TYPE_ROOK, active_color)).SetCapture(true));
+				moves.push_back(Move(active_piece, from_square, to_square, Piece(Piece::TYPE_KNIGHT, active_color)).SetCapture(true));
 			}
 			else {
 				Move move;
@@ -218,7 +218,7 @@ void MoveGenerator::GeneratePawnMoves(std::vector<Move>& moves) const {
 					move = Move(active_piece, from_square, to_square).SetEpCapture();
 				}
 				else {
-					move = Move(active_piece, from_square, to_square);
+					move = Move(active_piece, from_square, to_square).SetCapture(true);
 				}
 				moves.push_back(move);
 			}
@@ -319,6 +319,10 @@ bool MoveGenerator::SetMoveFlags(Move& move) {
 
 	//piece
 	move.SetPiece(piece);
+
+	//capture
+	Piece captured_piece;
+	move.SetCapture(position_.GetPiece(move.GetSquareTo(), captured_piece));
 
 	//castling
 	if (piece.GetType() == Piece::TYPE_KING) {
@@ -441,7 +445,7 @@ void MoveGenerator::GenerateRayMoves(const Square& from_square, const uint8_t di
 			move_board &= block_board; //check evasion
 			move_board &= pin_ray_board; //pinned movement
 			if (move_board.NotEmpty()) 
-				moves.push_back(Move(active_piece, from_square, nearest_square));
+				moves.push_back(Move(active_piece, from_square, nearest_square).SetCapture(true));
 			return;
 		}
 
@@ -458,7 +462,7 @@ void MoveGenerator::GenerateRayMoves(const Square& from_square, const uint8_t di
 
 	Square to_square;
 	while (move_board.ConsumeLowestSquare(to_square)) {
-		moves.push_back(Move(active_piece, from_square, to_square));
+		moves.push_back(Move(active_piece, from_square, to_square).SetCapture(IsCapture(to_square)));
 	}
 }
 
@@ -771,4 +775,8 @@ bool MoveGenerator::CheckEpDiscoveredCheck(const Square ep_square, const Square 
 	}
 
 	return false;
+}
+
+bool MoveGenerator::IsCapture(const Square to_square) const {
+	return (BitBoard().Set(to_square.GetValue()) & inactive_board).NotEmpty();
 }

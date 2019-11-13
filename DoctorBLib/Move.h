@@ -19,6 +19,8 @@ public:
 	bool IsPromotion() const;
 	bool IsEpCapture() const;
 	Move& SetEpCapture();
+	bool IsCapture() const;
+	Move& SetCapture(bool capture);
 	bool IsCastling() const;
 	Move& SetCastling();
 	bool IsDoublePush() const;
@@ -28,6 +30,7 @@ public:
 	void GetPiece(Piece& piece) const;
 
 private:
+	static const uint8_t MASK_CAPTURE = 0b00000001Ui8;
 	static const uint8_t MASK_PROMOTION = 0b00000010Ui8;
 	static const uint8_t MASK_EP_CAPTURE = 0b00000100Ui8;
 	static const uint8_t MASK_CASTLING = 0b00001000Ui8;

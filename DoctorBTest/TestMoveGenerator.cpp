@@ -206,8 +206,8 @@ public:
 
 		//assert
 		Assert::AreEqual(2Ui64, moves.size());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(11Ui8), Square(18Ui8))) != moves.end());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(11Ui8), Square(20Ui8))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(Square::D2), Square(Square::C3)).SetCapture(true)) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(Square::D2), Square(Square::E3)).SetCapture(true)) != moves.end());
 	}
 
 	TEST_METHOD(TestMoveGeneratorGenerateBlackPawnPushes) {
@@ -242,7 +242,7 @@ public:
 
 		//assert
 		Assert::AreEqual(1Ui64, moves.size());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(55Ui8), Square(46Ui8))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(55Ui8), Square(46Ui8)).SetCapture(true)) != moves.end());
 	}
 
 	TEST_METHOD(TestMoveGeneratorGeneratePromotions) {
@@ -259,15 +259,15 @@ public:
 
 		//assert
 		Assert::AreEqual(8Ui64, moves.size());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(53Ui8), Square(61Ui8), Piece(Piece::TYPE_QUEEN, Piece::COLOR_WHITE))) != moves.end());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(53Ui8), Square(61Ui8), Piece(Piece::TYPE_KNIGHT, Piece::COLOR_WHITE))) != moves.end());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(53Ui8), Square(61Ui8), Piece(Piece::TYPE_ROOK, Piece::COLOR_WHITE))) != moves.end());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(53Ui8), Square(61Ui8), Piece(Piece::TYPE_BISHOP, Piece::COLOR_WHITE))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(Square::F7), Square(Square::F8), Piece(Piece::TYPE_QUEEN, Piece::COLOR_WHITE))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(Square::F7), Square(Square::F8), Piece(Piece::TYPE_KNIGHT, Piece::COLOR_WHITE))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(Square::F7), Square(Square::F8), Piece(Piece::TYPE_ROOK, Piece::COLOR_WHITE))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(Square::F7), Square(Square::F8), Piece(Piece::TYPE_BISHOP, Piece::COLOR_WHITE))) != moves.end());
 
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(53Ui8), Square(60Ui8), Piece(Piece::TYPE_QUEEN, Piece::COLOR_WHITE))) != moves.end());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(53Ui8), Square(60Ui8), Piece(Piece::TYPE_KNIGHT, Piece::COLOR_WHITE))) != moves.end());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(53Ui8), Square(60Ui8), Piece(Piece::TYPE_ROOK, Piece::COLOR_WHITE))) != moves.end());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(53Ui8), Square(60Ui8), Piece(Piece::TYPE_BISHOP, Piece::COLOR_WHITE))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(Square::F7), Square(Square::E8), Piece(Piece::TYPE_QUEEN, Piece::COLOR_WHITE)).SetCapture(true)) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(Square::F7), Square(Square::E8), Piece(Piece::TYPE_KNIGHT, Piece::COLOR_WHITE)).SetCapture(true)) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(Square::F7), Square(Square::E8), Piece(Piece::TYPE_ROOK, Piece::COLOR_WHITE)).SetCapture(true)) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(Square::F7), Square(Square::E8), Piece(Piece::TYPE_BISHOP, Piece::COLOR_WHITE)).SetCapture(true)) != moves.end());
 	}
 
 	TEST_METHOD(TestMoveGeneratorGenerateEpCapture) {
@@ -333,10 +333,10 @@ public:
 
 		//assert
 		Assert::AreEqual(4Ui64, moves.size());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(25Ui8), Square(24Ui8))) != moves.end());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(25Ui8), Square(33Ui8))) != moves.end());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(25Ui8), Square(41Ui8))) != moves.end());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(25Ui8), Square(49Ui8))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(Square::B4), Square(Square::A4))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(Square::B4), Square(Square::B5))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(Square::B4), Square(Square::B6))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(Square::B4), Square(Square::B7)).SetCapture(true)) != moves.end());
 	}
 
 	TEST_METHOD(TestMoveGeneratorGenerateBishopMoves) {
@@ -379,9 +379,9 @@ public:
 
 		//assert
 		Assert::AreEqual(3Ui64, moves.size());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(52Ui8), Square(45Ui8))) != moves.end());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(52Ui8), Square(38Ui8))) != moves.end());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(52Ui8), Square(61Ui8))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(Square::E7), Square(Square::F8))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(Square::E7), Square(Square::F6))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(Square::E7), Square(Square::G5)).SetCapture(true)) != moves.end());
 	}
 
 	TEST_METHOD(TestMoveGeneratorGenerateQueenMoves) {
@@ -491,7 +491,7 @@ public:
 		Assert::IsTrue(find(moves.begin(), moves.end(), Move(horse, Square(Square::G6), Square(Square::E7))) != moves.end());
 
 		//capture rook by knight
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(horse, Square(Square::G6), Square(Square::E5))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(horse, Square(Square::G6), Square(Square::E5)).SetCapture(true)) != moves.end());
 	}
 
 	//8/8/8/2k5/3Pp3/8/8/4K3 w - - 0 2 
@@ -537,7 +537,7 @@ public:
 		Assert::IsTrue(find(moves.begin(), moves.end(), Move(tower, Square(Square::E7), Square(Square::E5))) != moves.end());
 		Assert::IsTrue(find(moves.begin(), moves.end(), Move(tower, Square(Square::E7), Square(Square::E4))) != moves.end());
 		Assert::IsTrue(find(moves.begin(), moves.end(), Move(tower, Square(Square::E7), Square(Square::E3))) != moves.end());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(tower, Square(Square::E7), Square(Square::E2))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(tower, Square(Square::E7), Square(Square::E2)).SetCapture(true)) != moves.end());
 	}
 
 	TEST_METHOD(TestMoveGeneratorPinnedPiece2) {
@@ -591,7 +591,7 @@ public:
 		//assert
 		//only one capture available
 		Assert::AreEqual(1Ui64, moves.size());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(horse, Square(Square::F3), Square(Square::E5))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(horse, Square(Square::F3), Square(Square::E5)).SetCapture(true)) != moves.end());
 
 	}
 
@@ -603,7 +603,7 @@ public:
 		Parser::ParseFen(tokens, pos);
 		MoveGenerator moveGen = MoveGenerator(pos, true);
 		Move actual_capture;
-		Move expected_capture = Move(Piece(Piece::TYPE_PAWN, Piece::COLOR_BLACK), Square(Square::E6), Square(Square::F5));
+		Move expected_capture = Move(Piece(Piece::TYPE_PAWN, Piece::COLOR_BLACK), Square(Square::E6), Square(Square::F5)).SetCapture(true);
 
 		//act
 		bool result = moveGen.GetLvaCapture(Square(Square::F5), actual_capture);
@@ -622,7 +622,7 @@ public:
 		Parser::ParseFen(tokens, pos);
 		MoveGenerator moveGen = MoveGenerator(pos, true);
 		Move actual_capture;
-		Move expected_capture = Move(Piece(Piece::TYPE_ROOK, Piece::COLOR_WHITE), Square(Square::A5), Square(Square::F5));
+		Move expected_capture = Move(Piece(Piece::TYPE_ROOK, Piece::COLOR_WHITE), Square(Square::A5), Square(Square::F5)).SetCapture(true);
 
 		//act
 		bool result = moveGen.GetLvaCapture(Square(Square::F5), actual_capture);

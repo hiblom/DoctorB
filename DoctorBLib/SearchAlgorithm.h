@@ -13,4 +13,5 @@ protected:
 	const Position& base_position_;
 	uint64_t node_count_;
 	virtual void Loop(const uint64_t iteration_depth, Score& score, std::vector<Move>& pv) = 0;
+	virtual void AfterSearch() {};
 };

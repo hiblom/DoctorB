@@ -79,6 +79,16 @@ bool Move::IsEpCapture() const {
 
 Move& Move::SetEpCapture() {
 	status_bits_ |= MASK_EP_CAPTURE;
+	status_bits_ |= MASK_CAPTURE;
+	return *this;
+}
+
+bool Move::IsCapture() const {
+	return status_bits_ & MASK_CAPTURE;
+}
+
+Move & Move::SetCapture(bool capture) {
+	status_bits_ = (status_bits_ & ~MASK_CAPTURE) | (capture * MASK_CAPTURE);
 	return *this;
 }
 

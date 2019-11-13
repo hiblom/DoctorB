@@ -10,5 +10,6 @@ private:
 	void Loop(const uint64_t iteration_depth, Score& score, std::vector<Move>& pv);
 	void OrderMoves(const Position& position, std::vector<Move>& moves);
 	void See(const Position & position, const Square & square, Score & score);
+	void AfterSearch();
 };
 

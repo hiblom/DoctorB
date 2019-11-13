@@ -31,13 +31,9 @@ void AlphaBetaQuiesce::Loop(const uint64_t iteration_depth, Score& score, std::v
 		//evaluate
 		if (depth == iteration_depth) {
 			//go to See only when it was a capture
-			//for now we check board at depth -1 to see if there was a piece at the square
-			//TODO put capture info in move
-
-			Square square = depth_moves[depth - 1][depth_index[depth - 1]].GetSquareTo(); //get last square moved to
-			Piece dummy_piece;
-			if (depth_position[depth - 1].GetPiece(square, dummy_piece)) {
-				See(depth_position[depth], square, depth_score[depth]);
+			Move last_move = depth_moves[depth - 1][depth_index[depth - 1]];
+			if (last_move.IsCapture()) {
+				See(depth_position[depth], last_move.GetSquareTo(), depth_score[depth]);
 			}
 			else {
 				Evaluator eval(depth_position[depth]);
