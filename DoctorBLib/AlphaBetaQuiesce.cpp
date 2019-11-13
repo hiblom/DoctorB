@@ -1,25 +1,20 @@
 #include "stdafx.h"
-#include "AlphaBetaOrder.h"
+#include "AlphaBetaQuiesce.h"
 #include <iostream>
 #include <chrono>
 #include <algorithm>
 #include "MoveGenerator.h"
 #include "Evaluator.h"
-#include "TranspositionTable.h"
 
 using namespace std;
 
-AlphaBetaOrder::AlphaBetaOrder(const Position & base_position) : SearchAlgorithm(base_position) {
+AlphaBetaQuiesce::AlphaBetaQuiesce(const Position& base_position) : SearchAlgorithm(base_position) {
 }
 
-
-AlphaBetaOrder::~AlphaBetaOrder() {
+AlphaBetaQuiesce::~AlphaBetaQuiesce() {
 }
 
-//use a loop (no recursion) to calculate the best move using the AlphaBeta algorithm with move ordering
-void AlphaBetaOrder::Loop(const uint64_t iteration_depth, Score& score, std::vector<Move>& pv) {
-	static const int64_t START_SCORE[2] = { Score::WHITE_START_SCORE, Score::BLACK_START_SCORE };
-
+void AlphaBetaQuiesce::Loop(const uint64_t iteration_depth, Score& score, std::vector<Move>& pv) {
 	vector<Position> depth_position(iteration_depth + 1);
 	vector<vector<Move>> depth_moves(iteration_depth, vector<Move>(128));
 	vector<int> depth_index(iteration_depth);
@@ -55,8 +50,6 @@ void AlphaBetaOrder::Loop(const uint64_t iteration_depth, Score& score, std::vec
 		//compare scores
 		if (score_depth > depth) {
 			if (Evaluator::CompareScore(depth_position[depth].GetActiveColor(), depth_score[score_depth], depth_score[depth]) > 0) {
-				//store move in TT
-				TranspositionTable::GetInstance().AddEntry(depth_position[depth].GetHashKey(), TranspositionTable::Entry(depth_moves[depth][depth_index[depth]]));
 
 				//alphabeta-cutoff? (by picking this move, the score would be worse than the current move from the parent's perspective, so the parent would never pick it)
 				if (depth > 0) {
@@ -80,8 +73,7 @@ void AlphaBetaOrder::Loop(const uint64_t iteration_depth, Score& score, std::vec
 			MoveGenerator move_gen(depth_position[depth]);
 			depth_moves[depth].clear();
 			move_gen.GenerateMoves(depth_moves[depth]);
-			OrderMoves(depth_position[depth], depth_moves[depth]);
-			
+
 			if (depth_moves[depth].size() == 0)
 				if (move_gen.IsCheck(depth_position[depth].GetActiveColor()))
 					depth_score[depth] = Score::GetMateScore(depth_position[depth].GetActiveColor(), depth); //mate
@@ -118,29 +110,12 @@ void AlphaBetaOrder::Loop(const uint64_t iteration_depth, Score& score, std::vec
 }
 
 
-//if position is in TT, but best move at first position
-void AlphaBetaOrder::OrderMoves(const Position& position, std::vector<Move>& moves) {
-	if (moves.size() < 2)
-		return;
-
-	TranspositionTable::Entry entry;
-	if (TranspositionTable::GetInstance().FindEntry(position.GetHashKey(), entry)) {
-		std::vector<Move>::iterator pos = find(moves.begin(), moves.end(), entry.best_move);
-		if (pos != moves.begin() && pos != moves.end()) {
-			//swap first move and best move
-			Move best_move = *pos;
-			*pos = moves[0];
-			moves[0] = best_move;
-		}
-	}
-}
-
 //for now, the quiescence routine is replaced by a static exchange evaluation
 //this means that we only evaluate captures on the square that was last captured, in order
 //of least valuable attacker to most valuable attacker
 //until we run out of captures on this square
 //then we take the evaluation of the remaining position
-void AlphaBetaOrder::See(const Position& position, const Square& square, Score& score) {
+void AlphaBetaQuiesce::See(const Position& position, const Square& square, Score& score) {
 	Move lva_capture;
 	Position current_position(position);
 	while (true) {
@@ -152,3 +127,86 @@ void AlphaBetaOrder::See(const Position& position, const Square& square, Score& 
 	Evaluator eval(current_position);
 	eval.Evaluate(score);
 }
+
+
+//keep doing captures until the board reaches a "quiet" state, then return the score
+//TODO weave this into the regular loop (?)
+/*
+void AlphaBetaQuiesce::Quiesce(const Position& quiesce_position, Score& score) {
+	//we are not interested in variants here
+
+	quiesce_depth_position[0] = quiesce_position;
+
+	int score_depth = 0;
+	int moves_depth = -1;
+	int depth = 0;
+	while (depth >= 0) {
+		//when we reach max depth for quiesce, we evaluate anyway
+		if (depth == MAX_QUIESCE_DEPTH) {
+			Evaluator eval(quiesce_depth_position[depth]);
+			eval.Evaluate(quiesce_depth_score[depth]);
+			score_depth = depth;
+			depth--;
+		}
+
+		//compare scores
+		if (score_depth > depth) {
+			if (Evaluator::CompareScore(quiesce_depth_position[depth].GetActiveColor(), quiesce_depth_score[score_depth], quiesce_depth_score[depth]) > 0) {
+
+				//alphabeta-cutoff? (by picking this move, the score would be worse than the current move from the parent's perspective, so the parent would never pick it)
+				if (depth > 0) {
+					if (Evaluator::CompareScore(quiesce_depth_position[depth - 1].GetActiveColor(), quiesce_depth_score[score_depth], quiesce_depth_score[depth - 1]) < 0) {
+						score_depth -= 2;
+						depth--;
+						moves_depth--;
+						continue;
+					}
+				}
+
+				quiesce_depth_score[depth] = quiesce_depth_score[score_depth];
+			}
+			score_depth--;
+		}
+
+		//generate captures only...
+		//TODO also generate promotions, checks
+		if (moves_depth < depth) {
+			MoveGenerator move_gen(quiesce_depth_position[depth], true);
+			quiesce_depth_captures[depth].clear();
+			move_gen.GenerateMoves(quiesce_depth_captures[depth]);
+
+			if (quiesce_depth_captures[depth].size() == 0) {
+				//we have run out of captures. evaluate
+				Evaluator eval(quiesce_depth_position[depth]);
+				eval.Evaluate(quiesce_depth_score[depth]);
+				score_depth = depth;
+				depth--;
+				continue;
+			}
+
+			quiesce_depth_score[depth] = Score::GetStartScore(quiesce_depth_position[depth].GetActiveColor());
+			quiesce_depth_index[depth] = 0;
+			moves_depth = depth;
+			score_depth = depth;
+		}
+		else {
+			quiesce_depth_index[depth]++;
+		}
+
+		//reached end of moves
+		if (quiesce_depth_index[depth] >= quiesce_depth_captures[depth].size()) {
+			moves_depth--;
+			depth--;
+			continue;
+		}
+
+		//apply move
+		Position new_position = Position(quiesce_depth_position[depth]);
+		new_position.ApplyMove(quiesce_depth_captures[depth][quiesce_depth_index[depth]]);
+		node_count_++;
+		quiesce_depth_position[++depth] = new_position;
+	}
+
+	score.SetValue(quiesce_depth_score[0].GetValue());
+}
+*/

@@ -575,5 +575,65 @@ public:
 		Assert::IsTrue(find(moves.begin(), moves.end(), Move(pawn, Square(Square::F4), Square(Square::E3)).SetEpCapture()) == moves.end());
 	}
 
+	TEST_METHOD(TestMoveGeneratorCapturesOnly) {
+		//rnbqkb1r/pppp1ppp/5n2/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 2 3 
+		//arrange
+		vector<string> tokens = { "rnbqkb1r/pppp1ppp/5n2/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R", "w", "KQkq" };
+		Position pos;
+		Parser::ParseFen(tokens, pos);
+		MoveGenerator moveGen = MoveGenerator(pos, true);
+		vector<Move> moves;
+		Piece horse = Piece(Piece::TYPE_KNIGHT, Piece::COLOR_WHITE);
+
+		//act
+		moveGen.GenerateMoves(moves);
+
+		//assert
+		//only one capture available
+		Assert::AreEqual(1Ui64, moves.size());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(horse, Square(Square::F3), Square(Square::E5))) != moves.end());
+
+	}
+
+	TEST_METHOD(TestMoveGeneratorLvaCapture) {
+		//4kq2/6n1/4p3/5Q2/8/6N1/8/4K3 w
+		//arrange
+		vector<string> tokens = { "4kq2/6n1/4p3/5Q2/8/6N1/8/4K3", "b" };
+		Position pos;
+		Parser::ParseFen(tokens, pos);
+		MoveGenerator moveGen = MoveGenerator(pos, true);
+		Move actual_capture;
+		Move expected_capture = Move(Piece(Piece::TYPE_PAWN, Piece::COLOR_BLACK), Square(Square::E6), Square(Square::F5));
+
+		//act
+		bool result = moveGen.GetLvaCapture(Square(Square::F5), actual_capture);
+
+		//assert
+		Assert::IsTrue(result);
+		Assert::AreEqual(expected_capture, actual_capture);
+
+	}
+
+	TEST_METHOD(TestMoveGeneratorLvaCapturePinned) {
+		//white knight is pinned
+		//arrange
+		vector<string> tokens = { "4k3/4q1n1/8/R4p2/8/4N3/8/4K3", "w" };
+		Position pos;
+		Parser::ParseFen(tokens, pos);
+		MoveGenerator moveGen = MoveGenerator(pos, true);
+		Move actual_capture;
+		Move expected_capture = Move(Piece(Piece::TYPE_ROOK, Piece::COLOR_WHITE), Square(Square::A5), Square(Square::F5));
+
+		//act
+		bool result = moveGen.GetLvaCapture(Square(Square::F5), actual_capture);
+
+		//assert
+		Assert::IsTrue(result);
+		Assert::AreEqual(expected_capture, actual_capture);
+
+	}
+
+
+
 	};
 }

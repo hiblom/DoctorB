@@ -6,7 +6,8 @@
 
 class MoveGenerator {
 public:
-	MoveGenerator(const Position& generator_position);
+	MoveGenerator(const Position& position);
+	MoveGenerator(const Position& position, const bool only_captures);
 	~MoveGenerator();
 	void GenerateMoves(std::vector<Move>& moves);
 	void GenerateKingMoves(std::vector<Move>& moves) const;
@@ -21,8 +22,10 @@ public:
 	void GenerateCheckInfo();
 	uint8_t GetCheckerCount();
 	BitBoard GetBlockBoard();
+	bool GetLvaCapture(const Square to_square, Move& move) const;
 private:
-	const Position& position;
+	const Position& position_;
+	const bool only_captures_;
 	BitBoard active_board;
 	BitBoard inactive_board;
 	BitBoard combined_board;
@@ -32,8 +35,10 @@ private:
 	uint8_t checker_count;
 	BitBoard block_board;
 	BitBoard pinned_board;
+	BitBoard captures_board;
 	std::map<uint8_t, BitBoard> pin_rays;
 
+	void Initialize();
 	void GenerateRayMoves(const Square& from_square, const uint8_t dir, bool(BitBoard::*find_nearest_square)(Square&) const, const Piece active_piece, const BitBoard pin_ray_board, std::vector<Move>& moves) const;
 	bool IsSquareAttacked(const Square& square, const uint8_t attacking_color) const;
 	BitBoard GetCheckRayBoard(const Square king_square, const uint8_t dir, bool(BitBoard::* find_nearest_square)(Square &) const, const uint8_t rook_or_bishop_type) const;

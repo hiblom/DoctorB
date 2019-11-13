@@ -10,6 +10,7 @@
 #include "Parser.h"
 #include "Perft.h"
 #include "Searcher.h"
+#include "Evaluator.h"
 
 using namespace std;
 using namespace boost::algorithm;
@@ -185,5 +186,11 @@ void Uci::executeD() {
 		cout << "No position set";
 	}
 	cout << position.value().ToString();
+	
+	Evaluator eval(position.value());
+	Score score;
+	eval.Evaluate(score);
+	cout << "Evaluation: " << score.ToString(Piece::COLOR_WHITE, 1) << endl;
+
 }
 

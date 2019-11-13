@@ -6,29 +6,46 @@
 
 using namespace std;
 
-MoveGenerator::MoveGenerator(const Position& generator_position) : position(generator_position) {
-	active_color = position.GetActiveColor();
-	inactive_color = position.GetActiveColor() ^ 1Ui8;
+MoveGenerator::MoveGenerator(const Position& position) : position_(position), only_captures_(false) {
+	Initialize();
+	captures_board = BitBoard(~0Ui64); //only captures = false, so all squares are available to move to
+}
+
+MoveGenerator::MoveGenerator(const Position & position, const bool only_captures): position_(position), only_captures_(only_captures) {
+	Initialize();
+	if (only_captures) {
+		captures_board = inactive_board; //we can only move to squres with opponent's piece
+	}
+	else
+		captures_board = BitBoard(~0Ui64); //only captures = false, so all squares are available to move to
+}
+
+MoveGenerator::~MoveGenerator() {
+}
+
+void MoveGenerator::Initialize() {
+	active_color = position_.GetActiveColor();
+	inactive_color = position_.GetActiveColor() ^ 1Ui8;
 	checker_count = 0;
 
 	//previous loop unrolled to lessen the number of loops
-	active_board = position.GetBitBoard(Piece(Piece::TYPE_PAWN, active_color));
-	inactive_board = position.GetBitBoard(Piece(Piece::TYPE_PAWN, inactive_color));
+	active_board = position_.GetBitBoard(Piece(Piece::TYPE_PAWN, active_color));
+	inactive_board = position_.GetBitBoard(Piece(Piece::TYPE_PAWN, inactive_color));
 
-	active_board |= position.GetBitBoard(Piece(Piece::TYPE_KING, active_color));
-	inactive_board |= position.GetBitBoard(Piece(Piece::TYPE_KING, inactive_color));
+	active_board |= position_.GetBitBoard(Piece(Piece::TYPE_KING, active_color));
+	inactive_board |= position_.GetBitBoard(Piece(Piece::TYPE_KING, inactive_color));
 
-	active_board |= position.GetBitBoard(Piece(Piece::TYPE_QUEEN, active_color));
-	inactive_board |= position.GetBitBoard(Piece(Piece::TYPE_QUEEN, inactive_color));
+	active_board |= position_.GetBitBoard(Piece(Piece::TYPE_QUEEN, active_color));
+	inactive_board |= position_.GetBitBoard(Piece(Piece::TYPE_QUEEN, inactive_color));
 
-	active_board |= position.GetBitBoard(Piece(Piece::TYPE_ROOK, active_color));
-	inactive_board |= position.GetBitBoard(Piece(Piece::TYPE_ROOK, inactive_color));
+	active_board |= position_.GetBitBoard(Piece(Piece::TYPE_ROOK, active_color));
+	inactive_board |= position_.GetBitBoard(Piece(Piece::TYPE_ROOK, inactive_color));
 
-	active_board |= position.GetBitBoard(Piece(Piece::TYPE_BISHOP, active_color));
-	inactive_board |= position.GetBitBoard(Piece(Piece::TYPE_BISHOP, inactive_color));
+	active_board |= position_.GetBitBoard(Piece(Piece::TYPE_BISHOP, active_color));
+	inactive_board |= position_.GetBitBoard(Piece(Piece::TYPE_BISHOP, inactive_color));
 
-	active_board |= position.GetBitBoard(Piece(Piece::TYPE_KNIGHT, active_color));
-	inactive_board |= position.GetBitBoard(Piece(Piece::TYPE_KNIGHT, inactive_color));
+	active_board |= position_.GetBitBoard(Piece(Piece::TYPE_KNIGHT, active_color));
+	inactive_board |= position_.GetBitBoard(Piece(Piece::TYPE_KNIGHT, inactive_color));
 
 	combined_board = active_board | inactive_board;
 
@@ -36,9 +53,6 @@ MoveGenerator::MoveGenerator(const Position& generator_position) : position(gene
 	GenerateDangerBoard(); //mark the squares that are not accessible for the king
 	GenerateCheckInfo(); //count the number of checkers and generate block board
 	GeneratePinInfo(); //mark pinned pieces and pin rays along which they can move
-}
-
-MoveGenerator::~MoveGenerator() {
 }
 
 void MoveGenerator::GenerateMoves(vector<Move>& moves) {
@@ -64,12 +78,13 @@ void MoveGenerator::GenerateKingMoves(std::vector<Move>& moves) const {
 	Piece active_piece = Piece(Piece::TYPE_KING, active_color);
 	Square from_square;
 
-	if (!position.GetPieceSquare(active_piece, from_square))
+	if (!position_.GetPieceSquare(active_piece, from_square))
 		return;
 
 	BitBoard to_board = MoveBoard::GetInstance().GetKingMoves(from_square);
 	to_board &= ~active_board; //exclude own pieces
 	to_board &= ~danger_board; //exclude danger board
+	to_board &= captures_board; //captures only - mode
 
 	Square to_square;
 	while (to_board.ConsumeLowestSquare(to_square)) {
@@ -77,7 +92,7 @@ void MoveGenerator::GenerateKingMoves(std::vector<Move>& moves) const {
 	}
 
 	//castling
-	if (checker_count == 0) {
+	if (checker_count == 0 && !only_captures_) {
 		if (CanCastle(CASTLING_KINGSIDE[active_color]))
 			moves.push_back(Move(active_piece, Square(KING_SQUARE[active_color]), Square(ROOK_SQUARE_KINGSIDE[active_color])).SetCastling());
 
@@ -88,7 +103,7 @@ void MoveGenerator::GenerateKingMoves(std::vector<Move>& moves) const {
 
 void MoveGenerator::GenerateKnightMoves(std::vector<Move>& moves) const {
 	Piece active_piece = Piece(Piece::TYPE_KNIGHT, active_color);
-	BitBoard pieces_board = position.GetBitBoard(active_piece);
+	BitBoard pieces_board = position_.GetBitBoard(active_piece);
 	BitBoard piece_board;
 
 	Square from_square;
@@ -101,6 +116,7 @@ void MoveGenerator::GenerateKnightMoves(std::vector<Move>& moves) const {
 		BitBoard to_board = MoveBoard::GetInstance().GetKnightMoves(from_square);
 		to_board &= ~active_board; //exclude own pieces
 		to_board &= block_board; //check evasion
+		to_board &= captures_board; //captures only - mode
 
 		Square to_square;
 		while (to_board.ConsumeLowestSquare(to_square)) {
@@ -116,7 +132,7 @@ void MoveGenerator::GeneratePawnMoves(std::vector<Move>& moves) const {
 
 	const Piece active_piece = Piece(Piece::TYPE_PAWN, active_color);
 
-	BitBoard pieces_board = position.GetBitBoard(active_piece);
+	BitBoard pieces_board = position_.GetBitBoard(active_piece);
 	BitBoard piece_board;
 	BitBoard pin_ray_board;
 	BitBoard to_board, to_board_2;
@@ -132,34 +148,36 @@ void MoveGenerator::GeneratePawnMoves(std::vector<Move>& moves) const {
 			pin_ray_board = BitBoard(~0Ui64);
 		}
 
-		//single push
-		to_board = MoveBoard::GetInstance().GetPawnPushes(from_square, active_color);
-		to_board &= ~combined_board; //exclude all pieces: only silent moves
-		to_board &= pin_ray_board; //pinned movement
-		double_push_board = BitBoard(to_board); //must measure before check evasion
-		to_board &= block_board; //check evasion
+		if (!only_captures_) {
+			//single push
+			to_board = MoveBoard::GetInstance().GetPawnPushes(from_square, active_color);
+			to_board &= ~combined_board; //exclude all pieces: only silent moves
+			to_board &= pin_ray_board; //pinned movement
+			double_push_board = BitBoard(to_board); //must measure before check evasion
+			to_board &= block_board; //check evasion
 
-		if (to_board.GetLowestSquare(to_square)) {
-			if (from_square.GetY() == PROMOTION_RANKS[active_color]) {
-				moves.push_back(Move(active_piece, from_square, to_square, Piece(Piece::TYPE_QUEEN, active_color)));
-				moves.push_back(Move(active_piece, from_square, to_square, Piece(Piece::TYPE_BISHOP, active_color)));
-				moves.push_back(Move(active_piece, from_square, to_square, Piece(Piece::TYPE_ROOK, active_color)));
-				moves.push_back(Move(active_piece, from_square, to_square, Piece(Piece::TYPE_KNIGHT, active_color)));
+			if (to_board.GetLowestSquare(to_square)) {
+				if (from_square.GetY() == PROMOTION_RANKS[active_color]) {
+					moves.push_back(Move(active_piece, from_square, to_square, Piece(Piece::TYPE_QUEEN, active_color)));
+					moves.push_back(Move(active_piece, from_square, to_square, Piece(Piece::TYPE_BISHOP, active_color)));
+					moves.push_back(Move(active_piece, from_square, to_square, Piece(Piece::TYPE_ROOK, active_color)));
+					moves.push_back(Move(active_piece, from_square, to_square, Piece(Piece::TYPE_KNIGHT, active_color)));
+				}
+				else {
+					moves.push_back(Move(active_piece, from_square, to_square));
+				}
 			}
-			else {
-				moves.push_back(Move(active_piece, from_square, to_square));
-			}
-		}
 
-		//double push
-		if (double_push_board.GetLowestSquare(to_square) && from_square.GetY() == DOUBLE_PUSH_RANKS[active_color]) {
-			to_board_2 = MoveBoard::GetInstance().GetPawnPushes(to_square, active_color);
-			to_board_2 &= ~combined_board; //exclude all pieces: only silent moves
-			to_board_2 &= block_board; //check evasion
-			to_board_2 &= pin_ray_board; //pinned movement
+			//double push
+			if (double_push_board.GetLowestSquare(to_square) && from_square.GetY() == DOUBLE_PUSH_RANKS[active_color]) {
+				to_board_2 = MoveBoard::GetInstance().GetPawnPushes(to_square, active_color);
+				to_board_2 &= ~combined_board; //exclude all pieces: only silent moves
+				to_board_2 &= block_board; //check evasion
+				to_board_2 &= pin_ray_board; //pinned movement
 
-			if (to_board_2.GetLowestSquare(to_square)) {
-				moves.push_back(Move(active_piece, from_square, to_square).SetDoublePush());
+				if (to_board_2.GetLowestSquare(to_square)) {
+					moves.push_back(Move(active_piece, from_square, to_square).SetDoublePush());
+				}
 			}
 		}
 
@@ -171,12 +189,12 @@ void MoveGenerator::GeneratePawnMoves(std::vector<Move>& moves) const {
 
 		//add EP square to list of targets for pawn captures
 		Square ep_square;
-		bool has_ep_square = position.GetEpSquare(ep_square);
+		bool has_ep_square = position_.GetEpSquare(ep_square);
 		if (has_ep_square) {
 			BitBoard ep_board = BitBoard().Set(ep_square.GetValue());
 			pawn_targets |= ep_board;
 			//if enemy pawn is a checker, and is capturable by ep, add ep square to pawn_block_board
-			BitBoard checking_pawns = block_board & position.GetBitBoard(Piece(Piece::TYPE_PAWN, inactive_color));
+			BitBoard checking_pawns = block_board & position_.GetBitBoard(Piece(Piece::TYPE_PAWN, inactive_color));
 			pawn_block_board |= (checking_pawns.*pawn_forward)() & ep_board;
 		}
 
@@ -209,9 +227,9 @@ void MoveGenerator::GeneratePawnMoves(std::vector<Move>& moves) const {
 }
 
 void MoveGenerator::GenerateRookMoves(std::vector<Move>& moves) const {
-	const Piece piece = Piece(Piece::TYPE_ROOK, position.GetActiveColor());
+	const Piece piece = Piece(Piece::TYPE_ROOK, position_.GetActiveColor());
 
-	BitBoard pieces_board = position.GetBitBoard(piece);
+	BitBoard pieces_board = position_.GetBitBoard(piece);
 	BitBoard piece_board;
 	BitBoard pin_ray_board;
 	Square piece_square;
@@ -233,9 +251,9 @@ void MoveGenerator::GenerateRookMoves(std::vector<Move>& moves) const {
 }
 
 void MoveGenerator::GenerateBishopMoves(std::vector<Move>& moves) const {
-	const Piece piece = Piece(Piece::TYPE_BISHOP, position.GetActiveColor());
+	const Piece piece = Piece(Piece::TYPE_BISHOP, position_.GetActiveColor());
 
-	BitBoard pieces_board = position.GetBitBoard(piece);
+	BitBoard pieces_board = position_.GetBitBoard(piece);
 	BitBoard piece_board;
 	BitBoard pin_ray_board;
 	Square piece_square;
@@ -256,9 +274,9 @@ void MoveGenerator::GenerateBishopMoves(std::vector<Move>& moves) const {
 }
 
 void MoveGenerator::GenerateQueenMoves(std::vector<Move>& moves) const {
-	const Piece piece = Piece(Piece::TYPE_QUEEN, position.GetActiveColor());
+	const Piece piece = Piece(Piece::TYPE_QUEEN, position_.GetActiveColor());
 
-	BitBoard pieces_board = position.GetBitBoard(piece);
+	BitBoard pieces_board = position_.GetBitBoard(piece);
 	BitBoard piece_board;
 	BitBoard pin_ray_board;
 	Square piece_square;
@@ -284,7 +302,7 @@ void MoveGenerator::GenerateQueenMoves(std::vector<Move>& moves) const {
 }
 
 bool MoveGenerator::IsCheck(uint8_t color) {
-	BitBoard king_board = position.GetBitBoard(Piece(Piece::TYPE_KING, color));
+	BitBoard king_board = position_.GetBitBoard(Piece(Piece::TYPE_KING, color));
 	Square square;
 	if (king_board.GetLowestSquare(square)) {
 		return IsSquareAttacked(square, color ^ 1Ui8);
@@ -296,7 +314,7 @@ bool MoveGenerator::IsCheck(uint8_t color) {
 
 bool MoveGenerator::SetMoveFlags(Move& move) {
 	Piece piece;
-	if (!position.GetPiece(move.GetSquareFrom(), piece))
+	if (!position_.GetPiece(move.GetSquareFrom(), piece))
 		return false;
 
 	//piece
@@ -313,7 +331,7 @@ bool MoveGenerator::SetMoveFlags(Move& move) {
 	else if (piece.GetType() == Piece::TYPE_PAWN) {
 		//ep capture
 		Square ep_square;
-		if (position.GetEpSquare(ep_square)) {
+		if (position_.GetEpSquare(ep_square)) {
 			if (ep_square == move.GetSquareTo()) {
 				move.SetEpCapture();
 				return true;
@@ -340,6 +358,73 @@ BitBoard MoveGenerator::GetBlockBoard() {
 	return block_board;
 }
 
+//get capture by least valuable attacker by color on a certain square
+bool MoveGenerator::GetLvaCapture(const Square to_square, Move& move) const {
+	vector<Move> moves(16);
+
+	//pawn
+	moves.clear();
+	GeneratePawnMoves(moves);
+	for (Move piece_move : moves) {
+		if (piece_move.GetSquareTo() == to_square) {
+			move = piece_move;
+			return true;
+		}
+	}
+
+	//knight
+	moves.clear();
+	GenerateKnightMoves(moves);
+	for (Move piece_move : moves) {
+		if (piece_move.GetSquareTo() == to_square) {
+			move = piece_move;
+			return true;
+		}
+	}
+
+	//bishop
+	moves.clear();
+	GenerateBishopMoves(moves);
+	for (Move piece_move : moves) {
+		if (piece_move.GetSquareTo() == to_square) {
+			move = piece_move;
+			return true;
+		}
+	}
+
+	//rook
+	moves.clear();
+	GenerateRookMoves(moves);
+	for (Move piece_move : moves) {
+		if (piece_move.GetSquareTo() == to_square) {
+			move = piece_move;
+			return true;
+		}
+	}
+
+	//queen
+	moves.clear();
+	GenerateQueenMoves(moves);
+	for (Move piece_move : moves) {
+		if (piece_move.GetSquareTo() == to_square) {
+			move = piece_move;
+			return true;
+		}
+	}
+
+	//king
+	moves.clear();
+	GenerateKingMoves(moves);
+	for (Move piece_move : moves) {
+		if (piece_move.GetSquareTo() == to_square) {
+			move = piece_move;
+			return true;
+		}
+	}
+
+	return false;
+}
+
 void MoveGenerator::GenerateRayMoves(const Square& from_square, const uint8_t dir, bool(BitBoard::*find_nearest_square)(Square&) const, const Piece active_piece, const BitBoard pin_ray_board, std::vector<Move>& moves) const {
 	//BitBoard move_board;
 	BitBoard move_board = MoveBoard::GetInstance().GetRay(from_square, dir);
@@ -348,10 +433,25 @@ void MoveGenerator::GenerateRayMoves(const Square& from_square, const uint8_t di
 	if (intersect_board.NotEmpty()) {
 		Square nearest_square;
 		(intersect_board.*find_nearest_square)(nearest_square);
+
+		if (only_captures_) {
+			//shortcut when only captures, only look at intersect square
+			move_board = BitBoard().Set(nearest_square.GetValue());
+			move_board &= captures_board; //only captures
+			move_board &= block_board; //check evasion
+			move_board &= pin_ray_board; //pinned movement
+			if (move_board.NotEmpty()) 
+				moves.push_back(Move(active_piece, from_square, nearest_square));
+			return;
+		}
+
 		//slight change after reading https://www.chessprogramming.org/Classical_Approach
 		move_board ^= MoveBoard::GetInstance().GetRay(nearest_square, dir);
 		move_board &= ~active_board; //subtract own pieces
 	}
+	
+	if (only_captures_)
+		return;
 
 	move_board &= block_board; //check evasion
 	move_board &= pin_ray_board; //pinned movement
@@ -366,13 +466,13 @@ void MoveGenerator::GenerateCheckInfo() {
 	block_board = BitBoard(0);
 
 	Square square;
-	if (!position.GetPieceSquare(Piece(Piece::TYPE_KING, active_color), square))
+	if (!position_.GetPieceSquare(Piece(Piece::TYPE_KING, active_color), square))
 		return;
 
 	//attacked by pawn
 	//pretend we are a pawn, can we capture opponent's pawn?
 	BitBoard pawn_capture_board = MoveBoard::GetInstance().GetPawnCaptures(square, active_color);
-	BitBoard attacking_pawn_board = position.GetBitBoard(Piece(Piece::TYPE_PAWN, inactive_color));
+	BitBoard attacking_pawn_board = position_.GetBitBoard(Piece(Piece::TYPE_PAWN, inactive_color));
 	BitBoard pawn_checker_board = pawn_capture_board & attacking_pawn_board;
 	checker_count += pawn_checker_board.NotEmpty();
 	block_board |= pawn_checker_board;
@@ -380,7 +480,7 @@ void MoveGenerator::GenerateCheckInfo() {
 	//attacked by knight
 	//pretend we are a knight, can we capture opponent's knight?
 	BitBoard knight_capture_board = MoveBoard::GetInstance().GetKnightMoves(square);
-	BitBoard attacking_knight_board = position.GetBitBoard(Piece(Piece::TYPE_KNIGHT, inactive_color));
+	BitBoard attacking_knight_board = position_.GetBitBoard(Piece(Piece::TYPE_KNIGHT, inactive_color));
 	BitBoard knight_checker_board = knight_capture_board & attacking_knight_board;
 	checker_count += knight_checker_board.NotEmpty();
 	block_board |= knight_checker_board;
@@ -432,21 +532,21 @@ bool MoveGenerator::IsSquareAttacked(const Square& square, const uint8_t attacki
 	//attacked by pawn
 	//pretend we are a pawn, can we capture opponent's pawn?
 	BitBoard pawn_capture_board = MoveBoard::GetInstance().GetPawnCaptures(square, defending_color);
-	BitBoard attacking_pawn_board = position.GetBitBoard(Piece(Piece::TYPE_PAWN, attacking_color));
+	BitBoard attacking_pawn_board = position_.GetBitBoard(Piece(Piece::TYPE_PAWN, attacking_color));
 	if ((pawn_capture_board & attacking_pawn_board).NotEmpty())
 		return true;
 
 	//attacked by knight
 	//pretend we are a knight, can we capture opponent's knight?
 	BitBoard knight_capture_board = MoveBoard::GetInstance().GetKnightMoves(square);
-	BitBoard attacking_knight_board = position.GetBitBoard(Piece(Piece::TYPE_KNIGHT, attacking_color));
+	BitBoard attacking_knight_board = position_.GetBitBoard(Piece(Piece::TYPE_KNIGHT, attacking_color));
 	if ((knight_capture_board & attacking_knight_board).NotEmpty())
 		return true;
 
 	//attacked by king
 	//pretend we are a king, can we capture opponent's king?
 	BitBoard king_capture_board = MoveBoard::GetInstance().GetKingMoves(square);
-	BitBoard attacking_king_board = position.GetBitBoard(Piece(Piece::TYPE_KING, attacking_color));
+	BitBoard attacking_king_board = position_.GetBitBoard(Piece(Piece::TYPE_KING, attacking_color));
 	if ((king_capture_board & attacking_king_board).NotEmpty())
 		return true;
 
@@ -472,7 +572,7 @@ BitBoard MoveGenerator::GetCheckRayBoard(const Square king_square, const uint8_t
 	Square nearest_square;
 	(forward_ray_intersect.*find_nearest_square)(nearest_square);
 	BitBoard nearest_square_board = BitBoard().Set(nearest_square.GetValue());
-	BitBoard attacker_board = position.GetBitBoard(Piece(Piece::TYPE_QUEEN, inactive_color)) | position.GetBitBoard(Piece(rook_or_bishop_type, inactive_color));
+	BitBoard attacker_board = position_.GetBitBoard(Piece(Piece::TYPE_QUEEN, inactive_color)) | position_.GetBitBoard(Piece(rook_or_bishop_type, inactive_color));
 	if ((nearest_square_board & attacker_board).NotEmpty()) {
 		forward_ray_board ^= MoveBoard::GetInstance().GetRay(nearest_square.GetValue(), dir); //flip bits of "shadow ray"
 		return forward_ray_board;
@@ -491,13 +591,13 @@ bool MoveGenerator::IsAttackedFromDirection(const Square square, const uint8_t d
 	Square nearest_square;
 	(forward_ray_intersect.*find_nearest_square)(nearest_square);
 	BitBoard nearest_square_board = BitBoard().Set(nearest_square.GetValue());
-	BitBoard possible_attackers = position.GetBitBoard(Piece(Piece::TYPE_QUEEN, attacking_color)) | position.GetBitBoard(Piece(rook_or_bishop_type, attacking_color));
+	BitBoard possible_attackers = position_.GetBitBoard(Piece(Piece::TYPE_QUEEN, attacking_color)) | position_.GetBitBoard(Piece(rook_or_bishop_type, attacking_color));
 	return (nearest_square_board & possible_attackers).NotEmpty();
 }
 
 bool MoveGenerator::CanCastle(const int castling_index) const {
 	//check castling rights
-	if (!position.GetCastlingStatus(castling_index))
+	if (!position_.GetCastlingStatus(castling_index))
 		return false;
 
 	//squares between king and rook must be empty
@@ -514,27 +614,27 @@ void MoveGenerator::GenerateDangerBoard() {
 	Square piece_square;
 	BitBoard piece_board;
 
-	BitBoard king_board = position.GetBitBoard(Piece(Piece::TYPE_KING, active_color));
+	BitBoard king_board = position_.GetBitBoard(Piece(Piece::TYPE_KING, active_color));
 
 	//pawn captures (generate all at once)
-	BitBoard pawn_pos_board = position.GetBitBoard(Piece(Piece::TYPE_PAWN, inactive_color));
+	BitBoard pawn_pos_board = position_.GetBitBoard(Piece(Piece::TYPE_PAWN, inactive_color));
 	BitBoard pawn_capture_board = (pawn_pos_board.Clone().*pawn_forward)().Left() | (pawn_pos_board.Clone().*pawn_forward)().Right();
 	danger_board |= pawn_capture_board;
 
 	//king
-	if (position.GetPieceSquare(Piece(Piece::TYPE_KING, inactive_color), piece_square)) {
+	if (position_.GetPieceSquare(Piece(Piece::TYPE_KING, inactive_color), piece_square)) {
 		danger_board |= MoveBoard::GetInstance().GetKingMoves(piece_square);
 	}
 
 	//knight
-	piece_board = position.GetBitBoard(Piece(Piece::TYPE_KNIGHT, inactive_color));
+	piece_board = position_.GetBitBoard(Piece(Piece::TYPE_KNIGHT, inactive_color));
 	while (piece_board.ConsumeLowestSquare(piece_square)) {
 		danger_board |= MoveBoard::GetInstance().GetKnightMoves(piece_square);
 	}
 
 	Piece piece;
 	//rook
-	piece_board = position.GetBitBoard(Piece(Piece::TYPE_ROOK, inactive_color));
+	piece_board = position_.GetBitBoard(Piece(Piece::TYPE_ROOK, inactive_color));
 	while (piece_board.ConsumeLowestSquare(piece_square)) {
 		//rook moves
 		danger_board |= GenerateDangerRayBoard(piece_square, MoveBoard::DIR_UP, &BitBoard::GetLowestSquare, king_board);
@@ -544,7 +644,7 @@ void MoveGenerator::GenerateDangerBoard() {
 	}
 
 	//bishop
-	piece_board = position.GetBitBoard(Piece(Piece::TYPE_BISHOP, inactive_color));
+	piece_board = position_.GetBitBoard(Piece(Piece::TYPE_BISHOP, inactive_color));
 	while (piece_board.ConsumeLowestSquare(piece_square)) {
 		//bishop moves
 		danger_board |= GenerateDangerRayBoard(piece_square, MoveBoard::DIR_UP_RIGHT, &BitBoard::GetLowestSquare, king_board);
@@ -554,7 +654,7 @@ void MoveGenerator::GenerateDangerBoard() {
 	}
 
 	//queen
-	piece_board = position.GetBitBoard(Piece(Piece::TYPE_QUEEN, inactive_color));
+	piece_board = position_.GetBitBoard(Piece(Piece::TYPE_QUEEN, inactive_color));
 	while (piece_board.ConsumeLowestSquare(piece_square)) {
 		//rook moves
 		danger_board |= GenerateDangerRayBoard(piece_square, MoveBoard::DIR_UP, &BitBoard::GetLowestSquare, king_board);
@@ -587,7 +687,7 @@ void MoveGenerator::GeneratePinInfo() {
 	pinned_board = BitBoard(0);
 	pin_rays.clear();
 
-	BitBoard king_board = position.GetBitBoard(Piece(Piece::TYPE_KING, active_color));
+	BitBoard king_board = position_.GetBitBoard(Piece(Piece::TYPE_KING, active_color));
 	Square king_square;
 	king_board.GetLowestSquare(king_square);
 
@@ -620,7 +720,7 @@ void MoveGenerator::GeneratePinRayInfo(const Square king_square, const uint8_t d
 	Square nearest_square;
 	if ((inter_board.*find_nearest_square)(nearest_square)) {
 		BitBoard nearest_board = BitBoard().Set(nearest_square.GetValue());
-		BitBoard slider_board = position.GetBitBoard(Piece(Piece::TYPE_QUEEN, inactive_color)) | position.GetBitBoard(Piece(rook_or_bishop_type, inactive_color));
+		BitBoard slider_board = position_.GetBitBoard(Piece(Piece::TYPE_QUEEN, inactive_color)) | position_.GetBitBoard(Piece(rook_or_bishop_type, inactive_color));
 		if ((nearest_board & slider_board).NotEmpty()) {
 			ray_board ^= MoveBoard::GetInstance().GetRay(nearest_square.GetValue(), dir);
 			BitBoard potential_pinner_board = ray_board & active_board;
@@ -641,7 +741,7 @@ bool MoveGenerator::CheckEpDiscoveredCheck(const Square ep_square, const Square 
 	
 	//active king on same rank as pawns?
 	Square king_square;
-	if (!position.GetBitBoard(Piece(Piece::TYPE_KING, active_color)).GetLowestSquare(king_square))
+	if (!position_.GetBitBoard(Piece(Piece::TYPE_KING, active_color)).GetLowestSquare(king_square))
 		return false;
 
 	if (king_square.GetY() != capturing_square.GetY())
@@ -651,7 +751,7 @@ bool MoveGenerator::CheckEpDiscoveredCheck(const Square ep_square, const Square 
 	Square captured_square = Square(ep_square.GetX(), capturing_square.GetY());
 
 	BitBoard after_ep_board = combined_board & ~BitBoard().Set(captured_square.GetValue()) & ~BitBoard().Set(capturing_square.GetValue());
-	BitBoard potential_checkers = position.GetBitBoard(Piece(Piece::TYPE_QUEEN, inactive_color)) | position.GetBitBoard(Piece(Piece::TYPE_ROOK, inactive_color));
+	BitBoard potential_checkers = position_.GetBitBoard(Piece(Piece::TYPE_QUEEN, inactive_color)) | position_.GetBitBoard(Piece(Piece::TYPE_ROOK, inactive_color));
 	
 	//check attack from the right
 	BitBoard ray_board = MoveBoard::GetInstance().GetRay(king_square, MoveBoard::DIR_RIGHT);

@@ -8,6 +8,7 @@
 #include "MiniMax.h"
 #include "AlphaBeta.h"
 #include "AlphaBetaOrder.h"
+#include "AlphaBetaQuiesce.h"
 
 using namespace std;
 

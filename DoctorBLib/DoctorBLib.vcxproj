@@ -150,6 +150,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="AlphaBetaQuiesce.h" />
     <ClInclude Include="AlphaBeta.h" />
     <ClInclude Include="AlphaBetaOrder.h" />
     <ClInclude Include="App.h" />
@@ -176,6 +177,7 @@
     <ClInclude Include="Zobrist.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AlphaBetaQuiesce.cpp" />
     <ClCompile Include="AlphaBeta.cpp" />
     <ClCompile Include="AlphaBetaOrder.cpp" />
     <ClCompile Include="BitBoard.cpp" />
@@ -190,6 +192,7 @@
     <ClCompile Include="Piece.cpp" />
     <ClCompile Include="Position.cpp" />
     <ClCompile Include="Score.cpp" />
+    <ClCompile Include="SearchAlgorithm.cpp" />
     <ClCompile Include="Searcher.cpp" />
     <ClCompile Include="Square.cpp" />
     <ClCompile Include="stdafx.cpp">
