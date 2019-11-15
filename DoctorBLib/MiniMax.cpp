@@ -56,7 +56,7 @@ void MiniMax::Loop(const uint64_t iteration_depth, Score& score, std::vector<Mov
 			move_gen.GenerateMoves(moves_stack[depth]);
 
 			if (moves_stack[depth].size() == 0)
-				if (move_gen.IsCheck(position_stack[depth].GetActiveColor()))
+				if (move_gen.IsCheck())
 					score_stack[depth] = Score::GetMateScore(position_stack[depth].GetActiveColor(), depth); //mate
 				else
 					score_stack[depth] = Score(0Ui64); //stale-mate

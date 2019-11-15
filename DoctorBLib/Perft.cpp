@@ -24,8 +24,6 @@ uint64_t Perft::Go() {
 //Count function using recursion
 uint64_t Perft::Count(const Position& position, const int remaining_depth) const {
 	MoveGenerator move_gen(position);
-	if (move_gen.IsCheck(position.GetActiveColor() ^ 1Ui8))
-		return 0Ui64;
 
 	if (remaining_depth == 0)
 		return 1Ui64;

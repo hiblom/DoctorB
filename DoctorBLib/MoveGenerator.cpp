@@ -68,7 +68,7 @@ void MoveGenerator::GenerateMoves(vector<Move>& moves) {
 	GenerateKnightMoves(moves);
 }
 
-void MoveGenerator::GenerateKingMoves(std::vector<Move>& moves) const {
+void MoveGenerator::GenerateKingMoves(vector<Move>& moves) const {
 	static const int CASTLING_KINGSIDE[2] = { Constants::CASTLING_WHITE_KINGSIDE, Constants::CASTLING_BLACK_KINGSIDE };
 	static const int CASTLING_QUEENSIDE[2] = { Constants::CASTLING_WHITE_QUEENSIDE, Constants::CASTLING_BLACK_QUEENSIDE };
 	static const int KING_SQUARE[2] = { Square::E1, Square::E8 };
@@ -87,7 +87,7 @@ void MoveGenerator::GenerateKingMoves(std::vector<Move>& moves) const {
 	to_board &= captures_board; //captures only - mode
 
 	Square to_square;
-	while (to_board.ConsumeLowestSquare(to_square)) {
+	while (to_board.PopLowestSquare(to_square)) {
 		moves.push_back(Move(active_piece, from_square, to_square).SetCapture(IsCapture(to_square)));
 	}
 
@@ -101,13 +101,13 @@ void MoveGenerator::GenerateKingMoves(std::vector<Move>& moves) const {
 	}
 }
 
-void MoveGenerator::GenerateKnightMoves(std::vector<Move>& moves) const {
+void MoveGenerator::GenerateKnightMoves(vector<Move>& moves) const {
 	Piece active_piece = Piece(Piece::TYPE_KNIGHT, active_color);
 	BitBoard pieces_board = position_.GetBitBoard(active_piece);
 	BitBoard piece_board;
 
 	Square from_square;
-	while (pieces_board.ConsumeLowestSquare(from_square)) {
+	while (pieces_board.PopLowestSquare(from_square)) {
 		//pinned?
 		piece_board = BitBoard().Set(from_square.GetValue());
 		if ((piece_board & pinned_board).NotEmpty())
@@ -119,7 +119,7 @@ void MoveGenerator::GenerateKnightMoves(std::vector<Move>& moves) const {
 		to_board &= captures_board; //captures only - mode
 
 		Square to_square;
-		while (to_board.ConsumeLowestSquare(to_square)) {
+		while (to_board.PopLowestSquare(to_square)) {
 			moves.push_back(Move(active_piece, from_square, to_square).SetCapture(IsCapture(to_square)));
 		}
 	}
@@ -138,7 +138,7 @@ void MoveGenerator::GeneratePawnMoves(std::vector<Move>& moves) const {
 	BitBoard to_board, to_board_2;
 	Square from_square, to_square;
 	BitBoard double_push_board;
-	while (pieces_board.ConsumeLowestSquare(from_square)) {
+	while (pieces_board.PopLowestSquare(from_square)) {
 		
 		piece_board = BitBoard().Set(from_square.GetValue());
 		if ((piece_board & pinned_board).NotEmpty()) {
@@ -159,8 +159,8 @@ void MoveGenerator::GeneratePawnMoves(std::vector<Move>& moves) const {
 			if (to_board.GetLowestSquare(to_square)) {
 				if (from_square.GetY() == PROMOTION_RANKS[active_color]) {
 					moves.push_back(Move(active_piece, from_square, to_square, Piece(Piece::TYPE_QUEEN, active_color)));
-					moves.push_back(Move(active_piece, from_square, to_square, Piece(Piece::TYPE_BISHOP, active_color)));
-					moves.push_back(Move(active_piece, from_square, to_square, Piece(Piece::TYPE_ROOK, active_color)));
+					moves.push_back(Move(active_piece, from_square, to_square, Piece(Piece::TYPE_BISHOP, active_color))); //TODO remove this underpromotion when not performing perft
+					moves.push_back(Move(active_piece, from_square, to_square, Piece(Piece::TYPE_ROOK, active_color))); //TODO remove this underpromotion when not performing perft
 					moves.push_back(Move(active_piece, from_square, to_square, Piece(Piece::TYPE_KNIGHT, active_color)));
 				}
 				else {
@@ -202,11 +202,11 @@ void MoveGenerator::GeneratePawnMoves(std::vector<Move>& moves) const {
 		to_board &= pawn_block_board; //check evasion
 		to_board &= pin_ray_board; //pinned movement
 
-		while (to_board.ConsumeLowestSquare(to_square)) {
+		while (to_board.PopLowestSquare(to_square)) {
 			if (from_square.GetY() == PROMOTION_RANKS[active_color]) {
 				moves.push_back(Move(active_piece, from_square, to_square, Piece(Piece::TYPE_QUEEN, active_color)).SetCapture(true));
-				moves.push_back(Move(active_piece, from_square, to_square, Piece(Piece::TYPE_BISHOP, active_color)).SetCapture(true));
-				moves.push_back(Move(active_piece, from_square, to_square, Piece(Piece::TYPE_ROOK, active_color)).SetCapture(true));
+				moves.push_back(Move(active_piece, from_square, to_square, Piece(Piece::TYPE_BISHOP, active_color)).SetCapture(true)); //TODO remove this underpromotion when not performing perft
+				moves.push_back(Move(active_piece, from_square, to_square, Piece(Piece::TYPE_ROOK, active_color)).SetCapture(true)); //TODO remove this underpromotion when not performing perft
 				moves.push_back(Move(active_piece, from_square, to_square, Piece(Piece::TYPE_KNIGHT, active_color)).SetCapture(true));
 			}
 			else {
@@ -233,7 +233,7 @@ void MoveGenerator::GenerateRookMoves(std::vector<Move>& moves) const {
 	BitBoard piece_board;
 	BitBoard pin_ray_board;
 	Square piece_square;
-	while (pieces_board.ConsumeLowestSquare(piece_square)) {
+	while (pieces_board.PopLowestSquare(piece_square)) {
 		
 		piece_board = BitBoard().Set(piece_square.GetValue());
 		if ((piece_board & pinned_board).NotEmpty()) {
@@ -257,7 +257,7 @@ void MoveGenerator::GenerateBishopMoves(std::vector<Move>& moves) const {
 	BitBoard piece_board;
 	BitBoard pin_ray_board;
 	Square piece_square;
-	while (pieces_board.ConsumeLowestSquare(piece_square)) {
+	while (pieces_board.PopLowestSquare(piece_square)) {
 		piece_board = BitBoard().Set(piece_square.GetValue());
 		if ((piece_board & pinned_board).NotEmpty()) {
 			pin_ray_board = pin_rays.at(piece_square.GetValue());
@@ -280,7 +280,7 @@ void MoveGenerator::GenerateQueenMoves(std::vector<Move>& moves) const {
 	BitBoard piece_board;
 	BitBoard pin_ray_board;
 	Square piece_square;
-	while (pieces_board.ConsumeLowestSquare(piece_square)) {
+	while (pieces_board.PopLowestSquare(piece_square)) {
 		piece_board = BitBoard().Set(piece_square.GetValue());
 		if ((piece_board & pinned_board).NotEmpty()) {
 			pin_ray_board = pin_rays.at(piece_square.GetValue());
@@ -301,16 +301,9 @@ void MoveGenerator::GenerateQueenMoves(std::vector<Move>& moves) const {
 	}
 }
 
-bool MoveGenerator::IsCheck(uint8_t color) {
-	BitBoard king_board = position_.GetBitBoard(Piece(Piece::TYPE_KING, color));
-	Square square;
-	if (king_board.GetLowestSquare(square)) {
-		return IsSquareAttacked(square, color ^ 1Ui8);
-	}
-
-	return false;
+bool MoveGenerator::IsCheck() {
+	return checker_count > 0;
 }
-
 
 bool MoveGenerator::SetMoveFlags(Move& move) {
 	Piece piece;
@@ -461,7 +454,7 @@ void MoveGenerator::GenerateRayMoves(const Square& from_square, const uint8_t di
 	move_board &= pin_ray_board; //pinned movement
 
 	Square to_square;
-	while (move_board.ConsumeLowestSquare(to_square)) {
+	while (move_board.PopLowestSquare(to_square)) {
 		moves.push_back(Move(active_piece, from_square, to_square).SetCapture(IsCapture(to_square)));
 	}
 }
@@ -530,42 +523,6 @@ void MoveGenerator::GenerateCheckInfo() {
 		block_board = BitBoard(0xFFFFFFFFFFFFFFFFUi64);
 }
 
-bool MoveGenerator::IsSquareAttacked(const Square& square, const uint8_t attacking_color) const {
-	uint8_t defending_color = attacking_color ^ 1Ui8;
-
-	//attacked by pawn
-	//pretend we are a pawn, can we capture opponent's pawn?
-	BitBoard pawn_capture_board = MoveBoard::GetInstance().GetPawnCaptures(square, defending_color);
-	BitBoard attacking_pawn_board = position_.GetBitBoard(Piece(Piece::TYPE_PAWN, attacking_color));
-	if ((pawn_capture_board & attacking_pawn_board).NotEmpty())
-		return true;
-
-	//attacked by knight
-	//pretend we are a knight, can we capture opponent's knight?
-	BitBoard knight_capture_board = MoveBoard::GetInstance().GetKnightMoves(square);
-	BitBoard attacking_knight_board = position_.GetBitBoard(Piece(Piece::TYPE_KNIGHT, attacking_color));
-	if ((knight_capture_board & attacking_knight_board).NotEmpty())
-		return true;
-
-	//attacked by king
-	//pretend we are a king, can we capture opponent's king?
-	BitBoard king_capture_board = MoveBoard::GetInstance().GetKingMoves(square);
-	BitBoard attacking_king_board = position_.GetBitBoard(Piece(Piece::TYPE_KING, attacking_color));
-	if ((king_capture_board & attacking_king_board).NotEmpty())
-		return true;
-
-	//attacked by sliding pieces?
-	return
-		IsAttackedFromDirection(square, MoveBoard::DIR_UP, &BitBoard::GetLowestSquare, Piece::TYPE_ROOK, attacking_color) ||
-		IsAttackedFromDirection(square, MoveBoard::DIR_DOWN, &BitBoard::GetHighestSquare, Piece::TYPE_ROOK, attacking_color) ||
-		IsAttackedFromDirection(square, MoveBoard::DIR_RIGHT, &BitBoard::GetLowestSquare, Piece::TYPE_ROOK, attacking_color) ||
-		IsAttackedFromDirection(square, MoveBoard::DIR_LEFT, &BitBoard::GetHighestSquare, Piece::TYPE_ROOK, attacking_color) ||
-		IsAttackedFromDirection(square, MoveBoard::DIR_UP_RIGHT, &BitBoard::GetLowestSquare, Piece::TYPE_BISHOP, attacking_color) ||
-		IsAttackedFromDirection(square, MoveBoard::DIR_DOWN_LEFT, &BitBoard::GetHighestSquare, Piece::TYPE_BISHOP, attacking_color) ||
-		IsAttackedFromDirection(square, MoveBoard::DIR_UP_LEFT, &BitBoard::GetLowestSquare, Piece::TYPE_BISHOP, attacking_color) ||
-		IsAttackedFromDirection(square, MoveBoard::DIR_DOWN_RIGHT, &BitBoard::GetHighestSquare, Piece::TYPE_BISHOP, attacking_color);
-}
-
 BitBoard MoveGenerator::GetCheckRayBoard(const Square king_square, const uint8_t dir, bool(BitBoard::*find_nearest_square)(Square&) const, const uint8_t rook_or_bishop_type) const {
 	BitBoard forward_ray_board = MoveBoard::GetInstance().GetRay(king_square.GetValue(), dir);
 	BitBoard forward_ray_intersect = forward_ray_board & combined_board;
@@ -583,20 +540,6 @@ BitBoard MoveGenerator::GetCheckRayBoard(const Square king_square, const uint8_t
 	}
 
 	return BitBoard();
-}
-
-bool MoveGenerator::IsAttackedFromDirection(const Square square, const uint8_t dir, bool(BitBoard::*find_nearest_square)(Square&) const, const uint8_t rook_or_bishop_type, const uint8_t attacking_color) const {
-	BitBoard forward_ray_board = MoveBoard::GetInstance().GetRay(square.GetValue(), dir);
-	BitBoard forward_ray_intersect = forward_ray_board & combined_board;
-
-	if (forward_ray_intersect.Empty())
-		return false;
-
-	Square nearest_square;
-	(forward_ray_intersect.*find_nearest_square)(nearest_square);
-	BitBoard nearest_square_board = BitBoard().Set(nearest_square.GetValue());
-	BitBoard possible_attackers = position_.GetBitBoard(Piece(Piece::TYPE_QUEEN, attacking_color)) | position_.GetBitBoard(Piece(rook_or_bishop_type, attacking_color));
-	return (nearest_square_board & possible_attackers).NotEmpty();
 }
 
 bool MoveGenerator::CanCastle(const int castling_index) const {
@@ -632,14 +575,14 @@ void MoveGenerator::GenerateDangerBoard() {
 
 	//knight
 	piece_board = position_.GetBitBoard(Piece(Piece::TYPE_KNIGHT, inactive_color));
-	while (piece_board.ConsumeLowestSquare(piece_square)) {
+	while (piece_board.PopLowestSquare(piece_square)) {
 		danger_board |= MoveBoard::GetInstance().GetKnightMoves(piece_square);
 	}
 
 	Piece piece;
 	//rook
 	piece_board = position_.GetBitBoard(Piece(Piece::TYPE_ROOK, inactive_color));
-	while (piece_board.ConsumeLowestSquare(piece_square)) {
+	while (piece_board.PopLowestSquare(piece_square)) {
 		//rook moves
 		danger_board |= GenerateDangerRayBoard(piece_square, MoveBoard::DIR_UP, &BitBoard::GetLowestSquare, king_board);
 		danger_board |= GenerateDangerRayBoard(piece_square, MoveBoard::DIR_RIGHT, &BitBoard::GetLowestSquare, king_board);
@@ -649,7 +592,7 @@ void MoveGenerator::GenerateDangerBoard() {
 
 	//bishop
 	piece_board = position_.GetBitBoard(Piece(Piece::TYPE_BISHOP, inactive_color));
-	while (piece_board.ConsumeLowestSquare(piece_square)) {
+	while (piece_board.PopLowestSquare(piece_square)) {
 		//bishop moves
 		danger_board |= GenerateDangerRayBoard(piece_square, MoveBoard::DIR_UP_RIGHT, &BitBoard::GetLowestSquare, king_board);
 		danger_board |= GenerateDangerRayBoard(piece_square, MoveBoard::DIR_DOWN_RIGHT, &BitBoard::GetHighestSquare, king_board);
@@ -659,7 +602,7 @@ void MoveGenerator::GenerateDangerBoard() {
 
 	//queen
 	piece_board = position_.GetBitBoard(Piece(Piece::TYPE_QUEEN, inactive_color));
-	while (piece_board.ConsumeLowestSquare(piece_square)) {
+	while (piece_board.PopLowestSquare(piece_square)) {
 		//rook moves
 		danger_board |= GenerateDangerRayBoard(piece_square, MoveBoard::DIR_UP, &BitBoard::GetLowestSquare, king_board);
 		danger_board |= GenerateDangerRayBoard(piece_square, MoveBoard::DIR_RIGHT, &BitBoard::GetLowestSquare, king_board);

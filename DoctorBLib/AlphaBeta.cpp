@@ -65,7 +65,7 @@ void AlphaBeta::Loop(const uint64_t iteration_depth, Score& score, std::vector<M
 			move_gen.GenerateMoves(depth_moves[depth]);
 			
 			if (depth_moves[depth].size() == 0)
-				if (move_gen.IsCheck(depth_position[depth].GetActiveColor()))
+				if (move_gen.IsCheck())
 					depth_score[depth] = Score::GetMateScore(depth_position[depth].GetActiveColor(), depth); //mate
 				else
 					depth_score[depth] = Score(0Ui64); //stale-mate

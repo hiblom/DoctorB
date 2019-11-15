@@ -246,7 +246,7 @@ void Position::RecalculateHashKey() {
 	for (uint8_t p = 0; p < 12; p++) {
 		BitBoard b = GetBitBoard(p);
 		Square s;
-		while (b.ConsumeLowestSquare(s)) 
+		while (b.PopLowestSquare(s)) 
 			hash_key ^= Zobrist::GetInstance().PIECE_SQUARE_KEY[p][s.GetValue()];
 	}
 

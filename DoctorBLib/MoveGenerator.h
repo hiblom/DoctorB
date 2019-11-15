@@ -17,7 +17,7 @@ public:
 	void GenerateBishopMoves(std::vector<Move>& moves) const;
 	void GenerateQueenMoves(std::vector<Move>& moves) const;
 	void GenerateDangerBoard();
-	bool IsCheck(uint8_t color);
+	bool IsCheck();
 	bool SetMoveFlags(Move& move);
 	void GenerateCheckInfo();
 	uint8_t GetCheckerCount();
@@ -40,9 +40,7 @@ private:
 
 	void Initialize();
 	void GenerateRayMoves(const Square& from_square, const uint8_t dir, bool(BitBoard::*find_nearest_square)(Square&) const, const Piece active_piece, const BitBoard pin_ray_board, std::vector<Move>& moves) const;
-	bool IsSquareAttacked(const Square& square, const uint8_t attacking_color) const;
 	BitBoard GetCheckRayBoard(const Square king_square, const uint8_t dir, bool(BitBoard::* find_nearest_square)(Square &) const, const uint8_t rook_or_bishop_type) const;
-	bool IsAttackedFromDirection(const Square square, const uint8_t dir, bool(BitBoard::*find_nearest_square)(Square&) const, const uint8_t rook_or_bishop_type, const uint8_t attacking_color) const;
 	bool CanCastle(const int castling_index) const;
 	BitBoard GenerateDangerRayBoard(const Square from_square, const uint8_t dir, bool(BitBoard::* find_nearest_square)(Square &) const, const BitBoard exclude_board) const;
 	void GeneratePinInfo();

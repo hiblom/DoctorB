@@ -1,4 +1,5 @@
 #pragma once
+#include <memory>
 #include <unordered_map>
 #include "Move.h"
 
@@ -28,7 +29,7 @@ public:
 	void Reset();
 private:
 	TranspositionTable();
-	std::unordered_map<uint64_t, Entry, IdentityHasher> map; //TODO maybe put TT on heap?
+	std::unique_ptr<std::unordered_map<uint64_t, Entry, IdentityHasher>> map = std::make_unique<std::unordered_map<uint64_t, Entry, IdentityHasher>>();
 	size_t max_size;
 };
 

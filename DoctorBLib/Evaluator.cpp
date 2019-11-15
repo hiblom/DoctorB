@@ -22,7 +22,7 @@ void Evaluator::Evaluate(Score& score) {
 	for (uint8_t p = 0; p < 12; p++) {
 		BitBoard piece_board = position_.GetBitBoard(Piece(p));
 		Square square;
-		while (piece_board.ConsumeLowestSquare(square)) {
+		while (piece_board.PopLowestSquare(square)) {
 			value += Constants::PIECE_VALUES[p] + PIECE_SQUARE_VALUE[p][square.GetValue()];
 		}
 		//value += position_.GetBitBoard(Piece(p)).PopCount() * Constants::PIECE_VALUES[p];

@@ -71,7 +71,7 @@ void AlphaBetaQuiesce::Loop(const uint64_t iteration_depth, Score& score, std::v
 			move_gen.GenerateMoves(depth_moves[depth]);
 
 			if (depth_moves[depth].size() == 0)
-				if (move_gen.IsCheck(depth_position[depth].GetActiveColor()))
+				if (move_gen.IsCheck())
 					depth_score[depth] = Score::GetMateScore(depth_position[depth].GetActiveColor(), depth); //mate
 				else
 					depth_score[depth] = Score(0Ui64); //stale-mate
@@ -126,7 +126,6 @@ void AlphaBetaQuiesce::See(const Position& position, const Square& square, Score
 
 
 //keep doing captures until the board reaches a "quiet" state, then return the score
-//TODO weave this into the regular loop (?)
 /*
 void AlphaBetaQuiesce::Quiesce(const Position& quiesce_position, Score& score) {
 	//we are not interested in variants here

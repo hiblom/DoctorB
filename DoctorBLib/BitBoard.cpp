@@ -50,13 +50,13 @@ BitBoard BitBoard::Clone() const {
 
 BitBoard& BitBoard::Left() {
 	value >>= 1;
-	value &= ~H_FILE;
+	value &= NOT_H_FILE;
 	return *this;
 }
 
 BitBoard& BitBoard::Right() {
 	value <<= 1;
-	value &= ~A_FILE;
+	value &= NOT_A_FILE;
 	return *this;
 }
 
@@ -111,7 +111,7 @@ bool BitBoard::GetSquares(std::vector<Square>& squares) const {
 	return true;
 }
 
-bool BitBoard::ConsumeLowestSquare(Square& square) {
+bool BitBoard::PopLowestSquare(Square& square) {
 	if (!value)
 		return false;
 	
