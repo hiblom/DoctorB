@@ -33,9 +33,19 @@ void AlphaBetaOrder::Loop(const uint64_t iteration_depth, Score& score, std::vec
 
 	int depth = 0;
 	while (depth >= 0) {
-		//evaluate
-		if (depth == iteration_depth) {
-			//go to See only when it was a capture
+		//see if position is in the TT with a score
+		Score tt_score;
+		uint16_t tt_remaining_depth;
+		if (depth > 0 && TranspositionTable::GetInstance().FindScore(depth_position[depth].GetHashKey(), tt_score, tt_remaining_depth)) {
+			if (tt_remaining_depth >= (iteration_depth - depth)) {
+				depth_score[depth] = tt_score;
+				score_depth = depth;
+				depth--;
+			}
+		} 
+		else if (depth == iteration_depth) {
+			//evaluate
+			//go to SEE only when it was a capture
 			Move last_move = depth_moves[depth - 1][depth_index[depth - 1]];
 			if (last_move.IsCapture()) {
 				See(depth_position[depth], last_move.GetSquareTo(), depth_score[depth]);
@@ -50,9 +60,15 @@ void AlphaBetaOrder::Loop(const uint64_t iteration_depth, Score& score, std::vec
 
 		//compare scores
 		if (score_depth > depth) {
+			bool store_in_tt = depth < 6 || (iteration_depth - score_depth) < 2;
+			//store score in TT
+			if (store_in_tt)
+				TranspositionTable::GetInstance().SetScore(depth_position[depth].GetHashKey(), depth_score[score_depth], (uint16_t)(iteration_depth - score_depth));
+
 			if (Evaluator::CompareScore(depth_position[depth].GetActiveColor(), depth_score[score_depth], depth_score[depth]) > 0) {
 				//store move in TT
-				TranspositionTable::GetInstance().AddEntry(depth_position[depth].GetHashKey(), TranspositionTable::Entry(depth_moves[depth][depth_index[depth]]));
+				if (store_in_tt)
+					TranspositionTable::GetInstance().SetBestMove(depth_position[depth].GetHashKey(), depth_moves[depth][depth_index[depth]]);
 
 				//alphabeta-cutoff? (by picking this move, the score would be worse than the current move from the parent's perspective, so the parent would never pick it)
 				if (depth > 0) {
@@ -78,11 +94,12 @@ void AlphaBetaOrder::Loop(const uint64_t iteration_depth, Score& score, std::vec
 			move_gen.GenerateMoves(depth_moves[depth]);
 			OrderMoves(depth_position[depth], depth_moves[depth]);
 			
-			if (depth_moves[depth].size() == 0)
+			if (depth_moves[depth].size() == 0) {
 				if (move_gen.IsCheck())
 					depth_score[depth] = Score::GetMateScore(depth_position[depth].GetActiveColor(), depth); //mate
 				else
 					depth_score[depth] = Score(0Ui64); //stale-mate
+			}
 			else
 				depth_score[depth] = Score::GetStartScore(depth_position[depth].GetActiveColor());
 
@@ -106,6 +123,7 @@ void AlphaBetaOrder::Loop(const uint64_t iteration_depth, Score& score, std::vec
 		Position new_position = Position(depth_position[depth]);
 		new_position.ApplyMove(depth_moves[depth][depth_index[depth]]);
 		node_count_++;
+
 		depth_position[++depth] = new_position;
 	}
 
@@ -114,19 +132,18 @@ void AlphaBetaOrder::Loop(const uint64_t iteration_depth, Score& score, std::vec
 }
 
 
-//if position is in TT, but best move at first position
+//if position is in TT, put best move at first position
 void AlphaBetaOrder::OrderMoves(const Position& position, std::vector<Move>& moves) {
 	if (moves.size() < 2)
 		return;
 
-	TranspositionTable::Entry entry;
-	if (TranspositionTable::GetInstance().FindEntry(position.GetHashKey(), entry)) {
-		std::vector<Move>::iterator pos = find(moves.begin(), moves.end(), entry.best_move);
+	Move tt_move;
+	if (TranspositionTable::GetInstance().FindBestMove(position.GetHashKey(), tt_move)) {
+		std::vector<Move>::iterator pos = find(moves.begin(), moves.end(), tt_move);
 		if (pos != moves.begin() && pos != moves.end()) {
 			//swap first move and best move
-			Move best_move = *pos;
 			*pos = moves[0];
-			moves[0] = best_move;
+			moves[0] = tt_move;
 		}
 	}
 }
@@ -151,4 +168,8 @@ void AlphaBetaOrder::See(const Position& position, const Square& square, Score& 
 
 void AlphaBetaOrder::AfterSearch() {
 	TranspositionTable::GetInstance().Clear();
+}
+
+void AlphaBetaOrder::AfterIteration() {
+	cout << "hashfull " << TranspositionTable::GetInstance().GetHashFull() << endl;
 }

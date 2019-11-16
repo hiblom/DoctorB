@@ -29,7 +29,10 @@ Move SearchAlgorithm::GoDepth(uint64_t max_depth) {
 		}
 
 		cout << pv_string << endl;
+
 		best_move = pv[0];
+
+		AfterIteration();
 
 		if (score.IsMate())
 			break;
@@ -69,11 +72,15 @@ Move SearchAlgorithm::GoTime(uint64_t max_duration) {
 		cout << pv_string << endl;
 		best_move = pv[0];
 
+		AfterIteration();
+
 		if (score.IsMate())
 			break;
 
 		iteration_depth++;
-	} while ((duration * 15) < max_duration); //TODO implement game modes like CCRL 40/4
+	} while ((duration * GetSearchTimeMultiplier()) < max_duration); //TODO implement game modes like CCRL 40/4
+
+	AfterSearch();
 
 	return best_move;
 }

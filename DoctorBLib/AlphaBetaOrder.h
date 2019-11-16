@@ -11,5 +11,7 @@ private:
 	void OrderMoves(const Position& position, std::vector<Move>& moves);
 	void See(const Position & position, const Square & square, Score & score);
 	void AfterSearch();
+	void AfterIteration();
+	int GetSearchTimeMultiplier() { return 12; }
 };
 

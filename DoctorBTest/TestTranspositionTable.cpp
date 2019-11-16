@@ -20,13 +20,13 @@ public:
 
 		//act
 		uint64_t hash_key = pos.GetHashKey();
-		TranspositionTable::GetInstance().AddEntry(hash_key, TranspositionTable::Entry(move));
-		TranspositionTable::Entry actual_entry;
-		bool found = TranspositionTable::GetInstance().FindEntry(hash_key, actual_entry);
+		TranspositionTable::GetInstance().SetBestMove(hash_key, move);
+		Move tt_move;
+		bool found = TranspositionTable::GetInstance().FindBestMove(hash_key, tt_move);
 
 		//assert
 		Assert::IsTrue(found);
-		Assert::AreEqual(move, actual_entry.best_move);
+		Assert::AreEqual(move, tt_move);
 	}
 
 	TEST_METHOD(TestTranspositionTableAddFindFalse) {
@@ -38,13 +38,13 @@ public:
 
 		//act
 		uint64_t hash_key_1 = pos_1.GetHashKey();
-		TranspositionTable::GetInstance().AddEntry(hash_key_1, TranspositionTable::Entry(move));
+		TranspositionTable::GetInstance().SetBestMove(hash_key_1, move);
 		Position pos_2(pos_1);
 		pos_2.ApplyMove(move);
 		uint64_t hash_key_2 = pos_2.GetHashKey();
 
-		TranspositionTable::Entry actual_entry;
-		bool found = TranspositionTable::GetInstance().FindEntry(hash_key_2, actual_entry);
+		Move actual_move;
+		bool found = TranspositionTable::GetInstance().FindBestMove(hash_key_2, actual_move);
 
 		//assert
 		Assert::IsFalse(found);

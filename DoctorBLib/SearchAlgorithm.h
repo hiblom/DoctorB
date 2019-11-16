@@ -14,4 +14,6 @@ protected:
 	uint64_t node_count_;
 	virtual void Loop(const uint64_t iteration_depth, Score& score, std::vector<Move>& pv) = 0;
 	virtual void AfterSearch() {};
+	virtual void AfterIteration() {};
+	virtual int GetSearchTimeMultiplier() { return 30; }
 };

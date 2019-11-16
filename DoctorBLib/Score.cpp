@@ -10,8 +10,10 @@ Score Score::GetStartScore(uint8_t color) {
 }
 
 Score Score::GetMateScore(uint8_t color_against, uint32_t depth) {
+	static const int mult[2] = { 1, -1 };
+
 	static const int64_t START_SCORE[2] = { Score::WHITE_START_SCORE, Score::BLACK_START_SCORE };
-	return Score(START_SCORE[color_against] - depth);
+	return Score(START_SCORE[color_against] + mult[color_against] *depth);
 }
 
 Score::Score() {
