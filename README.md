@@ -6,10 +6,7 @@ DoctorB is named after a character in *Schachnovelle* by Stefan Zweig. Dr B play
 
 ## Current features
 * Classical bitboard board representation and move generation
-* Legal move generator
-* Simple board evaluation purely based on piece value
-* Minimax search strategy with iterative deepening
-* Alpha beta search strategy
+* Alpha beta search strategy with iterative deepening
 * Piece square board evaluation
 * Hashing / transposition table
 * Move ordering
