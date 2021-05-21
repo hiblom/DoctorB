@@ -7,6 +7,7 @@
 #include "Square.h"
 #include "Piece.h"
 #include "Constants.h"
+#include "HistoryMap.h"
 
 using namespace std;
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
@@ -188,9 +189,10 @@ public:
 		Position pos;
 		vector<string> tokens = { "startpos", "moves", "b1c3", "e7e5", "g1f3", "b8c6", "d2d4", "e5d4", "f3d4", "g8f6", "c1f4", "f8b4", "d1d3" };
 		Square ep_square;
+		HistoryMap history;
 
 		//act
-		bool parse_res = Parser::ParsePosition(tokens, pos);
+		bool parse_res = Parser::ParsePosition(tokens, pos, history);
 
 		Piece piece_d3;
 		Piece piece_b1;

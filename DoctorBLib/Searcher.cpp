@@ -12,19 +12,19 @@
 
 using namespace std;
 
-Searcher::Searcher(Position base_position) : base_position_(base_position) {
+Searcher::Searcher(const Position& base_position, HistoryMap& history) : base_position_(base_position), history_(history) {
 	node_count = 0;
 }
 
 void Searcher::GoDepth(int depth) {
-	AlphaBetaOrder search_algorithm = AlphaBetaOrder(base_position_);
+	AlphaBetaOrder search_algorithm = AlphaBetaOrder(base_position_, history_);
 	Move best_move = search_algorithm.GoDepth(depth);
 	cout << "bestmove " << best_move.ToString() << endl;
 }
 
 void Searcher::GoTime(uint64_t wtime, uint64_t btime, uint64_t winc, uint64_t binc, uint64_t movestogo) {
 	uint64_t max_duration = GetMaxDuration(wtime, btime, winc, binc, movestogo);
-	AlphaBetaOrder search_algorithm = AlphaBetaOrder(base_position_);
+	AlphaBetaOrder search_algorithm = AlphaBetaOrder(base_position_, history_);
 	Move best_move = search_algorithm.GoTime(max_duration);
 	cout << "bestmove " << best_move.ToString() << endl;
 }

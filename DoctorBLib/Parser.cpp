@@ -1,16 +1,13 @@
 #include "stdafx.h"
 #include "Parser.h"
-#include <string>
-#include <vector>
 #include <boost/algorithm/string.hpp>
 #include <boost/optional.hpp>
-#include "Piece.h"
 #include "Constants.h"
 #include "MoveGenerator.h"
 
 using namespace std;
 
-bool Parser::ParsePosition(const vector<string>& position_tokens, Position& position) {
+bool Parser::ParsePosition(const vector<string>& position_tokens, Position& position, HistoryMap& history) {
 	vector<string>::const_iterator moves_it = find(position_tokens.begin(), position_tokens.end(), "moves");
 
 	if (position_tokens[0] == "startpos") {
@@ -25,10 +22,13 @@ bool Parser::ParsePosition(const vector<string>& position_tokens, Position& posi
 			return false;
 	}
 
+	history.Clear();
+	history.Increase(position.GetHashKey());
+
 	//parse the moves
 	if (moves_it < position_tokens.end()) {
 		vector<string> move_tokens(moves_it + 1, position_tokens.end());
-		if (!ParsePositionMoves(move_tokens, position))
+		if (!ParsePositionMoves(move_tokens, position, history))
 			return false;
 	}
 
@@ -174,7 +174,7 @@ bool Parser::ParseSquare(string text, Square& square) {
 	return true;
 }
 
-bool Parser::ParsePositionMoves(const vector<string>& tokens, Position& position) {
+bool Parser::ParsePositionMoves(const vector<string>& tokens, Position& position, HistoryMap& history) {
 	Move move;
 	for (string token : tokens) {
 		if (!ParseMove(token, move))
@@ -186,6 +186,11 @@ bool Parser::ParsePositionMoves(const vector<string>& tokens, Position& position
 
 		if (!position.ApplyMove(move))
 			return false;
+
+		if (position.GetHalfmoveClock() == 0)
+			history.Clear();
+
+		history.Increase(position.GetHashKey());
 	}
 	return true;
 }

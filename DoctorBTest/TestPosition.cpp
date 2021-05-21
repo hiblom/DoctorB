@@ -10,6 +10,7 @@
 #include "Constants.h"
 #include "Parser.h"
 #include "Zobrist.h"
+#include "HistoryMap.h"
 
 using namespace std;
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
@@ -36,7 +37,8 @@ public:
 	TEST_METHOD(TestPositionClearSquare) {
 		//arrange
 		Position pos;
-		Parser::ParsePosition({ "startpos" }, pos);
+		HistoryMap history;
+		Parser::ParsePosition({ "startpos" }, pos, history);
 		Square square(Square::E1);
 		Piece actual_piece;
 
@@ -51,7 +53,8 @@ public:
 	TEST_METHOD(TestPositionClearSquarePiece) {
 		//arrange
 		Position pos;
-		Parser::ParsePosition({ "startpos" }, pos);
+		HistoryMap history;
+		Parser::ParsePosition({ "startpos" }, pos, history);
 		Square square(Square::E8);
 		Piece piece(Piece::TYPE_KING, Piece::COLOR_BLACK);
 		Piece actual_piece;
@@ -157,7 +160,8 @@ public:
 	TEST_METHOD(TestPositionGenerateHashKey) {
 		//arrange
 		Position pos;
-		Parser::ParsePosition({ "startpos" }, pos);
+		HistoryMap history;
+		Parser::ParsePosition({ "startpos" }, pos, history);
 
 		//act
 		uint64_t pos_hash_key = pos.GetHashKey();
@@ -171,8 +175,9 @@ public:
 	TEST_METHOD(TestPositionGenerateHashKey2) {
 		//arrange
 		Position pos;
+		HistoryMap history;
 		vector<string> tokens = { "startpos", "moves", "b1c3", "e7e5", "g1f3", "b8c6", "d2d4", "e5d4", "f3d4", "g8f6", "c1f4", "f8b4", "d1d3" };
-		Parser::ParsePosition(tokens, pos);
+		Parser::ParsePosition(tokens, pos, history);
 
 		//act
 		uint64_t pos_hash_key = pos.GetHashKey();

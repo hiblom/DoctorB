@@ -5,6 +5,7 @@
 #include "MoveBoard.h"
 #include "Position.h"
 #include "Parser.h"
+#include "HistoryMap.h"
 
 using namespace std;
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
@@ -15,8 +16,9 @@ public:
 	TEST_METHOD(TestPieceSearcherGo) {
 		//arrange
 		Position pos;
-		Parser::ParsePosition({ "startpos" }, pos);
-		Searcher search(pos);
+		HistoryMap history;
+		Parser::ParsePosition({ "startpos" }, pos, history);
+		Searcher search(pos, history);
 
 		//act
 		search.GoDepth(2);

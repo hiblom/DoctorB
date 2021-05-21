@@ -9,7 +9,7 @@
 
 using namespace std;
 
-AlphaBetaOrder::AlphaBetaOrder(const Position & base_position) : SearchAlgorithm(base_position) {
+AlphaBetaOrder::AlphaBetaOrder(const Position& base_position, HistoryMap& history) : SearchAlgorithm(base_position, history) {
 }
 
 
@@ -33,16 +33,22 @@ void AlphaBetaOrder::Loop(const uint64_t iteration_depth, Score& score, std::vec
 
 	int depth = 0;
 	while (depth >= 0) {
-		//see if position is in the TT with a score
 		Score tt_score;
 		uint16_t tt_remaining_depth;
-		if (depth > 0 && TranspositionTable::GetInstance().FindScore(depth_position[depth].GetHashKey(), tt_score, tt_remaining_depth)) {
+		//examine three-fold repetition
+		if ((depth == 1 || depth == 2) && history_.IsAtMax(depth_position[depth].GetHashKey())) {
+			depth_score[depth] = Score(0);
+			score_depth = depth;
+			depth--;
+		}
+		else if (depth > 0 && TranspositionTable::GetInstance().FindScore(depth_position[depth].GetHashKey(), tt_score, tt_remaining_depth)) {
+			//see if position is in the TT with a score
 			if (tt_remaining_depth >= (iteration_depth - depth)) {
 				depth_score[depth] = tt_score;
 				score_depth = depth;
 				depth--;
 			}
-		} 
+		}
 		else if (depth == iteration_depth) {
 			//evaluate
 			//go to SEE only when it was a capture

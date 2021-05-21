@@ -3,6 +3,7 @@
 #include "CppUnitTest.h"
 #include "ToStringSpecializations.h"
 #include "Position.h"
+#include "HistoryMap.h"
 #include "Perft.h"
 #include "Parser.h"
 #include "MoveBoard.h"
@@ -16,7 +17,8 @@ public:
 	TEST_METHOD(TestPerftStartpos1) {
 		//arrange
 		Position pos;
-		Parser::ParsePosition({ "startpos" }, pos);
+		HistoryMap history;
+		Parser::ParsePosition({ "startpos" }, pos, history);
 		Perft perft(pos);
 		perft.SetDepth(1);
 

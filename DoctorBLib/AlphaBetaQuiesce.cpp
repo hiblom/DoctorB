@@ -8,7 +8,7 @@
 
 using namespace std;
 
-AlphaBetaQuiesce::AlphaBetaQuiesce(const Position& base_position) : SearchAlgorithm(base_position) {
+AlphaBetaQuiesce::AlphaBetaQuiesce(const Position& base_position, HistoryMap& history) : SearchAlgorithm(base_position, history) {
 }
 
 AlphaBetaQuiesce::~AlphaBetaQuiesce() {

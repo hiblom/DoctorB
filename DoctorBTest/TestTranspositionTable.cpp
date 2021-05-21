@@ -4,6 +4,7 @@
 #include "TranspositionTable.h"
 #include "Position.h"
 #include "Parser.h"
+#include "HistoryMap.h"
 
 using namespace std;
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
@@ -14,8 +15,9 @@ public:
 	TEST_METHOD(TestTranspositionTableAddFindTrue) {
 		//arrange
 		Position pos;
+		HistoryMap history;
 		vector<string> tokens = { "startpos" };
-		Parser::ParsePosition(tokens, pos);
+		Parser::ParsePosition(tokens, pos, history);
 		Move move = Move(Piece(Piece::TYPE_PAWN, Piece::COLOR_WHITE), Square(Square::E2), Square(Square::E4));
 
 		//act
@@ -32,8 +34,9 @@ public:
 	TEST_METHOD(TestTranspositionTableAddFindFalse) {
 		//arrange
 		Position pos_1;
+		HistoryMap history;
 		vector<string> tokens = { "startpos" };
-		Parser::ParsePosition(tokens, pos_1);
+		Parser::ParsePosition(tokens, pos_1, history);
 		Move move = Move(Piece(Piece::TYPE_PAWN, Piece::COLOR_WHITE), Square(Square::E2), Square(Square::E4));
 
 		//act

@@ -418,7 +418,8 @@ public:
 	TEST_METHOD(TestMoveGeneratorStartPos) {
 		//arrange
 		Position pos;
-		Parser::ParsePosition({ "startpos" }, pos);
+		HistoryMap history;
+		Parser::ParsePosition({ "startpos" }, pos, history);
 		vector<Move> moves;
 		MoveGenerator moveGen = MoveGenerator(pos);
 

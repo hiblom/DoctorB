@@ -8,7 +8,7 @@
 
 using namespace std;
 
-AlphaBeta::AlphaBeta(const Position& base_position) : SearchAlgorithm(base_position) {
+AlphaBeta::AlphaBeta(const Position& base_position, HistoryMap& history) : SearchAlgorithm(base_position, history) {
 }
 
 AlphaBeta::~AlphaBeta() {

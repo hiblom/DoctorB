@@ -4,7 +4,7 @@
 class AlphaBetaOrder : public SearchAlgorithm
 {
 public:
-	AlphaBetaOrder(const Position& base_position);
+	AlphaBetaOrder(const Position& base_position, HistoryMap& history);
 	~AlphaBetaOrder();
 private:
 	void Loop(const uint64_t iteration_depth, Score& score, std::vector<Move>& pv);

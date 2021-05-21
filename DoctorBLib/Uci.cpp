@@ -39,8 +39,10 @@ bool Uci::Execute(string command) {
 		return true;
 	else if (command_parts[0] == "register")
 		return true;
-	else if (command_parts[0] == "ucinewgame")
+	else if (command_parts[0] == "ucinewgame") {
+		executeUciNewGame();
 		return true;
+	}
 	else if (command_parts[0] == "position") {
 		executePosition(command_parts);
 		return true;
@@ -71,6 +73,11 @@ void Uci::executeUci() {
 	cout << "uciok" << endl;
 }
 
+void Uci::executeUciNewGame() {
+	position_.reset();
+	history_.Clear();
+}
+
 void Uci::executeIsReady() {
 	cout << "readyok" << endl;
 }
@@ -81,10 +88,10 @@ void Uci::executePosition(const std::vector<std::string>& command_parts) {
 		return;
 	}
 
-	position = Position();
+	position_ = Position();
 
 	vector<string> position_tokens(command_parts.begin() + 1, command_parts.end());
-	Parser::ParsePosition(position_tokens, position.value());
+	Parser::ParsePosition(position_tokens, position_.value(), history_);
 }
 
 void Uci::executeGo(const std::vector<std::string>& command_parts) {
@@ -93,7 +100,7 @@ void Uci::executeGo(const std::vector<std::string>& command_parts) {
 		return;
 	}
 
-	if (!position.has_value()) {
+	if (!position_.has_value()) {
 		cout << "No position set" << endl;
 		return;
 	}
@@ -123,7 +130,7 @@ void Uci::goDepth(const vector<string>& tokens) {
 		return;
 	}
 
-	Searcher search(position.value());
+	Searcher search(position_.value(), history_);
 	search.GoDepth(depth);
 }
 
@@ -149,7 +156,7 @@ void Uci::goTime(const vector<string>& tokens) {
 		i++;
 	}
 
-	Searcher search(position.value());
+	Searcher search(position_.value(), history_);
 	search.GoTime(wtime, btime, winc, binc, movestogo);
 }
 
@@ -167,7 +174,7 @@ void Uci::goPerft(const vector<string>& tokens) {
 	
 	auto start_time = chrono::system_clock::now();
 
-	Perft perft(position.value());
+	Perft perft(position_.value());
 	perft.SetDepth(depth);
 	uint64_t count = perft.Go();
 
@@ -182,12 +189,12 @@ void Uci::goPerft(const vector<string>& tokens) {
 }
 
 void Uci::executeD() {
-	if (!position.has_value()) {
+	if (!position_.has_value()) {
 		cout << "No position set";
 	}
-	cout << position.value().ToString();
+	cout << position_.value().ToString();
 	
-	Evaluator eval(position.value());
+	Evaluator eval(position_.value());
 	Score score;
 	eval.Evaluate(score);
 	cout << "Evaluation: " << score.ToString(Piece::COLOR_WHITE, 1) << endl;

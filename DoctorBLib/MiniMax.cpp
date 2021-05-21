@@ -8,7 +8,7 @@
 
 using namespace std;
 
-MiniMax::MiniMax(const Position& base_position) : SearchAlgorithm(base_position) {
+MiniMax::MiniMax(const Position& base_position, HistoryMap& history) : SearchAlgorithm(base_position, history) {
 }
 
 MiniMax::~MiniMax() {

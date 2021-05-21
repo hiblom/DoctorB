@@ -5,7 +5,7 @@
 class AlphaBetaQuiesce : public SearchAlgorithm
 {
 public:
-	AlphaBetaQuiesce(const Position& base_position);
+	AlphaBetaQuiesce(const Position& base_position, HistoryMap& history);
 	~AlphaBetaQuiesce();
 private:
 	void Loop(const uint64_t iteration_depth, Score& score, std::vector<Move>& pv);
