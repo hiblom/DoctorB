@@ -10,16 +10,18 @@ DoctorB is named after a character in *Schachnovelle* by Stefan Zweig. Dr B play
 * Piece square board evaluation
 * Hashing / transposition table
 * Move ordering
+* Static Exchange Evaluation (SEE)
+* Repetition detection
 
 ## Next up
 * Quiesence search
-* Repetition detection
 * Support opening books
 * Threaded search to implement quit and stop commands properly
 
 ## Down the road
 * Advanced board evaluation
 * End game tables
+* Aspiration Windows
 * Multi-threaded search
 * ...
 
