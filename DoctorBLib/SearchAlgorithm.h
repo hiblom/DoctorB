@@ -7,7 +7,7 @@
 
 class SearchAlgorithm {
 public:
-	SearchAlgorithm(const Position& base_position, HistoryMap& history) : base_position_(base_position), history_(history) {};
+	SearchAlgorithm(const Position& base_position, HistoryMap& history) : base_position_(base_position), history_(history), node_count_(0) {};
 	Move GoDepth(uint64_t max_depth);
 	Move GoTime(uint64_t max_duration);
 protected:

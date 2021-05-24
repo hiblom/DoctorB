@@ -1,16 +1,8 @@
 #include "stdafx.h"
 #include "Options.h"
 
-Options::Options() {
-	//set defaults
-	MaxHashSizeMb = 16;
-}
+using namespace std;
 
-
-Options::~Options() {
-}
-
-Options& Options::GetInstance() {
-	static Options instance;
-	return instance;
-}
+size_t Options::Hash = 32;
+bool Options::OwnBook = false;
+string Options::OwnBookPath = "openings.bin";

@@ -73,7 +73,7 @@ void TranspositionTable::Clear() {
 
 void TranspositionTable::Reset() {
 	int elem_size = sizeof(pair<uint64_t, Entry>);
-	max_size = (Options::GetInstance().MaxHashSizeMb * 1048576Ui32) / elem_size;
+	max_size = (Options::Hash * 1048576Ui32) / elem_size;
 	map->clear();
 	map->reserve(max_size);
 }

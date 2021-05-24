@@ -166,6 +166,7 @@
     <ClInclude Include="Parser.h" />
     <ClInclude Include="Perft.h" />
     <ClInclude Include="Piece.h" />
+    <ClInclude Include="Polyglot.h" />
     <ClInclude Include="Position.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Score.h" />
@@ -193,6 +194,7 @@
     <ClCompile Include="Parser.cpp" />
     <ClCompile Include="Perft.cpp" />
     <ClCompile Include="Piece.cpp" />
+    <ClCompile Include="Polyglot.cpp" />
     <ClCompile Include="Position.cpp" />
     <ClCompile Include="Score.cpp" />
     <ClCompile Include="SearchAlgorithm.cpp" />

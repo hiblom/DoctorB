@@ -2,6 +2,7 @@
 #include "Move.h"
 
 Move::Move() {
+	status_bits_ = 0Ui8;
 }
 
 Move::Move(const Piece piece, const Square square_from, const Square square_to) {
