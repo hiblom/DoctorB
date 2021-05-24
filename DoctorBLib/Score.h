@@ -5,8 +5,8 @@
 class Score
 {
 public:
-	static const int64_t WHITE_START_SCORE = -65536;
 	static const int64_t BLACK_START_SCORE = 65536;
+	static const int64_t WHITE_START_SCORE = -65536;
 	static const int64_t BLACK_MATE_SCORE = -32768;
 	static const int64_t WHITE_MATE_SCORE = 32768;
 

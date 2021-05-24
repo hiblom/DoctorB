@@ -6,13 +6,13 @@ class Piece
 {
 public:
 	static const std::uint8_t TYPE_PAWN = 0;
-	static const std::uint8_t TYPE_KING = 2;
-	static const std::uint8_t TYPE_QUEEN = 4;
+	static const std::uint8_t TYPE_KNIGHT = 2;
+	static const std::uint8_t TYPE_BISHOP = 4;
 	static const std::uint8_t TYPE_ROOK = 6;
-	static const std::uint8_t TYPE_BISHOP = 8;
-	static const std::uint8_t TYPE_KNIGHT = 10;
-	static const std::uint8_t COLOR_WHITE = 0;
-	static const std::uint8_t COLOR_BLACK = 1;
+	static const std::uint8_t TYPE_QUEEN = 8;
+	static const std::uint8_t TYPE_KING = 10;
+	static const std::uint8_t COLOR_BLACK = 0;
+	static const std::uint8_t COLOR_WHITE = 1;
 
 	Piece();
 	Piece(uint8_t piece_value);

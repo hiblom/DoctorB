@@ -206,7 +206,6 @@
     </ClCompile>
     <ClCompile Include="TranspositionTable.cpp" />
     <ClCompile Include="Uci.cpp" />
-    <ClCompile Include="Zobrist.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -172,6 +172,21 @@ public:
 		Assert::AreEqual(pos_hash_key, generated_hash_key);
 	}
 
+	TEST_METHOD(TestPositionStartingHashKey) {
+		//arrange
+		Position pos;
+		HistoryMap history;
+		Parser::ParsePosition({ "startpos" }, pos, history);
+		uint64_t expected_key = 0x463b96181691fc9cULL;
+
+		//act
+		uint64_t actual_key = pos.GetHashKey();
+
+
+		//assert
+		Assert::AreEqual(actual_key, expected_key);
+	}
+
 	TEST_METHOD(TestPositionGenerateHashKey2) {
 		//arrange
 		Position pos;

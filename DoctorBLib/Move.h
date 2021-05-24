@@ -28,6 +28,7 @@ public:
 	std::string ToString() const;
 	Move& SetPiece(const Piece piece);
 	void GetPiece(Piece& piece) const;
+	bool IsValid() const;
 
 private:
 	static const uint8_t MASK_CAPTURE = 0b00000001Ui8;

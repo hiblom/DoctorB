@@ -69,11 +69,11 @@ void MoveGenerator::GenerateMoves(vector<Move>& moves) {
 }
 
 void MoveGenerator::GenerateKingMoves(vector<Move>& moves) const {
-	static const int CASTLING_KINGSIDE[2] = { Constants::CASTLING_WHITE_KINGSIDE, Constants::CASTLING_BLACK_KINGSIDE };
-	static const int CASTLING_QUEENSIDE[2] = { Constants::CASTLING_WHITE_QUEENSIDE, Constants::CASTLING_BLACK_QUEENSIDE };
-	static const int KING_SQUARE[2] = { Square::E1, Square::E8 };
-	static const int ROOK_SQUARE_KINGSIDE[2] = { Square::G1, Square::G8 };
-	static const int ROOK_SQUARE_QUEENSIDE[2] = { Square::C1, Square::C8 };
+	static const int CASTLING_KINGSIDE[2] = { Constants::CASTLING_BLACK_KINGSIDE, Constants::CASTLING_WHITE_KINGSIDE};
+	static const int CASTLING_QUEENSIDE[2] = { Constants::CASTLING_BLACK_QUEENSIDE, Constants::CASTLING_WHITE_QUEENSIDE };
+	static const int KING_SQUARE[2] = { Square::E8, Square::E1 };
+	static const int ROOK_SQUARE_KINGSIDE[2] = { Square::G8, Square::G1 };
+	static const int ROOK_SQUARE_QUEENSIDE[2] = { Square::C8, Square::C1 };
 
 	Piece active_piece = Piece(Piece::TYPE_KING, active_color);
 	Square from_square;
@@ -126,8 +126,8 @@ void MoveGenerator::GenerateKnightMoves(vector<Move>& moves) const {
 }
 
 void MoveGenerator::GeneratePawnMoves(std::vector<Move>& moves) const {
-	static const uint8_t DOUBLE_PUSH_RANKS[2] = { 1Ui8, 6Ui8 };
-	static const uint8_t PROMOTION_RANKS[2] = { 6Ui8, 1Ui8 };
+	static const uint8_t DOUBLE_PUSH_RANKS[2] = { 6Ui8, 1Ui8 };
+	static const uint8_t PROMOTION_RANKS[2] = { 1Ui8, 6Ui8 };
 	BitBoard&(BitBoard::*pawn_forward)() = MoveBoard::GetInstance().Forward[active_color];
 
 	const Piece active_piece = Piece(Piece::TYPE_PAWN, active_color);

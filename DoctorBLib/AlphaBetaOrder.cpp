@@ -18,8 +18,6 @@ AlphaBetaOrder::~AlphaBetaOrder() {
 
 //use a loop (no recursion) to calculate the best move using the AlphaBeta algorithm with move ordering
 void AlphaBetaOrder::Loop(const uint64_t iteration_depth, Score& score, std::vector<Move>& pv) {
-	static const int64_t START_SCORE[2] = { Score::WHITE_START_SCORE, Score::BLACK_START_SCORE };
-
 	vector<Position> depth_position(iteration_depth + 1);
 	vector<vector<Move>> depth_moves(iteration_depth, vector<Move>(128));
 	vector<int> depth_index(iteration_depth);

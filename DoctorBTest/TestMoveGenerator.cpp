@@ -182,14 +182,15 @@ public:
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
 		MoveGenerator moveGen = MoveGenerator(pos);
+		Piece piece(Piece::TYPE_PAWN, Piece::COLOR_WHITE);
 
 		//act
 		moveGen.GeneratePawnMoves(moves);
 
 		//assert
 		Assert::AreEqual(2Ui64, moves.size());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(11Ui8), Square(19Ui8))) != moves.end());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(11Ui8), Square(27Ui8)).SetDoublePush()) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(11Ui8), Square(19Ui8))) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(11Ui8), Square(27Ui8)).SetDoublePush()) != moves.end());
 	}
 
 
@@ -200,14 +201,15 @@ public:
 		Parser::ParseFen(tokens, pos);
 		vector<Move> moves;
 		MoveGenerator moveGen = MoveGenerator(pos);
+		Piece piece(Piece::TYPE_PAWN, Piece::COLOR_WHITE);
 
 		//act
 		moveGen.GeneratePawnMoves(moves);
 
 		//assert
 		Assert::AreEqual(2Ui64, moves.size());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(Square::D2), Square(Square::C3)).SetCapture(true)) != moves.end());
-		Assert::IsTrue(find(moves.begin(), moves.end(), Move(Square(Square::D2), Square(Square::E3)).SetCapture(true)) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(Square::D2), Square(Square::C3)).SetCapture(true)) != moves.end());
+		Assert::IsTrue(find(moves.begin(), moves.end(), Move(piece, Square(Square::D2), Square(Square::E3)).SetCapture(true)) != moves.end());
 	}
 
 	TEST_METHOD(TestMoveGeneratorGenerateBlackPawnPushes) {
@@ -420,6 +422,22 @@ public:
 		Position pos;
 		HistoryMap history;
 		Parser::ParsePosition({ "startpos" }, pos, history);
+		vector<Move> moves;
+		MoveGenerator moveGen = MoveGenerator(pos);
+
+		//act
+		moveGen.GenerateMoves(moves);
+
+		//assert
+		Assert::AreEqual(20Ui64, moves.size());
+	}
+
+	TEST_METHOD(TestMoveGeneratorStartPosA2A4) {
+		//arrange
+		Position pos;
+		HistoryMap history;
+		vector<string> tokens = { "startpos", "moves", "a2a4" };
+		Parser::ParsePosition(tokens, pos, history);
 		vector<Move> moves;
 		MoveGenerator moveGen = MoveGenerator(pos);
 

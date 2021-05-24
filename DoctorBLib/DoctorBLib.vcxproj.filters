@@ -140,9 +140,6 @@
     <ClCompile Include="Searcher.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Zobrist.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="TranspositionTable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

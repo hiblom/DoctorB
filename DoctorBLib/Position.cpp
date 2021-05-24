@@ -8,10 +8,11 @@
 using namespace std;
 
 Position::Position() {
-	//empty board equals hash_key = 0, so no castling status, white to move, no pieces
+	//empty board equals hash_key = 0, so no castling status, black to move(!), no pieces
 	castling_status_bits = 0Ui8;
-	active_color = Piece::COLOR_WHITE;
+	active_color = Piece::COLOR_BLACK;
 	hash_key = 0Ui64;
+	halfmove_clock = 0;
 }
 
 Position::~Position() {
@@ -19,14 +20,14 @@ Position::~Position() {
 
 void Position::SetPiece(const Square& square, const Piece& piece) {
 	bit_boards[piece.GetValue()].Set(square.GetValue());
-	hash_key ^= Zobrist::GetInstance().PIECE_SQUARE_KEY[piece.GetValue()][square.GetValue()];
+	hash_key ^= Zobrist::PIECE_SQUARE_KEY[piece.GetValue()][square.GetValue()];
 }
 
 void Position::ClearSquare(const Square& square) {
 	for (uint8_t p = 0; p <= 11; p++) {
 		if (bit_boards[p].Check(square.GetValue())) {
 			bit_boards[p].Clear(square.GetValue());
-			hash_key ^= Zobrist::GetInstance().PIECE_SQUARE_KEY[p][square.GetValue()];
+			hash_key ^= Zobrist::PIECE_SQUARE_KEY[p][square.GetValue()];
 			break;
 		}
 	}
@@ -35,7 +36,7 @@ void Position::ClearSquare(const Square& square) {
 void Position::ClearSquare(const Square& square, const Piece& piece) {
 	if (bit_boards[piece.GetValue()].Check(square.GetValue())) {
 		bit_boards[piece.GetValue()].Clear(square.GetValue());
-		hash_key ^= Zobrist::GetInstance().PIECE_SQUARE_KEY[piece.GetValue()][square.GetValue()];
+		hash_key ^= Zobrist::PIECE_SQUARE_KEY[piece.GetValue()][square.GetValue()];
 	}
 }
 
@@ -52,13 +53,13 @@ bool Position::GetPiece(const Square & square, Piece& piece) const {
 void Position::SetActiveColor(uint8_t color) {
 	if (color != active_color) {
 		active_color = color;
-		hash_key ^= Zobrist::GetInstance().BLACK_TURN_KEY;
+		hash_key ^= Zobrist::WHITE_TURN_KEY;
 	}
 }
 
 void Position::ToggleActiveColor() {
 	active_color ^= 1Ui8;
-	hash_key ^= Zobrist::GetInstance().BLACK_TURN_KEY;
+	hash_key ^= Zobrist::WHITE_TURN_KEY;
 }
 
 uint8_t Position::GetActiveColor() const {
@@ -69,7 +70,7 @@ void Position::SetCastlingStatus(int index, bool value) {
 	bool current_status = GetCastlingStatus(index);
 	if (value != current_status) {
 		castling_status_bits = (castling_status_bits & ~(1Ui8 << index)) | ((uint8_t)value << index);
-		hash_key ^= Zobrist::GetInstance().CASTLING_KEY[index];
+		hash_key ^= Zobrist::CASTLING_KEY[index];
 	}
 }
 
@@ -79,15 +80,15 @@ bool Position::GetCastlingStatus(int index) const {
 
 void Position::SetEpSquare(const Square& square) {
 	if (ep_square.has_value()) {
-		hash_key ^= Zobrist::GetInstance().EP_FILE_KEY[ep_square.value().GetX()];
+		hash_key ^= Zobrist::EP_FILE_KEY[ep_square.value().GetX()];
 	}
 	ep_square = square;
-	hash_key ^= Zobrist::GetInstance().EP_FILE_KEY[square.GetX()];
+	hash_key ^= Zobrist::EP_FILE_KEY[square.GetX()];
 }
 
 void Position::ResetEpSquare() {
 	if (ep_square.has_value()) {
-		hash_key ^= Zobrist::GetInstance().EP_FILE_KEY[ep_square.value().GetX()];
+		hash_key ^= Zobrist::EP_FILE_KEY[ep_square.value().GetX()];
 	}
 	ep_square.reset();
 }
@@ -133,7 +134,7 @@ string Position::ToString() const {
 }
 
 bool Position::ApplyMove(const Move& move) {
-	static const uint8_t EP_RANK[2] = { 2Ui8, 5Ui8 };
+	static const uint8_t EP_RANK[2] = { 5Ui8, 2Ui8 };
 
 	uint8_t inactive_color = active_color ^ 1Ui8;
 
@@ -247,20 +248,20 @@ void Position::RecalculateHashKey() {
 		BitBoard b = GetBitBoard(p);
 		Square s;
 		while (b.PopLowestSquare(s)) 
-			hash_key ^= Zobrist::GetInstance().PIECE_SQUARE_KEY[p][s.GetValue()];
+			hash_key ^= Zobrist::PIECE_SQUARE_KEY[p][s.GetValue()];
 	}
 
-	if (GetActiveColor() == Piece::COLOR_BLACK)
-		hash_key ^= Zobrist::GetInstance().BLACK_TURN_KEY;
+	if (GetActiveColor() == Piece::COLOR_WHITE)
+		hash_key ^= Zobrist::WHITE_TURN_KEY;
 
 	for (int i = 0; i < 4; i++) {
 		if (GetCastlingStatus(i))
-			hash_key ^= Zobrist::GetInstance().CASTLING_KEY[i];
+			hash_key ^= Zobrist::CASTLING_KEY[i];
 	}
 
 	Square ep_square;
 	if (GetEpSquare(ep_square))
-		hash_key ^= Zobrist::GetInstance().EP_FILE_KEY[ep_square.GetX()];
+		hash_key ^= Zobrist::EP_FILE_KEY[ep_square.GetX()];
 }
 
 uint64_t Position::GetHashKey() const {

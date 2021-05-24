@@ -111,7 +111,7 @@ Move& Move::SetDoublePush() {
 }
 
 std::string Move::ToString() const {
-	if (square_from_.GetValue() == 0 && square_to_.GetValue() == 0)
+	if (!IsValid())
 		return "-";
 
 	if (status_bits_ & MASK_PROMOTION) {
@@ -130,5 +130,9 @@ Move& Move::SetPiece(const Piece piece) {
 
 void Move::GetPiece(Piece& piece) const {
 	piece.SetValue(piece_.GetValue());
+}
+
+bool Move::IsValid() const {
+	return square_from_.GetValue() != 0 || square_to_.GetValue() != 0;
 }
 
