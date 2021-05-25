@@ -30,4 +30,13 @@ Next to the traditional UCI commands, DoctorB also supports the following comman
 * `go perft [n]` : show the number of possible positions after [n] plies
 * `d` : display the current position
 
+## Acknowledgements
+I'm trying to keep things originial. However, this engine would not have been possible without the following sources:
+* https://www.chessprogramming.org/Main_Page
+* https://www.arasanchess.org/programr.shtml
+* https://github.com/AndyGrant/Ethereal
+* https://github.com/jdart1/arasan-chess
+* http://wbec-ridderkerk.nl/html/UCIProtocol.html
+* http://hgm.nubati.net/book_format.html
+
 
