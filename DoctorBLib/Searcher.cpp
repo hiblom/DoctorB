@@ -18,7 +18,6 @@ Searcher::Searcher(const Position& base_position, HistoryMap& history) : base_po
 }
 
 void Searcher::GoDepth(int depth) {
-	//book?
 	if (Options::OwnBook) {
 		Move move = Polyglot::get_instance().get_move(base_position_.GetHashKey());
 		if (move.IsValid()) {
@@ -33,7 +32,6 @@ void Searcher::GoDepth(int depth) {
 }
 
 void Searcher::GoTime(uint64_t wtime, uint64_t btime, uint64_t winc, uint64_t binc, uint64_t movestogo) {
-	//book?
 	if (Options::OwnBook) {
 		Move move = Polyglot::get_instance().get_move(base_position_.GetHashKey());
 		if (move.IsValid()) {
