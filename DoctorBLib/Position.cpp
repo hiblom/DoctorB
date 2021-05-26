@@ -82,8 +82,34 @@ void Position::SetEpSquare(const Square& square) {
 	if (ep_square.has_value()) {
 		hash_key ^= Zobrist::EP_FILE_KEY[ep_square.value().GetX()];
 	}
-	ep_square = square;
-	hash_key ^= Zobrist::EP_FILE_KEY[square.GetX()];
+
+	//polyglot hashing; only set ep square when there is an enemy pawn next to the moved pawn
+	bool setEpSquare = false;
+
+	uint8_t other_color = square.GetY() == 2 ? Piece::COLOR_BLACK : Piece::COLOR_WHITE;
+	uint8_t other_y = square.GetY() == 2 ? 3 : 4;
+	Piece other_pawn = Piece(Piece::TYPE_PAWN, other_color);
+	if (square.GetX() > 0) {
+		Piece piece;
+		if (GetPiece(Square(square.GetX() - 1, other_y), piece)) {
+			if (piece.GetValue() == other_pawn.GetValue()) {
+				setEpSquare = true;
+			}
+		}
+	}
+	if (!setEpSquare && square.GetX() < 7) {
+		Piece piece;
+		if (GetPiece(Square(square.GetX() + 1, other_y), piece)) {
+			if (piece.GetValue() == other_pawn.GetValue()) {
+				setEpSquare = true;
+			}
+		}
+	}
+
+	if (setEpSquare) {
+		ep_square = square;
+		hash_key ^= Zobrist::EP_FILE_KEY[square.GetX()];
+	}
 }
 
 void Position::ResetEpSquare() {

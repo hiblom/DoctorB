@@ -106,8 +106,8 @@ public:
 		bool result = pos.GetEpSquare(actual_ep_square);
 
 		//assert
-		Assert::IsTrue(result);
-		Assert::AreEqual(ep_square, actual_ep_square);
+		Assert::IsFalse(result); //note: polyglot hashing: ep square will not be set when there is no enemy pawn next to moved pawn
+		//Assert::AreEqual(ep_square, actual_ep_square);
 	}
 
 	TEST_METHOD(TestPositionResetEpSquare) {
@@ -172,21 +172,6 @@ public:
 		Assert::AreEqual(pos_hash_key, generated_hash_key);
 	}
 
-	TEST_METHOD(TestPositionStartingHashKey) {
-		//arrange
-		Position pos;
-		HistoryMap history;
-		Parser::ParsePosition({ "startpos" }, pos, history);
-		uint64_t expected_key = 0x463b96181691fc9cULL;
-
-		//act
-		uint64_t actual_key = pos.GetHashKey();
-
-
-		//assert
-		Assert::AreEqual(actual_key, expected_key);
-	}
-
 	TEST_METHOD(TestPositionGenerateHashKey2) {
 		//arrange
 		Position pos;
@@ -201,6 +186,140 @@ public:
 
 		//assert
 		Assert::AreEqual(pos_hash_key, generated_hash_key);
+	}
+
+	TEST_METHOD(TestPositionPolyglotHash1) {
+		//arrange
+		Position pos;
+		HistoryMap history;
+		Parser::ParsePosition({ "startpos" }, pos, history);
+		uint64_t expected_key = 0x463b96181691fc9cUi64;
+
+		//act
+		uint64_t actual_key = pos.GetHashKey();
+
+		//assert
+		Assert::AreEqual(actual_key, expected_key);
+	}
+
+	TEST_METHOD(TestPositionPolyglotHash2) {
+		//arrange
+		Position pos;
+		HistoryMap history;
+		vector<string> tokens = { "startpos", "moves", "e2e4" };
+		Parser::ParsePosition(tokens, pos, history);
+		uint64_t expected_key = 0x823c9b50fd114196Ui64;
+
+		//act
+		uint64_t actual_key = pos.GetHashKey();
+
+		//assert
+		Assert::AreEqual(actual_key, expected_key);
+	}
+
+	TEST_METHOD(TestPositionPolyglotHash3) {
+		//arrange
+		Position pos;
+		HistoryMap history;
+		vector<string> tokens = { "startpos", "moves", "e2e4", "d7d5" };
+		Parser::ParsePosition(tokens, pos, history);
+		uint64_t expected_key = 0x0756b94461c50fb0Ui64;
+
+		//act
+		uint64_t actual_key = pos.GetHashKey();
+
+		//assert
+		Assert::AreEqual(actual_key, expected_key);
+	}
+
+	TEST_METHOD(TestPositionPolyglotHash4) {
+		//arrange
+		Position pos;
+		HistoryMap history;
+		vector<string> tokens = { "startpos", "moves", "e2e4", "d7d5", "e4e5" };
+		Parser::ParsePosition(tokens, pos, history);
+		uint64_t expected_key = 0x662fafb965db29d4Ui64;
+
+		//act
+		uint64_t actual_key = pos.GetHashKey();
+
+		//assert
+		Assert::AreEqual(actual_key, expected_key);
+	}
+
+	TEST_METHOD(TestPositionPolyglotHash5) {
+		//arrange
+		Position pos;
+		HistoryMap history;
+		vector<string> tokens = { "startpos", "moves", "e2e4", "d7d5", "e4e5", "f7f5" };
+		Parser::ParsePosition(tokens, pos, history);
+		uint64_t expected_key = 0x22a48b5a8e47ff78Ui64;
+
+		//act
+		uint64_t actual_key = pos.GetHashKey();
+
+		//assert
+		Assert::AreEqual(actual_key, expected_key);
+	}
+
+	TEST_METHOD(TestPositionPolyglotHash6) {
+		//arrange
+		Position pos;
+		HistoryMap history;
+		vector<string> tokens = { "startpos", "moves", "e2e4", "d7d5", "e4e5", "f7f5", "e1e2" };
+		Parser::ParsePosition(tokens, pos, history);
+		uint64_t expected_key = 0x652a607ca3f242c1Ui64;
+
+		//act
+		uint64_t actual_key = pos.GetHashKey();
+
+		//assert
+		Assert::AreEqual(actual_key, expected_key);
+	}
+
+	TEST_METHOD(TestPositionPolyglotHash7) {
+		//arrange
+		Position pos;
+		HistoryMap history;
+		vector<string> tokens = { "startpos", "moves", "e2e4", "d7d5", "e4e5", "f7f5", "e1e2", "e8f7" };
+		Parser::ParsePosition(tokens, pos, history);
+		uint64_t expected_key = 0x00fdd303c946bdd9Ui64;
+
+		//act
+		uint64_t actual_key = pos.GetHashKey();
+
+		//assert
+		Assert::AreEqual(actual_key, expected_key);
+	}
+
+	TEST_METHOD(TestPositionPolyglotHash8) {
+		//arrange
+		Position pos;
+		HistoryMap history;
+		vector<string> tokens = { "startpos", "moves", "a2a4", "b7b5", "h2h4", "b5b4", "c2c4" };
+		Parser::ParsePosition(tokens, pos, history);
+		uint64_t expected_key = 0x3c8123ea7b067637Ui64;
+
+		//act
+		uint64_t actual_key = pos.GetHashKey();
+
+		//assert
+		Assert::AreEqual(actual_key, expected_key);
+	}
+
+	TEST_METHOD(TestPositionPolyglotHash9) {
+		//arrange
+		Position pos;
+		HistoryMap history;
+		vector<string> tokens = { "startpos", "moves", "a2a4", "b7b5", "h2h4", "b5b4", "c2c4", "b4c3", "a1a3" };
+		Parser::ParsePosition(tokens, pos, history);
+		uint64_t expected_key = 0x5c3f9b829b279560Ui64;
+
+		//act
+		uint64_t actual_key = pos.GetHashKey();
+
+		//assert
+		Assert::AreEqual(actual_key, expected_key);
 	}
 
 	};
