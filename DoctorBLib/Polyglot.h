@@ -25,6 +25,8 @@ private:
 	void read_entry(PolyglotEntry& entry);
 	Move convert_move(uint16_t polyglot_move);
 	int get_random(int max);
+	bool binary_search(uint64_t hash);
+
 	static Polyglot* instance_;
 	std::string filePath_ = "";
 	std::ifstream file_;

@@ -39,37 +39,27 @@ Move Polyglot::get_move(uint64_t hash) {
         return Move();
     }
 
-    bool found = false;
-    
-    //set file pointer to start
-    file_.seekg(0, ios::beg);
+    if (!binary_search(hash))
+        return Move();
 
-    vector<PolyglotEntry> entries;
-    
     int count = 0;
     int total_weight = 0;
-    
+
+    vector<PolyglotEntry> entries;
     PolyglotEntry entry {};
-    
-    //collect all moves with right hash
+
     while (!file_.eof()) {
         read_entry(entry);
-
         count++;
 
-        if (entry.hash < hash)
-            continue;
-        else if (entry.hash > hash)
+        if (entry.hash != hash)
             break;
 
-        found = true;
         PolyglotEntry new_entry(entry);
         total_weight += entry.weight;
         entries.push_back(new_entry);
     }
 
-    if (!found)
-        return Move();
 
     //determine move (with rng)
     int r = get_random(total_weight);
@@ -126,10 +116,10 @@ Move Polyglot::convert_move(uint16_t polyglot_move) {
     uint8_t piece_value = 0;
     switch (polyglot_promo_piece)
     {
-        case 1:  piece_value = Piece::TYPE_KNIGHT; break;
-        case 2:  piece_value = Piece::TYPE_BISHOP; break;
-        case 3:  piece_value = Piece::TYPE_ROOK; break;
-        case 4:  piece_value = Piece::TYPE_QUEEN; break;
+        case 1: piece_value = Piece::TYPE_KNIGHT; break;
+        case 2: piece_value = Piece::TYPE_BISHOP; break;
+        case 3: piece_value = Piece::TYPE_ROOK; break;
+        case 4: piece_value = Piece::TYPE_QUEEN; break;
     }
     
     return Move(square_from, square_to, Piece(piece_value));
@@ -137,6 +127,48 @@ Move Polyglot::convert_move(uint16_t polyglot_move) {
 
 int Polyglot::get_random(int max) {
     return (rand() * RAND_MAX + rand()) % max;
+}
+
+bool Polyglot::binary_search(uint64_t hash) {
+
+    file_.seekg(0, ios::beg);
+    uint64_t min_pos = (uint64_t)file_.tellg();
+
+    file_.seekg(0, ios::end);
+    uint64_t max_pos = (uint64_t)file_.tellg();
+
+    uint64_t entry_count = (max_pos - min_pos) / sizeof(PolyglotEntry);
+
+    uint64_t min = 0;
+    uint64_t max = entry_count;
+    uint64_t mid = 0;
+
+    PolyglotEntry entry {};
+    while (max - min > 1) {
+        mid = (min + max) / 2;
+        file_.seekg(min_pos + mid * sizeof(PolyglotEntry));
+        read_entry(entry);
+        if (entry.hash < hash) {
+            min = mid;
+        }
+        else if (entry.hash > hash) {
+            max = mid;
+        }
+        else break;
+    }
+
+    if (entry.hash != hash)
+        return false;
+
+    //there might be multiple entries. go back until we hit another hash
+    while (entry.hash == hash && mid-- > 0) {
+        file_.seekg(min_pos + mid * sizeof(PolyglotEntry));
+        read_entry(entry);
+    }
+    
+    //set file pointer to start of hash series
+    file_.seekg(min_pos + (mid + 1) * sizeof(PolyglotEntry));
+    return true;
 }
 
 Polyglot* Polyglot::instance_ = nullptr;
