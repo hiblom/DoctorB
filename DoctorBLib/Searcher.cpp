@@ -54,17 +54,11 @@ uint64_t Searcher::GetMaxDuration(uint64_t wtime, uint64_t btime, uint64_t winc,
 		movestogo = 40;
 
 	//be extra careful when moves to go is approaching 1
-	/*
-	int duration_multiplier = 20;
-	if (movestogo == 1)
-		duration_multiplier = 80;
-	else if (movestogo < 5)
-		duration_multiplier = 40;
-	*/
+	int duration_multiplier = movestogo < 5 ? 1 : 2;
 
 	//subtract 50 ms from time left to be on the safe side
 	wtime = wtime > 60 ? wtime - 50 : 10;
 	btime = btime > 60 ? btime - 50 : 10;
 
-	return (base_position_.GetActiveColor() == Piece::COLOR_WHITE) ? (wtime / movestogo + winc) : (btime / movestogo + binc);
+	return (base_position_.GetActiveColor() == Piece::COLOR_WHITE) ? (wtime * duration_multiplier / movestogo + winc) : (btime * duration_multiplier / movestogo + binc);
 }
