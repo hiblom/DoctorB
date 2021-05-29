@@ -12,7 +12,7 @@ DoctorB is named after a character in *Schachnovelle* by Stefan Zweig. Dr B play
 * Move ordering
 * Static Exchange Evaluation (SEE)
 * Repetition detection
-* * Support opening books
+* Support Polyglot opening books
 
 ## Next up
 * Quiesence search
