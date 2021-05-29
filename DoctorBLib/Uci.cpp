@@ -15,6 +15,8 @@
 #include "MoveGenerator.h"
 #include "Options.h"
 #include "TranspositionTable.h"
+#include "Globals.h"
+#include "Constants.h"
 
 using namespace std;
 using namespace boost::algorithm;
@@ -82,15 +84,16 @@ bool Uci::Execute(string command) {
 void Uci::executeUci() {
 	cout << "id name " << App::Name << " " << App::Version << endl;
 	cout << "id author " << App::Author << endl;
-	cout << "option name Hash type spin default " << Options::Hash << " min 1 max 128" << endl;
-	cout << "option name OwnBook type check default " << (Options::OwnBook ? "true" : "false") << endl;
-	cout << "option name OwnBookPath type string default " << Options::OwnBookPath << endl;
+	cout << "option name Hash type spin default " << Constants::DEFAULT_HASH << " min 1 max 128" << endl;
+	cout << "option name OwnBook type check default " << (Constants::DEFAULT_OWN_BOOK ? "true" : "false") << endl;
+	cout << "option name OwnBookPath type string default " << Constants::DEFAULT_OWN_BOOK_PATH << endl;
 	cout << "uciok" << endl;
 }
 
 void Uci::executeUciNewGame() {
 	position_.reset();
 	history_.Clear();
+	Globals::out_of_book = false;
 }
 
 void Uci::executeIsReady() {

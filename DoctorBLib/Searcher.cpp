@@ -11,6 +11,7 @@
 #include "AlphaBetaQuiesce.h"
 #include "Options.h"
 #include "Polyglot.h"
+#include "Globals.h"
 
 using namespace std;
 
@@ -18,13 +19,8 @@ Searcher::Searcher(const Position& base_position, HistoryMap& history) : base_po
 }
 
 void Searcher::GoDepth(int depth) {
-	if (Options::OwnBook) {
-		Move move = Polyglot::get_instance().get_move(base_position_.GetHashKey());
-		if (move.IsValid()) {
-			cout << "bestmove " << move.ToString() << endl;
-			return;
-		}
-	}
+	if (BookMove())
+		return;
 
 	AlphaBetaOrder search_algorithm = AlphaBetaOrder(base_position_, history_);
 	Move best_move = search_algorithm.GoDepth(depth);
@@ -32,13 +28,8 @@ void Searcher::GoDepth(int depth) {
 }
 
 void Searcher::GoTime(uint64_t wtime, uint64_t btime, uint64_t winc, uint64_t binc, uint64_t movestogo) {
-	if (Options::OwnBook) {
-		Move move = Polyglot::get_instance().get_move(base_position_.GetHashKey());
-		if (move.IsValid()) {
-			cout << "bestmove " << move.ToString() << endl;
-			return;
-		}
-	}
+	if (BookMove())
+		return;
 
 	uint64_t max_duration = GetMaxDuration(wtime, btime, winc, binc, movestogo);
 	AlphaBetaOrder search_algorithm = AlphaBetaOrder(base_position_, history_);
@@ -51,7 +42,7 @@ Searcher::~Searcher() {
 
 uint64_t Searcher::GetMaxDuration(uint64_t wtime, uint64_t btime, uint64_t winc, uint64_t binc, uint64_t movestogo) {
 	if (movestogo == 0)
-		movestogo = 40;
+		movestogo = 30;
 
 	//be extra careful when moves to go is approaching 1
 	int duration_multiplier = movestogo < 5 ? 1 : 2;
@@ -60,5 +51,24 @@ uint64_t Searcher::GetMaxDuration(uint64_t wtime, uint64_t btime, uint64_t winc,
 	wtime = wtime > 60 ? wtime - 50 : 10;
 	btime = btime > 60 ? btime - 50 : 10;
 
-	return (base_position_.GetActiveColor() == Piece::COLOR_WHITE) ? (wtime * duration_multiplier / movestogo + winc) : (btime * duration_multiplier / movestogo + binc);
+	if (base_position_.GetActiveColor() == Piece::COLOR_WHITE)
+		return (wtime + winc * movestogo) * duration_multiplier / movestogo;
+	else
+		return (btime + binc * movestogo) * duration_multiplier / movestogo;
+}
+
+bool Searcher::BookMove() {
+	if (!Options::OwnBook || Globals::out_of_book)
+		return false;
+
+	Move move = Polyglot::get_instance().get_move(base_position_.GetHashKey());
+	if (move.IsValid()) {
+		cout << "bestmove " << move.ToString() << endl;
+		return true;
+	}
+	else {
+		Globals::out_of_book = true;
+		return false;
+	}
+	
 }

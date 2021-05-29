@@ -17,5 +17,6 @@ private:
 	const Position& base_position_;
 	HistoryMap& history_;
 	uint64_t GetMaxDuration(uint64_t wtime, uint64_t btime, uint64_t winc, uint64_t binc, uint64_t movestogo);
+	bool BookMove();
 };
 

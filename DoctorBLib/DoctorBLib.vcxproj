@@ -157,6 +157,7 @@
     <ClInclude Include="BitBoard.h" />
     <ClInclude Include="Constants.h" />
     <ClInclude Include="Evaluator.h" />
+    <ClInclude Include="Globals.h" />
     <ClInclude Include="HistoryMap.h" />
     <ClInclude Include="MiniMax.h" />
     <ClInclude Include="Move.h" />
@@ -185,6 +186,7 @@
     <ClCompile Include="AlphaBetaOrder.cpp" />
     <ClCompile Include="BitBoard.cpp" />
     <ClCompile Include="Evaluator.cpp" />
+    <ClCompile Include="Globals.cpp" />
     <ClCompile Include="HistoryMap.cpp" />
     <ClCompile Include="MiniMax.cpp" />
     <ClCompile Include="Move.cpp" />
