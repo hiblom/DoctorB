@@ -31,9 +31,9 @@ Next to the traditional UCI commands, DoctorB also supports the following comman
 * `d` : display the current position
 
 ## Options
-option name Hash type spin default 32 min 1 max 128 (Hash size in MB)
-option name OwnBook type check default false (use Polyglot opening book)
-option name OwnBookPath type string default openings.bin (Polyglot opening book path)
+* option name Hash type spin default 32 min 1 max 128 (Hash size in MB)
+* option name OwnBook type check default false (use Polyglot opening book)
+* option name OwnBookPath type string default openings.bin (Polyglot opening book path)
 
 ## Acknowledgements
 I'm trying to keep things originial. However, this engine would not have been possible without the following sources:
