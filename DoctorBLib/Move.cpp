@@ -2,6 +2,7 @@
 #include "Move.h"
 
 Move::Move() {
+	status_bits_ = 0Ui8;
 }
 
 Move::Move(const Piece piece, const Square square_from, const Square square_to) {
@@ -111,7 +112,7 @@ Move& Move::SetDoublePush() {
 }
 
 std::string Move::ToString() const {
-	if (square_from_.GetValue() == 0 && square_to_.GetValue() == 0)
+	if (!IsValid())
 		return "-";
 
 	if (status_bits_ & MASK_PROMOTION) {
@@ -130,5 +131,9 @@ Move& Move::SetPiece(const Piece piece) {
 
 void Move::GetPiece(Piece& piece) const {
 	piece.SetValue(piece_.GetValue());
+}
+
+bool Move::IsValid() const {
+	return square_from_.GetValue() != 0 || square_to_.GetValue() != 0;
 }
 

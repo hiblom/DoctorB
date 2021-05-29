@@ -157,6 +157,7 @@
     <ClInclude Include="BitBoard.h" />
     <ClInclude Include="Constants.h" />
     <ClInclude Include="Evaluator.h" />
+    <ClInclude Include="Globals.h" />
     <ClInclude Include="HistoryMap.h" />
     <ClInclude Include="MiniMax.h" />
     <ClInclude Include="Move.h" />
@@ -166,6 +167,7 @@
     <ClInclude Include="Parser.h" />
     <ClInclude Include="Perft.h" />
     <ClInclude Include="Piece.h" />
+    <ClInclude Include="Polyglot.h" />
     <ClInclude Include="Position.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Score.h" />
@@ -184,6 +186,7 @@
     <ClCompile Include="AlphaBetaOrder.cpp" />
     <ClCompile Include="BitBoard.cpp" />
     <ClCompile Include="Evaluator.cpp" />
+    <ClCompile Include="Globals.cpp" />
     <ClCompile Include="HistoryMap.cpp" />
     <ClCompile Include="MiniMax.cpp" />
     <ClCompile Include="Move.cpp" />
@@ -193,6 +196,7 @@
     <ClCompile Include="Parser.cpp" />
     <ClCompile Include="Perft.cpp" />
     <ClCompile Include="Piece.cpp" />
+    <ClCompile Include="Polyglot.cpp" />
     <ClCompile Include="Position.cpp" />
     <ClCompile Include="Score.cpp" />
     <ClCompile Include="SearchAlgorithm.cpp" />
@@ -206,7 +210,6 @@
     </ClCompile>
     <ClCompile Include="TranspositionTable.cpp" />
     <ClCompile Include="Uci.cpp" />
-    <ClCompile Include="Zobrist.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

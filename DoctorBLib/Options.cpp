@@ -1,16 +1,9 @@
 #include "stdafx.h"
 #include "Options.h"
+#include "Constants.h"
 
-Options::Options() {
-	//set defaults
-	MaxHashSizeMb = 16;
-}
+using namespace std;
 
-
-Options::~Options() {
-}
-
-Options& Options::GetInstance() {
-	static Options instance;
-	return instance;
-}
+size_t Options::Hash = Constants::DEFAULT_HASH;
+bool Options::OwnBook = Constants::DEFAULT_OWN_BOOK;
+string Options::OwnBookPath = Constants::DEFAULT_OWN_BOOK_PATH;

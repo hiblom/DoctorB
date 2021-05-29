@@ -2,6 +2,11 @@
 #include "Square.h"
 #include <cstdint>
 
+
+//x = a..h = file
+//y = 1..8 = row
+
+
 using namespace std;
 
 Square::Square() {

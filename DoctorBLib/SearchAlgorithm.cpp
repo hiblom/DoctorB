@@ -30,7 +30,9 @@ Move SearchAlgorithm::GoDepth(uint64_t max_depth) {
 
 		cout << pv_string << endl;
 
-		best_move = pv[0];
+		if (pv[0].IsValid()) {
+			best_move = pv[0];
+		}
 
 		AfterIteration();
 
@@ -70,7 +72,10 @@ Move SearchAlgorithm::GoTime(uint64_t max_duration) {
 		}
 
 		cout << pv_string << endl;
-		best_move = pv[0];
+		
+		if (pv[0].IsValid()) {
+			best_move = pv[0];
+		}
 
 		AfterIteration();
 

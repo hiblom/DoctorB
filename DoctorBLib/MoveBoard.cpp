@@ -36,20 +36,20 @@ void MoveBoard::InitializeKnightMoves() {
 void MoveBoard::InitializePawnPushes() {
 	for (uint8_t s = 0; s < 64; s++) {
 		//double push will be handled in move generator
-		pawn_pushes[Piece::COLOR_WHITE][s].Set(s).Up();
 		pawn_pushes[Piece::COLOR_BLACK][s].Set(s).Down();
+		pawn_pushes[Piece::COLOR_WHITE][s].Set(s).Up();
 	}
 }
 
 void MoveBoard::InitializePawnCaptures() {
 	for (uint8_t s = 0; s < 64; s++) {
-		BitBoard white_board;
-		white_board.Set(s);
-		pawn_captures[Piece::COLOR_WHITE][s] = white_board.Clone().Up().Left() | white_board.Clone().Up().Right();
-
 		BitBoard black_board;
 		black_board.Set(s);
 		pawn_captures[Piece::COLOR_BLACK][s] = black_board.Clone().Down().Left() | black_board.Clone().Down().Right();
+
+		BitBoard white_board;
+		white_board.Set(s);
+		pawn_captures[Piece::COLOR_WHITE][s] = white_board.Clone().Up().Left() | white_board.Clone().Up().Right();
 	}
 }
 
@@ -187,8 +187,8 @@ void MoveBoard::Initialize() {
 	InitializeRays();
 	InitializeCastlingSquares();
 	
-	Forward[0] = &BitBoard::Up;
-	Forward[1] = &BitBoard::Down;
+	Forward[Piece::COLOR_BLACK] = &BitBoard::Down;
+	Forward[Piece::COLOR_WHITE] = &BitBoard::Up;
 }
 
 BitBoard MoveBoard::GetKingMoves(const Square square) const {

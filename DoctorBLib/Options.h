@@ -1,16 +1,11 @@
 #pragma once
 #include <cstdint>
+#include <string>
 
-class Options
+struct Options
 {
-public:
-	uint32_t MaxHashSizeMb;
-	~Options();
-	static Options& GetInstance();
-	Options(const Options&) = delete;
-	void operator=(const Options&) = delete;
-private:
-	Options();
-	
+	static size_t Hash;
+	static bool OwnBook;
+	static std::string OwnBookPath;
 };
 

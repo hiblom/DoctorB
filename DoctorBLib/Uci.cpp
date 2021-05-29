@@ -11,6 +11,12 @@
 #include "Perft.h"
 #include "Searcher.h"
 #include "Evaluator.h"
+#include "Polyglot.h"
+#include "MoveGenerator.h"
+#include "Options.h"
+#include "TranspositionTable.h"
+#include "Globals.h"
+#include "Constants.h"
 
 using namespace std;
 using namespace boost::algorithm;
@@ -22,6 +28,8 @@ Uci::~Uci() {
 }
 
 bool Uci::Execute(string command) {
+
+	to_lower(command);
 	vector<string> command_parts;
 	split(command_parts, command, boost::is_any_of(" "));
 
@@ -35,8 +43,10 @@ bool Uci::Execute(string command) {
 		executeIsReady();
 		return true;
 	}
-	else if (command_parts[0] == "setoption")
+	else if (command_parts[0] == "setoption") {
+		executeSetOption(command_parts);
 		return true;
+	}
 	else if (command_parts[0] == "register")
 		return true;
 	else if (command_parts[0] == "ucinewgame") {
@@ -61,6 +71,10 @@ bool Uci::Execute(string command) {
 		executeD();
 		return true;
 	}
+	else if (command_parts[0] == "testpolyglot") {
+		TestPolyglot();
+		return true;
+	}
 	else {
 		cout << "Invalid UCI command" << endl;
 		return true;
@@ -70,12 +84,16 @@ bool Uci::Execute(string command) {
 void Uci::executeUci() {
 	cout << "id name " << App::Name << " " << App::Version << endl;
 	cout << "id author " << App::Author << endl;
+	cout << "option name Hash type spin default " << Constants::DEFAULT_HASH << " min 1 max 128" << endl;
+	cout << "option name OwnBook type check default " << (Constants::DEFAULT_OWN_BOOK ? "true" : "false") << endl;
+	cout << "option name OwnBookPath type string default " << Constants::DEFAULT_OWN_BOOK_PATH << endl;
 	cout << "uciok" << endl;
 }
 
 void Uci::executeUciNewGame() {
 	position_.reset();
 	history_.Clear();
+	Globals::out_of_book = false;
 }
 
 void Uci::executeIsReady() {
@@ -117,6 +135,51 @@ void Uci::executeGo(const std::vector<std::string>& command_parts) {
 		goPerft(tokens);
 	}
 }
+
+void Uci::executeSetOption(const std::vector<std::string>& command_parts) {
+	if (command_parts.size() < 5) {
+		cout << "Invalid setoption command" << endl;
+		return;
+	}
+
+	string name = command_parts[2];
+	if (name == "hash") {
+		int hashValue = stoi(command_parts[4]);
+		if (hashValue < 1 || hashValue > 128) {
+			cout << "Invalid Hash value" << endl;
+			return;
+		}
+
+		Options::Hash = hashValue;
+		TranspositionTable::GetInstance().Reset();
+	}
+	else if (name == "ownbook") {
+		string ownBookValue = command_parts[4];
+		if (ownBookValue != "true" && ownBookValue != "false")
+		{
+			cout << "Invalid OwnBook value" << endl;
+			return;
+		}
+		Options::OwnBook = (ownBookValue == "true");
+	}
+	else if (name == "ownbookpath") {
+		//filename could contain spaces, so there could be more than 5 command parts
+		vector<string> filename_parts(command_parts.begin() + 4, command_parts.end());
+		string filename = join(filename_parts, " ");
+
+		Options::OwnBookPath = filename;
+		if (!Polyglot::get_instance().open()) {
+			cout << "Error opening file at provided OwnBookPath value" << endl;
+			return;
+		}
+	}
+	else {
+		cout << "Invalid option" << endl;
+	}
+
+}
+
+
 
 void Uci::goDepth(const vector<string>& tokens) {
 	if (tokens.size() != 2) {
@@ -190,7 +253,8 @@ void Uci::goPerft(const vector<string>& tokens) {
 
 void Uci::executeD() {
 	if (!position_.has_value()) {
-		cout << "No position set";
+		cout << "No position set" << endl;
+		return;
 	}
 	cout << position_.value().ToString();
 	
@@ -199,5 +263,20 @@ void Uci::executeD() {
 	eval.Evaluate(score);
 	cout << "Evaluation: " << score.ToString(Piece::COLOR_WHITE, 1) << endl;
 
+}
+
+void Uci::TestPolyglot() {
+	if (!position_.has_value()) {
+		cout << "No position set" << endl;
+		return;
+	}
+
+	Polyglot& pg = Polyglot::get_instance();
+	Move mv = pg.get_move(position_.value().GetHashKey());
+
+	MoveGenerator move_gen(position_.value());
+	move_gen.SetMoveFlags(mv);
+
+	cout << mv.ToString() << endl;
 }
 

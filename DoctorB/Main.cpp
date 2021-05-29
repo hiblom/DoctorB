@@ -18,7 +18,7 @@ int main() {
 	cout << "Input UCI command" << endl;
 
 	//initialize engine
-	srand((uint32_t)time(NULL));
+	srand(time(NULL));
 	Uci uci;
 	
 	//main loop to receive commands

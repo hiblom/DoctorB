@@ -126,8 +126,8 @@ public:
 
 		//assert
 		Assert::IsTrue(parse_res);
-		Assert::IsTrue(get_res);
-		Assert::AreEqual(Square(1Ui8, 2Ui8), ep_square);
+		Assert::IsFalse(get_res); //note: polyglot hashing. ES square is not set when no enemy pawn is enxt to moved pawn
+		//Assert::AreEqual(Square(1Ui8, 2Ui8), ep_square);
 	}
 
 	TEST_METHOD(TestParserParseFenEpSquare2) {

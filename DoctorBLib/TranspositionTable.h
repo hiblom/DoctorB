@@ -19,8 +19,8 @@ public:
 		boost::optional<Score> score;
 		uint16_t remaining_depth;
 		
-		Entry() {}
-		Entry(Move move) : best_move(move) {}
+		Entry() : remaining_depth(0) {}
+		Entry(Move move) : best_move(move), remaining_depth(0) {}
 		Entry(Move move, Score score, uint16_t remaining_depth) : best_move(move), score(score), remaining_depth(remaining_depth) {}
 	};
 

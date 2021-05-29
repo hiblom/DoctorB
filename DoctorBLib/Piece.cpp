@@ -5,6 +5,7 @@
 using namespace std;
 
 Piece::Piece() {
+	value = 0;
 }
 
 Piece::Piece(uint8_t piece_value) {
@@ -23,7 +24,7 @@ uint8_t Piece::GetType() const {
 }
 
 void Piece::SetType(uint8_t piece_type) {
-	value = piece_type | (value & MASK_COLOR);
+	value = (value & ~MASK_TYPE) | piece_type;
 }
 
 uint8_t Piece::GetColor() const {
@@ -31,7 +32,7 @@ uint8_t Piece::GetColor() const {
 }
 
 void Piece::SetColor(uint8_t piece_color) {
-	value = piece_color & (value & MASK_TYPE);
+	value = (value & ~MASK_COLOR) | piece_color;
 }
 
 uint8_t Piece::GetValue() const {
