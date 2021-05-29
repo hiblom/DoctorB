@@ -12,14 +12,13 @@ DoctorB is named after a character in *Schachnovelle* by Stefan Zweig. Dr B play
 * Move ordering
 * Static Exchange Evaluation (SEE)
 * Repetition detection
+* * Support opening books
 
 ## Next up
 * Quiesence search
-* Support opening books
-* Threaded search to implement quit and stop commands properly
+* Better board evaluation
 
 ## Down the road
-* Advanced board evaluation
 * End game tables
 * Aspiration Windows
 * Multi-threaded search
