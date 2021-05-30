@@ -17,6 +17,7 @@ public:
 	void ClearSquare(const Square& square);
 	void ClearSquare(const Square& square, const Piece& piece);
 	bool GetPiece(const Square& square, Piece& piece) const;
+	int GetPieceCount(const Piece& piece) const;
 	void SetActiveColor(uint8_t color);
 	void ToggleActiveColor();
 	uint8_t GetActiveColor() const;

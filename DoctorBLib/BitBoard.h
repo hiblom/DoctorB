@@ -12,7 +12,7 @@ public:
 	~BitBoard();
 	bool Empty();
 	bool NotEmpty();
-	uint8_t PopCount();
+	uint8_t PopCount() const;
 	BitBoard& Set(uint8_t square_value);
 	BitBoard& Clear(uint8_t square_value);
 	bool Check(uint8_t square_value) const;

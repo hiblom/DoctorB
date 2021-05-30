@@ -50,6 +50,10 @@ bool Position::GetPiece(const Square & square, Piece& piece) const {
 	return false;
 }
 
+int Position::GetPieceCount(const Piece& piece) const {
+	return bit_boards[piece.GetValue()].PopCount();
+}
+
 void Position::SetActiveColor(uint8_t color) {
 	if (color != active_color) {
 		active_color = color;

@@ -26,7 +26,7 @@ bool BitBoard::NotEmpty() {
 	return value != 0Ui64;
 }
 
-uint8_t BitBoard::PopCount(){
+uint8_t BitBoard::PopCount() const {
 	return (uint8_t)(__popcnt64(value));
 }
 
