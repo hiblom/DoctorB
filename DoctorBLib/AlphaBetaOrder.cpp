@@ -23,6 +23,7 @@ void AlphaBetaOrder::Loop(const uint64_t iteration_depth, Score& score, std::vec
 	vector<int> depth_index(iteration_depth);
 	vector<Score> depth_score(iteration_depth + 1);
 	vector<vector<Move>> depth_variation(iteration_depth + 1);
+	Score see_score;
 
 	depth_position[0] = base_position_;
 
@@ -49,14 +50,19 @@ void AlphaBetaOrder::Loop(const uint64_t iteration_depth, Score& score, std::vec
 		}
 		else if (depth == iteration_depth) {
 			//evaluate
-			//go to SEE only when it was a capture
+
+			Evaluator eval(depth_position[depth]);
+			eval.Evaluate(depth_score[depth]);
+
+			//go to SEE only when it was a capture (or also when it was just a move??? -> test this)
 			Move last_move = depth_moves[depth - 1][depth_index[depth - 1]];
 			if (last_move.IsCapture()) {
-				See(depth_position[depth], last_move.GetSquareTo(), depth_score[depth]);
-			}
-			else {
-				Evaluator eval(depth_position[depth]);
-				eval.Evaluate(depth_score[depth]);
+				see_score.SetValue(depth_score[depth].GetValue());
+				See(depth_position[depth], last_move.GetSquareTo(), see_score);
+				//use the "worst" of the scores, current score and see score
+				if (Evaluator::CompareScore(depth_position[depth - 1].GetActiveColor(), depth_score[depth], see_score) > 0) {
+					depth_score[depth].SetValue(see_score.GetValue());
+				}
 			}
 			score_depth = depth;
 			depth--;
@@ -160,14 +166,18 @@ void AlphaBetaOrder::OrderMoves(const Position& position, std::vector<Move>& mov
 void AlphaBetaOrder::See(const Position& position, const Square& square, Score& score) {
 	Move lva_capture;
 	Position current_position(position);
+	bool captured = false;
 	while (true) {
 		MoveGenerator move_gen(current_position);
 		if (!move_gen.GetLvaCapture(square, lva_capture))
 			break;
+		captured = true;
 		current_position.ApplyMove(lva_capture);
 	}
-	Evaluator eval(current_position);
-	eval.Evaluate(score);
+	if (captured) {
+		Evaluator eval(current_position);
+		eval.Evaluate(score);
+	}
 }
 
 void AlphaBetaOrder::AfterSearch() {
