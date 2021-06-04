@@ -131,6 +131,9 @@ void Uci::executeGo(const std::vector<std::string>& command_parts) {
 	else if (command_parts[1] == "wtime" || command_parts[1] == "btime" || command_parts[1] == "winc" || command_parts[1] == "binc") {
 		goTime(tokens);
 	}
+	else if (command_parts[1] == "movetime") {
+		goTime(tokens);
+	}
 	else if (command_parts[1] == "perft") {
 		goPerft(tokens);
 	}
@@ -216,6 +219,11 @@ void Uci::goTime(const vector<string>& tokens) {
 			binc = stoi(tokens[++i]);
 		else if (tokens[i] == "movestogo")
 			movestogo = stoi(tokens[++i]);
+		else if (tokens[i] == "movetime") {
+			wtime = stoi(tokens[++i]);
+			btime = wtime;
+			movestogo = 1;
+		}
 		i++;
 	}
 
