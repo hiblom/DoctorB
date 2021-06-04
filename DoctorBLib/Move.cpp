@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "Move.h"
 
+using namespace std;
+
 Move::Move() {
 	status_bits_ = 0Ui8;
 }
@@ -115,8 +117,9 @@ std::string Move::ToString() const {
 	if (!IsValid())
 		return "";
 
-	if (status_bits_ & MASK_PROMOTION) {
-		return square_from_.ToString() + square_to_.ToString() + promo_piece_.ToString();
+	if (IsPromotion()) {
+		string promo_letter = string(1, tolower(promo_piece_.ToChar()));
+		return square_from_.ToString() + square_to_.ToString() + promo_letter;
 	}
 
 	return square_from_.ToString() + square_to_.ToString();
