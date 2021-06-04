@@ -52,9 +52,9 @@ uint64_t Searcher::GetMaxDuration(uint64_t wtime, uint64_t btime, uint64_t winc,
 	btime = btime > 60 ? btime - 50 : 10;
 
 	if (base_position_.GetActiveColor() == Piece::COLOR_WHITE)
-		return (wtime + winc * movestogo) * duration_multiplier / movestogo;
+		return min((wtime + winc * movestogo) * duration_multiplier / movestogo, wtime);
 	else
-		return (btime + binc * movestogo) * duration_multiplier / movestogo;
+		return min((btime + binc * movestogo) * duration_multiplier / movestogo, btime);
 }
 
 bool Searcher::BookMove() {
