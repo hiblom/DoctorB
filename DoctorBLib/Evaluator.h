@@ -8,11 +8,11 @@ class Evaluator
 {
 public:
 	Evaluator(const Position& position);
-	void Evaluate(Score& score);
 	~Evaluator();
-	static int CompareScore(uint8_t color, Score score_1, Score score_2);
+	void evaluate(Score& score);
+	static int compareScore(uint8_t color, Score score_1, Score score_2);
 private:
-	int GetMaterialCount();
+	int getMaterialCount();
 
 	static const std::array<std::array<int, 64>, 12> PIECE_SQUARE_START_VALUE;
 	static const std::array<std::array<int, 64>, 12> PIECE_SQUARE_END_VALUE;

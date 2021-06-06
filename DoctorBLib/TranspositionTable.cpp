@@ -4,7 +4,7 @@
 
 using namespace std;
 
-bool TranspositionTable::SetBestMove(const uint64_t key, const Move move) {
+bool TranspositionTable::setBestMove(const uint64_t key, const Move move) {
 	auto it = map->find(key);
 	if (it == map->end()) {
 		if (map->size() >= max_size)
@@ -20,7 +20,7 @@ bool TranspositionTable::SetBestMove(const uint64_t key, const Move move) {
 	return true;
 }
 
-bool TranspositionTable::SetScore(const uint64_t key, const Score score, uint16_t remaining_depth) {
+bool TranspositionTable::setScore(const uint64_t key, const Score score, uint16_t remaining_depth) {
 	auto it = map->find(key);
 	if (it == map->end()) {
 		if (map->size() >= max_size)
@@ -38,7 +38,7 @@ bool TranspositionTable::SetScore(const uint64_t key, const Score score, uint16_
 	return true;
 }
 
-bool TranspositionTable::FindBestMove(const uint64_t key, Move& move) {
+bool TranspositionTable::findBestMove(const uint64_t key, Move& move) {
 	auto it = map->find(key);
 	if (it == map->end())
 		return false;
@@ -50,7 +50,7 @@ bool TranspositionTable::FindBestMove(const uint64_t key, Move& move) {
 	return true;
 }
 
-bool TranspositionTable::FindScore(const uint64_t key, Score& score, uint16_t& remaining_depth) {
+bool TranspositionTable::findScore(const uint64_t key, Score& score, uint16_t& remaining_depth) {
 	auto it = map->find(key);
 	if (it == map->end())
 		return false;
@@ -63,15 +63,15 @@ bool TranspositionTable::FindScore(const uint64_t key, Score& score, uint16_t& r
 	return true;
 }
 
-int TranspositionTable::GetHashFull() {
+int TranspositionTable::getHashFull() {
 	return static_cast<int>(map->size() * 1000000 / max_size);
 }
 
-void TranspositionTable::Clear() {
+void TranspositionTable::clear() {
 	map->clear();
 }
 
-void TranspositionTable::Reset() {
+void TranspositionTable::reset() {
 	int elem_size = sizeof(pair<uint64_t, Entry>);
 	max_size = (Options::Hash * 1048576Ui32) / elem_size;
 	map->clear();
@@ -79,13 +79,13 @@ void TranspositionTable::Reset() {
 }
 
 TranspositionTable::TranspositionTable() {
-	Reset();
+	reset();
 }
 
 TranspositionTable::~TranspositionTable() {
 }
 
-TranspositionTable& TranspositionTable::GetInstance() {
+TranspositionTable& TranspositionTable::getInstance() {
 	static TranspositionTable instance;
 	return instance;
 }

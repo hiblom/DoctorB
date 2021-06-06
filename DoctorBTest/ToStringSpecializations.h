@@ -11,15 +11,15 @@ namespace Microsoft
 		namespace CppUnitTestFramework
 		{
 			template<> static std::wstring ToString<Square>(const class Square& t) { 
-				std::string s = t.ToString();
+				std::string s = t.toString();
 				return std::wstring(s.begin(), s.end());
 			}
 			template<> static std::wstring ToString<Piece>(const class Piece& t) {
-				std::string s = t.ToString();
+				std::string s = t.toString();
 				return std::wstring(s.begin(), s.end());
 			}
 			template<> static std::wstring ToString<Move>(const class Move& t) {
-				std::string s = t.ToString();
+				std::string s = t.toString();
 				return std::wstring(s.begin(), s.end());
 			}
 		}

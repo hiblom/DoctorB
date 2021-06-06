@@ -13,16 +13,16 @@ Perft::Perft(const Position& position) : position_(position), depth_(0) {
 Perft::~Perft() {
 }
 
-void Perft::SetDepth(int value) {
+void Perft::setDepth(int value) {
 	depth_ = value;
 }
 
-uint64_t Perft::Go() {
-	return Count2(position_, depth_);
+uint64_t Perft::go() {
+	return count2(position_, depth_);
 }
 
 //Count function using recursion
-uint64_t Perft::Count(const Position& position, const int remaining_depth) const {
+uint64_t Perft::count(const Position& position, const int remaining_depth) const {
 	MoveGenerator move_gen(position);
 
 	if (remaining_depth == 0)
@@ -31,20 +31,20 @@ uint64_t Perft::Count(const Position& position, const int remaining_depth) const
 	uint64_t result = 0;
 	vector<Move> raw_moves;
 	Position new_position;
-	move_gen.GenerateMoves(raw_moves);
+	move_gen.generateMoves(raw_moves);
 	for (Move raw_move : raw_moves) {
 		new_position = Position(position);
-		new_position.ApplyMove(raw_move);
-		uint64_t count = Count(new_position, remaining_depth - 1);
-		if (remaining_depth == depth_ && count > 0)
-			cout << raw_move.ToString() << ": " << count << endl;
-		result += count;
+		new_position.applyMove(raw_move);
+		uint64_t cnt = count(new_position, remaining_depth - 1);
+		if (remaining_depth == depth_ && cnt > 0)
+			cout << raw_move.toString() << ": " << cnt << endl;
+		result += cnt;
 	}
 	return result;
 }
 
 //Count function using a loop instead of recursion
-uint64_t Perft::Count2(const Position& position, const int remaining_depth) const {
+uint64_t Perft::count2(const Position& position, const int remaining_depth) const {
 	vector<uint64_t> results(128);
 	uint64_t result = 0;
 	
@@ -60,7 +60,7 @@ uint64_t Perft::Count2(const Position& position, const int remaining_depth) cons
 			MoveGenerator move_gen(positions[current_depth]);
 
 			moves[current_depth].clear();
-			move_gen.GenerateMoves(moves[current_depth]);
+			move_gen.generateMoves(moves[current_depth]);
 			if (current_depth == 1) {
 				if (depth_ == 1) {
 					for (int i = 0; i < moves[current_depth].size(); i++) {
@@ -85,13 +85,13 @@ uint64_t Perft::Count2(const Position& position, const int remaining_depth) cons
 		} 
 		
 		positions[current_depth - 1] = Position(positions[current_depth]);
-		positions[current_depth - 1].ApplyMove(moves[current_depth][move_indices[current_depth]]);
+		positions[current_depth - 1].applyMove(moves[current_depth][move_indices[current_depth]]);
 		current_depth--;
 	}
 
 	for (int i = 0; i < moves[depth_].size(); i++) {
 		if (results[i]) {
-			cout << moves[depth_][i].ToString() << ": " << results[i] << endl;
+			cout << moves[depth_][i].toString() << ": " << results[i] << endl;
 			result += results[i];
 		}
 	}

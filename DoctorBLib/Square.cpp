@@ -10,45 +10,45 @@
 using namespace std;
 
 Square::Square() {
-	value = 0Ui8;
+	value_ = 0Ui8;
 }
 
 Square::Square(uint8_t square_value) {
-	value = square_value;
+	value_ = square_value;
 }
 
 Square::Square(uint8_t x, uint8_t y) {
-	value = (y << 3) | x;
+	value_ = (y << 3) | x;
 }
 
 Square::~Square() {
 }
 
-uint8_t Square::GetValue() const {
-	return value;
+uint8_t Square::getValue() const {
+	return value_;
 }
 
-void Square::SetValue(uint8_t square_value) {
-	value = square_value;
+void Square::setValue(uint8_t square_value) {
+	value_ = square_value;
 }
 
-void Square::SetXy(uint8_t x, uint8_t y) {
-	value = (y << 3) | x;
+void Square::setXy(uint8_t x, uint8_t y) {
+	value_ = (y << 3) | x;
 }
 
-inline uint8_t Square::GetX() const {
-	return value & MASK_X;
+inline uint8_t Square::getX() const {
+	return value_ & MASK_X;
 }
 
-inline uint8_t Square::GetY() const {
-	return value >> 3;
+inline uint8_t Square::getY() const {
+	return value_ >> 3;
 }
 
 bool Square::operator==(const Square & that) const {
-	return value == that.value;
+	return value_ == that.value_;
 }
 
-string Square::ToString() const {
-	char result[3] = { 'a' + GetX(), '1' + GetY(), '\0' };
+string Square::toString() const {
+	char result[3] = { 'a' + getX(), '1' + getY(), '\0' };
 	return result;
 }

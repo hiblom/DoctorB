@@ -25,16 +25,16 @@ public:
 	};
 
 	~TranspositionTable();
-	static TranspositionTable& GetInstance();
+	static TranspositionTable& getInstance();
 	TranspositionTable(const TranspositionTable&) = delete;
 	void operator=(const TranspositionTable&) = delete;
-	bool SetBestMove(const uint64_t key, const Move move);
-	bool SetScore(const uint64_t key, const Score score, const uint16_t remaining_depth);
-	bool FindBestMove(const uint64_t key, Move& move);
-	bool FindScore(const uint64_t key, Score& score, uint16_t& remaining_depth);
-	int GetHashFull();
-	void Clear();
-	void Reset();
+	bool setBestMove(const uint64_t key, const Move move);
+	bool setScore(const uint64_t key, const Score score, const uint16_t remaining_depth);
+	bool findBestMove(const uint64_t key, Move& move);
+	bool findScore(const uint64_t key, Score& score, uint16_t& remaining_depth);
+	int getHashFull();
+	void clear();
+	void reset();
 private:
 	TranspositionTable();
 	std::unique_ptr<std::unordered_map<uint64_t, Entry, IdentityHasher>> map = std::make_unique<std::unordered_map<uint64_t, Entry, IdentityHasher>>();

@@ -18,16 +18,16 @@ public:
 	static const uint8_t DIR_DOWN_RIGHT = 7Ui8;
 
 	~MoveBoard();
-	static MoveBoard& GetInstance();
+	static MoveBoard& getInstance();
 	MoveBoard(const MoveBoard&) = delete;
 	void operator=(const MoveBoard&) = delete;
-	BitBoard GetKingMoves(const Square square) const;
-	BitBoard GetKnightMoves(const Square square) const;
-	BitBoard GetPawnPushes(const Square square, uint8_t color) const;
-	BitBoard GetPawnCaptures(const Square square, uint8_t color) const;
-	BitBoard GetRay(const Square square, const uint8_t dir) const;
-	BitBoard GetCastlingSafeSquares(const int index) const;
-	BitBoard GetCastlingEmptySquares(const int index) const;
+	BitBoard getKingMoves(const Square square) const;
+	BitBoard getKnightMoves(const Square square) const;
+	BitBoard getPawnPushes(const Square square, uint8_t color) const;
+	BitBoard getPawnCaptures(const Square square, uint8_t color) const;
+	BitBoard getRay(const Square square, const uint8_t dir) const;
+	BitBoard getCastlingSafeSquares(const int index) const;
+	BitBoard getCastlingEmptySquares(const int index) const;
 	BitBoard&(BitBoard::*Forward[2])();
 private:
 	std::array<BitBoard, 64> king_moves;
@@ -39,20 +39,20 @@ private:
 	std::array<BitBoard, 4> castling_empty_squares;
 
 	MoveBoard();
-	void Initialize();
-	void InitializeKingMoves();
-	void InitializeKnightMoves();
-	void InitializePawnPushes();
-	void InitializePawnCaptures();
-	void InitializeRays();
-	void InitializeRayUp();
-	void InitializeRayUpRight();
-	void InitializeRayRight();
-	void InitializeRayDownRight();
-	void InitializeRayDown();
-	void InitializeRayDownLeft();
-	void InitializeRayLeft();
-	void InitializeRayUpLeft();
-	void InitializeCastlingSquares();
+	void initialize();
+	void initializeKingMoves();
+	void initializeKnightMoves();
+	void initializePawnPushes();
+	void initializePawnCaptures();
+	void initializeRays();
+	void initializeRayUp();
+	void initializeRayUpRight();
+	void initializeRayRight();
+	void initializeRayDownRight();
+	void initializeRayDown();
+	void initializeRayDownLeft();
+	void initializeRayLeft();
+	void initializeRayUpLeft();
+	void initializeCastlingSquares();
 };
 

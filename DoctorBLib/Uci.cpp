@@ -27,7 +27,7 @@ Uci::Uci() {
 Uci::~Uci() {
 }
 
-bool Uci::Execute(string command) {
+bool Uci::execute(string command) {
 
 	//to_lower(command); //cannot to_lower the command, because FEN is case sensitive
 	vector<string> command_parts;
@@ -93,7 +93,7 @@ void Uci::executeUci() {
 
 void Uci::executeUciNewGame() {
 	position_.reset();
-	history_.Clear();
+	history_.clear();
 	Globals::out_of_book = false;
 }
 
@@ -110,7 +110,7 @@ void Uci::executePosition(const std::vector<std::string>& command_parts) {
 	position_ = Position();
 
 	vector<string> position_tokens(command_parts.begin() + 1, command_parts.end());
-	Parser::ParsePosition(position_tokens, position_.value(), history_);
+	Parser::parsePosition(position_tokens, position_.value(), history_);
 }
 
 void Uci::executeGo(const vector<string>& command_parts) {
@@ -155,7 +155,7 @@ void Uci::executeSetOption(const std::vector<std::string>& command_parts) {
 		}
 
 		Options::Hash = hashValue;
-		TranspositionTable::GetInstance().Reset();
+		TranspositionTable::getInstance().reset();
 	}
 	else if (iequals(name, "ownbook")) {
 		string ownBookValue = command_parts[4];
@@ -172,7 +172,7 @@ void Uci::executeSetOption(const std::vector<std::string>& command_parts) {
 		string filename = join(filename_parts, " ");
 
 		Options::OwnBookPath = filename;
-		if (!Polyglot::get_instance().open()) {
+		if (!Polyglot::getInstance().open()) {
 			cout << "Error opening file at provided OwnBookPath value" << endl;
 			return;
 		}
@@ -195,7 +195,7 @@ void Uci::goDepth(const vector<string>& tokens) {
 	}
 
 	Searcher search(position_.value(), history_);
-	search.GoDepth(depth);
+	search.goDepth(depth);
 }
 
 void Uci::goTime(const vector<string>& tokens) {
@@ -226,7 +226,7 @@ void Uci::goTime(const vector<string>& tokens) {
 	}
 
 	Searcher search(position_.value(), history_);
-	search.GoTime(wtime, btime, winc, binc, movestogo);
+	search.goTime(wtime, btime, winc, binc, movestogo);
 }
 
 void Uci::goPerft(const vector<string>& tokens) {
@@ -244,8 +244,8 @@ void Uci::goPerft(const vector<string>& tokens) {
 	auto start_time = chrono::system_clock::now();
 
 	Perft perft(position_.value());
-	perft.SetDepth(depth);
-	uint64_t count = perft.Go();
+	perft.setDepth(depth);
+	uint64_t count = perft.go();
 
 	auto end_time = chrono::system_clock::now();
 
@@ -262,11 +262,11 @@ void Uci::executeD() {
 		cout << "No position set" << endl;
 		return;
 	}
-	cout << position_.value().ToString();
+	cout << position_.value().toString();
 	
 	Evaluator eval(position_.value());
 	Score score;
-	eval.Evaluate(score);
-	cout << "Evaluation: " << score.ToString(Piece::COLOR_WHITE, 1) << endl;
+	eval.evaluate(score);
+	cout << "Evaluation: " << score.toString(Piece::COLOR_WHITE, 1) << endl;
 
 }

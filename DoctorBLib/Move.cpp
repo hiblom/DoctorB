@@ -43,24 +43,24 @@ Move::Move(const Square square_from, const Square square_to, const Piece promo_p
 Move::~Move() {
 }
 
-Square Move::GetSquareFrom() const {
+Square Move::getSquareFrom() const {
 	return square_from_;
 }
 
-Square Move::GetSquareTo() const {
+Square Move::getSquareTo() const {
 	return square_to_;
 }
 
-bool Move::GetPromoPiece(Piece& promo_piece) const {
+bool Move::getPromoPiece(Piece& promo_piece) const {
 	if(status_bits_ & MASK_PROMOTION) {
-		promo_piece.SetValue(promo_piece_.GetValue());
+		promo_piece.setValue(promo_piece_.getValue());
 		return true;
 	}
 	return false;
 }
 
-void Move::GetPromoOrMovingPieceType(Piece& piece) const {
-	piece.SetType(promo_piece_.GetType());
+void Move::getPromoOrMovingPieceType(Piece& piece) const {
+	piece.setType(promo_piece_.getType());
 }
 
 bool Move::operator==(const Move& that) const {
@@ -72,71 +72,71 @@ bool Move::operator==(const Move& that) const {
 		promo_piece_ == that.promo_piece_;
 }
 
-bool Move::IsPromotion() const {
+bool Move::isPromotion() const {
 	return status_bits_ & MASK_PROMOTION;
 }
 
-bool Move::IsEpCapture() const {
+bool Move::isEpCapture() const {
 	return status_bits_ & MASK_EP_CAPTURE;
 }
 
-Move& Move::SetEpCapture() {
+Move& Move::setEpCapture() {
 	status_bits_ |= MASK_EP_CAPTURE;
 	status_bits_ |= MASK_CAPTURE;
 	return *this;
 }
 
-bool Move::IsCapture() const {
+bool Move::isCapture() const {
 	return status_bits_ & MASK_CAPTURE;
 }
 
-Move & Move::SetCapture(bool capture) {
+Move & Move::setCapture(bool capture) {
 	status_bits_ = (status_bits_ & ~MASK_CAPTURE) | (capture * MASK_CAPTURE);
 	return *this;
 }
 
-bool Move::IsCastling() const {
+bool Move::isCastling() const {
 	return status_bits_ & MASK_CASTLING;
 }
 
-Move& Move::SetCastling() {
+Move& Move::setCastling() {
 	status_bits_ |= MASK_CASTLING;
 	return *this;
 }
 
-bool Move::IsDoublePush() const {
+bool Move::isDoublePush() const {
 	return status_bits_ & MASK_DOUBLE_PUSH;
 }
 
-Move& Move::SetDoublePush() {
+Move& Move::setDoublePush() {
 	status_bits_ |= MASK_DOUBLE_PUSH;
 	return *this;
 }
 
-std::string Move::ToString() const {
-	if (!IsValid())
+std::string Move::toString() const {
+	if (!isValid())
 		return "";
 
-	if (IsPromotion()) {
-		string promo_letter = string(1, tolower(promo_piece_.ToChar()));
-		return square_from_.ToString() + square_to_.ToString() + promo_letter;
+	if (isPromotion()) {
+		string promo_letter = string(1, tolower(promo_piece_.toChar()));
+		return square_from_.toString() + square_to_.toString() + promo_letter;
 	}
 
-	return square_from_.ToString() + square_to_.ToString();
+	return square_from_.toString() + square_to_.toString();
 }
 
-Move& Move::SetPiece(const Piece piece) {
+Move& Move::setPiece(const Piece piece) {
 	piece_ = piece;
-	if (!IsPromotion())
+	if (!isPromotion())
 		promo_piece_ = piece; //set promo piece to moving piece when no promo
 	return *this;
 }
 
-void Move::GetPiece(Piece& piece) const {
-	piece.SetValue(piece_.GetValue());
+void Move::getPiece(Piece& piece) const {
+	piece.setValue(piece_.getValue());
 }
 
-bool Move::IsValid() const {
-	return square_from_.GetValue() != 0 || square_to_.GetValue() != 0;
+bool Move::isValid() const {
+	return square_from_.getValue() != 0 || square_to_.getValue() != 0;
 }
 

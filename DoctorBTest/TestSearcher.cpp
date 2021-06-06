@@ -17,11 +17,11 @@ public:
 		//arrange
 		Position pos;
 		HistoryMap history;
-		Parser::ParsePosition({ "startpos" }, pos, history);
+		Parser::parsePosition({ "startpos" }, pos, history);
 		Searcher search(pos, history);
 
 		//act
-		search.GoDepth(2);
+		search.goDepth(2);
 
 		//assert
 	}

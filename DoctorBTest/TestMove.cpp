@@ -22,9 +22,9 @@ namespace DoctorBTest {
 			Move move = Move(square_from, square_to);
 
 			//assert
-			Assert::AreEqual(square_from, move.GetSquareFrom());
-			Assert::AreEqual(square_to, move.GetSquareTo());
-			Assert::IsFalse(move.GetPromoPiece(actual_promo_piece));
+			Assert::AreEqual(square_from, move.getSquareFrom());
+			Assert::AreEqual(square_to, move.getSquareTo());
+			Assert::IsFalse(move.getPromoPiece(actual_promo_piece));
 		}
 
 		TEST_METHOD(TestMoveConstructorFromToPromo) {
@@ -38,9 +38,9 @@ namespace DoctorBTest {
 			Move move = Move(square_from, square_to, expected_promo_piece);
 
 			//assert
-			Assert::AreEqual(square_from, move.GetSquareFrom());
-			Assert::AreEqual(square_to, move.GetSquareTo());
-			Assert::IsTrue(move.GetPromoPiece(actual_promo_piece));
+			Assert::AreEqual(square_from, move.getSquareFrom());
+			Assert::AreEqual(square_to, move.getSquareTo());
+			Assert::IsTrue(move.getPromoPiece(actual_promo_piece));
 			Assert::AreEqual(expected_promo_piece, actual_promo_piece);
 		}
 
@@ -97,7 +97,7 @@ namespace DoctorBTest {
 			Move move = Move(square_from, square_to);
 
 			//act
-			string notation = move.ToString();
+			string notation = move.toString();
 
 			//assert
 			Assert::AreEqual(string("b3d5"), notation);

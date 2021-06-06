@@ -16,29 +16,29 @@ using namespace std;
 Searcher::Searcher(const Position& base_position, HistoryMap& history) : base_position_(base_position), history_(history), node_count(0) {
 }
 
-void Searcher::GoDepth(int depth) {
-	if (BookMove())
+void Searcher::goDepth(int depth) {
+	if (bookMove())
 		return;
 
 	AlphaBetaOrder search_algorithm = AlphaBetaOrder(base_position_, history_);
-	Move best_move = search_algorithm.GoDepth(depth);
-	cout << "bestmove " << best_move.ToString() << endl;
+	Move best_move = search_algorithm.goDepth(depth);
+	cout << "bestmove " << best_move.toString() << endl;
 }
 
-void Searcher::GoTime(uint64_t wtime, uint64_t btime, uint64_t winc, uint64_t binc, uint64_t movestogo) {
-	if (BookMove())
+void Searcher::goTime(uint64_t wtime, uint64_t btime, uint64_t winc, uint64_t binc, uint64_t movestogo) {
+	if (bookMove())
 		return;
 
-	uint64_t max_duration = GetMaxDuration(wtime, btime, winc, binc, movestogo);
+	uint64_t max_duration = getMaxDuration(wtime, btime, winc, binc, movestogo);
 	AlphaBetaOrder search_algorithm = AlphaBetaOrder(base_position_, history_);
-	Move best_move = search_algorithm.GoTime(max_duration);
-	cout << "bestmove " << best_move.ToString() << endl;
+	Move best_move = search_algorithm.goTime(max_duration);
+	cout << "bestmove " << best_move.toString() << endl;
 }
 
 Searcher::~Searcher() {
 }
 
-uint64_t Searcher::GetMaxDuration(uint64_t wtime, uint64_t btime, uint64_t winc, uint64_t binc, uint64_t movestogo) {
+uint64_t Searcher::getMaxDuration(uint64_t wtime, uint64_t btime, uint64_t winc, uint64_t binc, uint64_t movestogo) {
 	if (movestogo == 0)
 		movestogo = 30;
 
@@ -49,19 +49,19 @@ uint64_t Searcher::GetMaxDuration(uint64_t wtime, uint64_t btime, uint64_t winc,
 	wtime = wtime > 60 ? wtime - 50 : 10;
 	btime = btime > 60 ? btime - 50 : 10;
 
-	if (base_position_.GetActiveColor() == Piece::COLOR_WHITE)
+	if (base_position_.getActiveColor() == Piece::COLOR_WHITE)
 		return min((wtime + winc * movestogo) * duration_multiplier / movestogo, wtime);
 	else
 		return min((btime + binc * movestogo) * duration_multiplier / movestogo, btime);
 }
 
-bool Searcher::BookMove() {
+bool Searcher::bookMove() {
 	if (!Options::OwnBook || Globals::out_of_book)
 		return false;
 
-	Move move = Polyglot::get_instance().get_move(base_position_.GetHashKey());
-	if (move.IsValid()) {
-		cout << "bestmove " << move.ToString() << endl;
+	Move move = Polyglot::getInstance().getMove(base_position_.getHashKey());
+	if (move.isValid()) {
+		cout << "bestmove " << move.toString() << endl;
 		return true;
 	}
 	else {

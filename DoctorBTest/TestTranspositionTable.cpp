@@ -17,14 +17,14 @@ public:
 		Position pos;
 		HistoryMap history;
 		vector<string> tokens = { "startpos" };
-		Parser::ParsePosition(tokens, pos, history);
+		Parser::parsePosition(tokens, pos, history);
 		Move move = Move(Piece(Piece::TYPE_PAWN, Piece::COLOR_WHITE), Square(Square::E2), Square(Square::E4));
 
 		//act
-		uint64_t hash_key = pos.GetHashKey();
-		TranspositionTable::GetInstance().SetBestMove(hash_key, move);
+		uint64_t hash_key = pos.getHashKey();
+		TranspositionTable::getInstance().setBestMove(hash_key, move);
 		Move tt_move;
-		bool found = TranspositionTable::GetInstance().FindBestMove(hash_key, tt_move);
+		bool found = TranspositionTable::getInstance().findBestMove(hash_key, tt_move);
 
 		//assert
 		Assert::IsTrue(found);
@@ -36,18 +36,18 @@ public:
 		Position pos_1;
 		HistoryMap history;
 		vector<string> tokens = { "startpos" };
-		Parser::ParsePosition(tokens, pos_1, history);
+		Parser::parsePosition(tokens, pos_1, history);
 		Move move = Move(Piece(Piece::TYPE_PAWN, Piece::COLOR_WHITE), Square(Square::E2), Square(Square::E4));
 
 		//act
-		uint64_t hash_key_1 = pos_1.GetHashKey();
-		TranspositionTable::GetInstance().SetBestMove(hash_key_1, move);
+		uint64_t hash_key_1 = pos_1.getHashKey();
+		TranspositionTable::getInstance().setBestMove(hash_key_1, move);
 		Position pos_2(pos_1);
-		pos_2.ApplyMove(move);
-		uint64_t hash_key_2 = pos_2.GetHashKey();
+		pos_2.applyMove(move);
+		uint64_t hash_key_2 = pos_2.getHashKey();
 
 		Move actual_move;
-		bool found = TranspositionTable::GetInstance().FindBestMove(hash_key_2, actual_move);
+		bool found = TranspositionTable::getInstance().findBestMove(hash_key_2, actual_move);
 
 		//assert
 		Assert::IsFalse(found);

@@ -18,8 +18,8 @@ namespace DoctorBTest {
 			Piece piece = Piece(type, color);
 
 			//assert
-			Assert::AreEqual(color, piece.GetColor());
-			Assert::AreEqual(type, piece.GetType());
+			Assert::AreEqual(color, piece.getColor());
+			Assert::AreEqual(type, piece.getType());
 		}
 
 		TEST_METHOD(TestPieceSetType) {
@@ -30,10 +30,10 @@ namespace DoctorBTest {
 			Piece piece = Piece(type, color);
 
 			//act
-			piece.SetType(new_type);
+			piece.setType(new_type);
 
 			//assert
-			Assert::AreEqual(new_type, piece.GetType());
+			Assert::AreEqual(new_type, piece.getType());
 		}
 		
 		TEST_METHOD(TestPieceSetColor) {
@@ -44,10 +44,10 @@ namespace DoctorBTest {
 			Piece piece = Piece(type, color);
 
 			//act
-			piece.SetColor(new_color);
+			piece.setColor(new_color);
 
 			//assert
-			Assert::AreEqual(new_color, piece.GetColor());
+			Assert::AreEqual(new_color, piece.getColor());
 		}
 
 		TEST_METHOD(TestPieceToChar) {
@@ -58,7 +58,7 @@ namespace DoctorBTest {
 			char expected_char = 'b';
 
 			//act
-			char c = piece.ToChar();
+			char c = piece.toChar();
 
 			//assert
 			Assert::AreEqual(expected_char, c);
@@ -72,7 +72,7 @@ namespace DoctorBTest {
 			string expected = "Q";
 
 			//act
-			string actual = piece.ToString();
+			string actual = piece.toString();
 
 			//assert
 			Assert::AreEqual(expected, actual);

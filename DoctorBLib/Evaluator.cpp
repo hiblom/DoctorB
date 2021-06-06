@@ -11,35 +11,35 @@ Evaluator::Evaluator(const Position& position) : position_(position) {
 Evaluator::~Evaluator() {
 }
 
-int Evaluator::CompareScore(uint8_t color, Score score_1, Score score_2) {
-	if (score_1.GetValue() == score_2.GetValue())
+int Evaluator::compareScore(uint8_t color, Score score_1, Score score_2) {
+	if (score_1.getValue() == score_2.getValue())
 		return 0;
 
-	return ((color == Piece::COLOR_WHITE) == (score_1.GetValue() > score_2.GetValue())) ? 1 : -1;
+	return ((color == Piece::COLOR_WHITE) == (score_1.getValue() > score_2.getValue())) ? 1 : -1;
 }
 
-int Evaluator::GetMaterialCount() {
+int Evaluator::getMaterialCount() {
 	int result = 0;
 	for (uint8_t p = 0; p < 10; p++) { //don't count kings
-		result += position_.GetPieceCount(Piece(p));
+		result += position_.getPieceCount(Piece(p));
 	}
 	return result;
 }
 
-void Evaluator::Evaluate(Score& score) {
-	int material_count = GetMaterialCount();
+void Evaluator::evaluate(Score& score) {
+	int material_count = getMaterialCount();
 
 	//int64_t value = 0;
 	int piece_value = 0;
 	int start_piece_square_value = 0;
 	int end_piece_square_value = 0;
 	for (uint8_t p = 0; p < 12; p++) {
-		BitBoard piece_board = position_.GetBitBoard(Piece(p));
+		BitBoard piece_board = position_.getBitBoard(Piece(p));
 		Square square;
-		while (piece_board.PopLowestSquare(square)) {
+		while (piece_board.popLowestSquare(square)) {
 			piece_value += Constants::PIECE_VALUES[p];
-			start_piece_square_value += PIECE_SQUARE_START_VALUE[p][square.GetValue()];
-			end_piece_square_value += PIECE_SQUARE_END_VALUE[p][square.GetValue()];
+			start_piece_square_value += PIECE_SQUARE_START_VALUE[p][square.getValue()];
+			end_piece_square_value += PIECE_SQUARE_END_VALUE[p][square.getValue()];
 		}
 	}
 
@@ -47,7 +47,7 @@ void Evaluator::Evaluate(Score& score) {
 	//add random "noise" to prevent DoctorB from playing the same moves over and over
 	//noise band = 0..4
 	value += (rand() % 5);
-	return score.SetValue(value);
+	return score.setValue(value);
 }
 
 const int Evaluator::PIECE_START_TOTAL_VALUE {

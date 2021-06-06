@@ -16,10 +16,10 @@ namespace DoctorBTest {
 			uint8_t square_value = 10Ui8;
 
 			//act
-			bit_board.Set(square_value);
+			bit_board.set(square_value);
 
 			//assert
-			Assert::IsTrue(bit_board.Check(square_value));
+			Assert::IsTrue(bit_board.check(square_value));
 		}
 
 		TEST_METHOD(TestBitBoardClear) {
@@ -28,10 +28,10 @@ namespace DoctorBTest {
 			uint8_t square_value = 10Ui8;
 
 			//act
-			bit_board.Clear(square_value);
+			bit_board.clear(square_value);
 
 			//assert
-			Assert::IsFalse(bit_board.Check(square_value));
+			Assert::IsFalse(bit_board.check(square_value));
 		}
 
 		//GetSquares
@@ -40,12 +40,12 @@ namespace DoctorBTest {
 			BitBoard bit_board = BitBoard();
 			Square square1 = Square(10Ui8);
 			Square square2 = Square(20Ui8);
-			bit_board.Set(square1.GetValue());
-			bit_board.Set(square2.GetValue());
+			bit_board.set(square1.getValue());
+			bit_board.set(square2.getValue());
 			vector<Square> squares;
 
 			//act
-			bit_board.GetSquares(squares);
+			bit_board.getSquares(squares);
 
 			//assert
 			Assert::AreEqual((size_t)2, squares.size());

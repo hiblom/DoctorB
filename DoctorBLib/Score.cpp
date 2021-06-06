@@ -5,12 +5,12 @@
 
 using namespace std;
 
-Score Score::GetStartScore(uint8_t color) {
+Score Score::getStartScore(uint8_t color) {
 	static const array<int64_t, 2> START_SCORE { { Score::BLACK_START_SCORE, Score::WHITE_START_SCORE } };
 	return Score(START_SCORE[color]);
 }
 
-Score Score::GetMateScore(uint8_t color_against, uint32_t depth) {
+Score Score::getMateScore(uint8_t color_against, uint32_t depth) {
 	static const array<int, 2> mult { { -1, 1 } };
 	static const array<int64_t, 2> START_SCORE{ { Score::BLACK_START_SCORE, Score::WHITE_START_SCORE } };
 	return Score(START_SCORE[color_against] + mult[color_against] *depth);
@@ -24,21 +24,21 @@ Score::Score(int64_t value) {
 	value_ = value;
 }
 
-int64_t Score::GetValue() {
+int64_t Score::getValue() {
 	return value_;
 }
 
-void Score::SetValue(int64_t value) {
+void Score::setValue(int64_t value) {
 	value_ = value;
 }
 
 Score::~Score() {
 }
 
-string Score::ToString(uint8_t engine_color, uint32_t depth) {
+string Score::toString(uint8_t engine_color, uint32_t depth) {
 	int mult = (engine_color == Piece::COLOR_BLACK) ? -1 : 1;
 
-	if (!IsMate())
+	if (!isMate())
 		return "cp " + to_string(mult * value_);
 
 	mult *= (value_ > 0) ? 1 : -1;
@@ -47,6 +47,6 @@ string Score::ToString(uint8_t engine_color, uint32_t depth) {
 	return "mate " + to_string(mult * moves_to_mate);
 }
 
-bool Score::IsMate() {
+bool Score::isMate() {
 	return (value_ <= BLACK_MATE_SCORE || value_ >= WHITE_MATE_SCORE);
 }

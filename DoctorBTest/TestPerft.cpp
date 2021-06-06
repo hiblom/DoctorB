@@ -18,12 +18,12 @@ public:
 		//arrange
 		Position pos;
 		HistoryMap history;
-		Parser::ParsePosition({ "startpos" }, pos, history);
+		Parser::parsePosition({ "startpos" }, pos, history);
 		Perft perft(pos);
-		perft.SetDepth(1);
+		perft.setDepth(1);
 
 		//act
-		uint64_t count = perft.Go();
+		uint64_t count = perft.go();
 
 		//assert
 		Assert::AreEqual(20Ui64, count);
@@ -33,12 +33,12 @@ public:
 		//arrange
 		Position pos;
 		HistoryMap history;
-		Parser::ParsePosition({ "startpos" }, pos, history);
+		Parser::parsePosition({ "startpos" }, pos, history);
 		Perft perft(pos);
-		perft.SetDepth(2);
+		perft.setDepth(2);
 
 		//act
-		uint64_t count = perft.Go();
+		uint64_t count = perft.go();
 
 		//assert
 		Assert::AreEqual(400Ui64, count);

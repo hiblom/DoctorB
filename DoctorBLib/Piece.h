@@ -18,18 +18,18 @@ public:
 	Piece(uint8_t piece_value);
 	Piece(uint8_t piece_type, uint8_t piece_color);
 	~Piece();
-	uint8_t GetType() const;
-	void SetType(uint8_t piece_type);
-	uint8_t GetColor() const;
-	void SetColor(uint8_t piece_color);
-	uint8_t GetValue() const;
-	void SetValue(uint8_t piece_value);
-	char ToChar() const;
-	std::string ToString() const;
+	uint8_t getType() const;
+	void setType(uint8_t piece_type);
+	uint8_t getColor() const;
+	void setColor(uint8_t piece_color);
+	uint8_t getValue() const;
+	void setValue(uint8_t piece_value);
+	char toChar() const;
+	std::string toString() const;
 	bool operator==(const Piece& that) const;
 private:
 	static const std::uint8_t MASK_COLOR = 0b00000001Ui8;
 	static const std::uint8_t MASK_TYPE = 0b11111110Ui8;
-	uint8_t value;
+	uint8_t value_;
 };
 

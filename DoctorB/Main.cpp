@@ -24,7 +24,7 @@ int main() {
 	//main loop to receive commands
 	string line;
 	while (getline(cin, line)) {
-		if (!uci.Execute(line))
+		if (!uci.execute(line))
 			break;
 	}
 

@@ -10,7 +10,7 @@ class Uci
 public:
 	Uci();
 	~Uci();
-	bool Execute(std::string command);
+	bool execute(std::string command);
 private:
 	boost::optional<Position> position_;
 	HistoryMap history_;

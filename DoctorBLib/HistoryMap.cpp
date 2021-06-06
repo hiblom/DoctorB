@@ -9,7 +9,7 @@ HistoryMap::HistoryMap() {
 HistoryMap::~HistoryMap() {
 }
 
-void HistoryMap::Increase(const uint64_t hash_key) {
+void HistoryMap::increase(const uint64_t hash_key) {
 	auto it = map_.find(hash_key);
 	if (it == map_.end()) {
 		map_.insert(pair<uint64_t, uint8_t>(hash_key, 1Ui8));
@@ -19,7 +19,7 @@ void HistoryMap::Increase(const uint64_t hash_key) {
 	}
 }
 
-void HistoryMap::Descrease(const uint64_t hash_key) {
+void HistoryMap::decrease(const uint64_t hash_key) {
 	auto it = map_.find(hash_key);
 	if (it != map_.end() && ((--it->second) == 0Ui8)) {
 		map_.erase(hash_key);
@@ -29,11 +29,11 @@ void HistoryMap::Descrease(const uint64_t hash_key) {
 	}
 }
 
-void HistoryMap::Clear() {
+void HistoryMap::clear() {
 	map_.clear();
 }
 
-bool HistoryMap::IsAtMax(const uint64_t hash_key) {
+bool HistoryMap::isAtMax(const uint64_t hash_key) {
 	auto it = map_.find(hash_key);
 	if (it == map_.end())
 		return false;
