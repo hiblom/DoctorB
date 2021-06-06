@@ -86,6 +86,7 @@ bool Position::getCastlingStatus(int index) const {
 void Position::setEpSquare(const Square& square) {
 	if (ep_square_.has_value()) {
 		hash_key_ ^= Zobrist::EP_FILE_KEY[ep_square_.value().getX()];
+		ep_square_.reset();
 	}
 
 	//polyglot hashing; only set ep square when there is an enemy pawn next to the moved pawn
@@ -243,16 +244,20 @@ bool Position::applyMove(const Move& move) {
 		setCastlingStatus(Constants::CASTLING_BLACK_KINGSIDE, castling_status_bk);
 	}
 
-	if (move.isDoublePush())
+	if (move.isDoublePush()) {
 		setEpSquare(Square(move.getSquareFrom().getX(), EP_RANK[active_color_]));
-	else
+	}
+	else {
 		resetEpSquare();
+	}
 
 	//increase/reset halfmove clock (reset when pawn moves or capture)
-	if (is_capture || move.isPromotion() || piece.getType() == Piece::TYPE_PAWN)
+	if (is_capture || move.isPromotion() || piece.getType() == Piece::TYPE_PAWN) {
 		setHalfmoveClock(0);
-	else
+	}
+	else {
 		incHalfmoveClock();
+	}
 
 	toggleActiveColor();
 
