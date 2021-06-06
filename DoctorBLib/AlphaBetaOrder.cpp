@@ -54,7 +54,7 @@ void AlphaBetaOrder::Loop(const uint64_t iteration_depth, Score& score, std::vec
 			Evaluator eval(depth_position[depth]);
 			eval.Evaluate(depth_score[depth]);
 
-			//go to SEE only when it was a capture (or also when it was just a move??? -> test this)
+			//go to SEE only when it was a capture
 			Move last_move = depth_moves[depth - 1][depth_index[depth - 1]];
 			if (last_move.IsCapture()) {
 				see_score.SetValue(depth_score[depth].GetValue());
@@ -158,11 +158,11 @@ void AlphaBetaOrder::OrderMoves(const Position& position, std::vector<Move>& mov
 	}
 }
 
-//for now, the quiescence routine is replaced by a static exchange evaluation
-//this means that we only evaluate captures on the square that was last captured, in order
+//we only evaluate captures on the square that was last captured, in order
 //of least valuable attacker to most valuable attacker
 //until we run out of captures on this square
 //then we take the evaluation of the remaining position
+//TODO simpler eval
 void AlphaBetaOrder::See(const Position& position, const Square& square, Score& score) {
 	Move lva_capture;
 	Position current_position(position);
