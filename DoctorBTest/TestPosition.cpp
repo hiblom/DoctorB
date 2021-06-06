@@ -135,7 +135,7 @@ public:
 		uint16_t actual_hmc = pos.GetHalfmoveClock();
 
 		//assert
-		Assert::AreEqual((int)hmc, (int)actual_hmc);
+		Assert::AreEqual(static_cast<int>(hmc), static_cast<int>(actual_hmc));
 	}
 
 	TEST_METHOD(TestPositionGetPieceSquares) {

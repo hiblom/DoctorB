@@ -50,14 +50,14 @@ void Evaluator::Evaluate(Score& score) {
 	return score.SetValue(value);
 }
 
-const int Evaluator::PIECE_START_TOTAL_VALUE =
+const int Evaluator::PIECE_START_TOTAL_VALUE {
 	16 * Constants::PIECE_VALUES[Piece::TYPE_PAWN | 1Ui8] +
 	4 * Constants::PIECE_VALUES[Piece::TYPE_KNIGHT | 1Ui8] +
 	4 * Constants::PIECE_VALUES[Piece::TYPE_BISHOP | 1Ui8] +
 	4 * Constants::PIECE_VALUES[Piece::TYPE_ROOK | 1Ui8] +
-	2 * Constants::PIECE_VALUES[Piece::TYPE_QUEEN | 1Ui8];
+	2 * Constants::PIECE_VALUES[Piece::TYPE_QUEEN | 1Ui8] };
 
-const int Evaluator::PIECE_SQUARE_START_VALUE[12][64] = {
+const std::array<std::array<int, 64>, 12> Evaluator::PIECE_SQUARE_START_VALUE{ {
 	{//black pawn
 	   0,   0,   0,   0,   0,   0,   0,   0,
 	 -50, -50, -50, -50, -50, -50, -50, -50,
@@ -178,9 +178,9 @@ const int Evaluator::PIECE_SQUARE_START_VALUE[12][64] = {
 	 -50, -50, -50, -50, -50, -50, -50, -50,
 	 -50, -50, -50, -50, -50, -50, -50, -50
 	}
-};
+} };
 
-const int Evaluator::PIECE_SQUARE_END_VALUE[12][64] = {
+const std::array<std::array<int, 64>, 12> Evaluator::PIECE_SQUARE_END_VALUE{ {
 	{//black pawn
 	   0,   0,   0,   0,   0,   0,   0,   0,
 	-150,-150,-150,-150,-150,-150,-150,-150,
@@ -301,4 +301,4 @@ const int Evaluator::PIECE_SQUARE_END_VALUE[12][64] = {
 	   0,   0,   0,   0,   0,   0,   0,   0,
 	 -25,   0,   0,   0,   0,   0,   0, -25
 	}
-};
+} };

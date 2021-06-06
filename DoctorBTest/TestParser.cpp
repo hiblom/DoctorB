@@ -153,7 +153,7 @@ public:
 
 		//assert
 		Assert::IsTrue(parse_res);
-		Assert::AreEqual(42, (int)pos.GetHalfmoveClock());
+		Assert::AreEqual(42, static_cast<int>(pos.GetHalfmoveClock()));
 	}
 
 	TEST_METHOD(TestParserParseFen) {
@@ -181,7 +181,7 @@ public:
 		Assert::IsTrue(pos.GetCastlingStatus(2));
 		Assert::IsTrue(pos.GetCastlingStatus(3));
 		Assert::IsFalse(pos.GetEpSquare(ep_square));
-		Assert::AreEqual(0, (int)pos.GetHalfmoveClock());
+		Assert::AreEqual(0, static_cast<int>(pos.GetHalfmoveClock()));
 	}
 
 	TEST_METHOD(TestParserParsePosition) {
@@ -210,7 +210,7 @@ public:
 		Assert::IsTrue(pos.GetCastlingStatus(Constants::CASTLING_BLACK_KINGSIDE));
 		Assert::IsTrue(pos.GetCastlingStatus(Constants::CASTLING_BLACK_QUEENSIDE));
 		Assert::IsFalse(pos.GetEpSquare(ep_square));
-		Assert::AreEqual(4, (int)pos.GetHalfmoveClock());
+		Assert::AreEqual(4, static_cast<int>(pos.GetHalfmoveClock()));
 	}
 
 	};

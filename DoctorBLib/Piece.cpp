@@ -1,5 +1,7 @@
 #include "stdafx.h"
 #include "Piece.h"
+#include <array>
+
 #include "Constants.h"
 
 using namespace std;
@@ -51,8 +53,8 @@ char Piece::ToChar() const {
 }
 
 string Piece::ToString() const {
-	char result[2] = { ToChar(), '\0' };
-	return result;
+	const array<char, 2> result { { ToChar(), '\0' } };
+	return result.data();
 }
 
 bool Piece::operator==(const Piece & that) const {

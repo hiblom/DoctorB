@@ -6,14 +6,15 @@
 #include "MoveGenerator.h"
 
 using namespace std;
+using namespace boost::algorithm;
 
 bool Parser::ParsePosition(const vector<string>& position_tokens, Position& position, HistoryMap& history) {
 	vector<string>::const_iterator moves_it = find(position_tokens.begin(), position_tokens.end(), "moves");
 
-	if (position_tokens[0] == "startpos") {
+	if (iequals(position_tokens[0], "startpos")) {
 		SetStartPos(position);
 	}
-	else if (position_tokens[0] == "fen") {
+	else if (iequals(position_tokens[0], "fen")) {
 		if (position_tokens.size() < 3)
 			return false;
 
@@ -40,7 +41,7 @@ bool Parser::ParsePiece(char c, Piece& piece) {
 	if (value == std::string::npos)
 		return false;
 
-	piece = Piece((uint8_t)value);
+	piece = Piece(static_cast<uint8_t>(value));
 	return true;
 }
 

@@ -1,6 +1,7 @@
 #pragma once
 #include <cstdint>
 #include <string>
+#include <array>
 #include <boost/optional.hpp>
 #include <vector>
 #include "BitBoard.h"
@@ -37,7 +38,7 @@ public:
 	void RecalculateHashKey();
 	uint64_t GetHashKey() const;
 private:
-	BitBoard bit_boards[12];
+	std::array<BitBoard, 12> bit_boards;
 	uint8_t active_color;
 	uint8_t castling_status_bits;
 	boost::optional<Square> ep_square;

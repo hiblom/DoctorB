@@ -24,7 +24,4 @@ private:
 	void goTime(const std::vector<std::string>& tokens);
 	void goPerft(const std::vector<std::string>& tokens);
 	void executeD();
-
-	//temp
-	void TestPolyglot();
 };

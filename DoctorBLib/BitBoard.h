@@ -34,7 +34,7 @@ public:
 	bool GetHighestSquare(Square& square) const;
 	std::string ToString() const;
 private:
-	static const uint64_t NOT_A_FILE = ~0x0101010101010101;
-	static const uint64_t NOT_H_FILE = ~0x8080808080808080;
+	static const uint64_t NOT_A_FILE { ~0x0101010101010101Ui64 };
+	static const uint64_t NOT_H_FILE { ~0x8080808080808080Ui64 };
 	uint64_t value;
 };

@@ -5,14 +5,14 @@
 class Piece
 {
 public:
-	static const std::uint8_t TYPE_PAWN = 0;
-	static const std::uint8_t TYPE_KNIGHT = 2;
-	static const std::uint8_t TYPE_BISHOP = 4;
-	static const std::uint8_t TYPE_ROOK = 6;
-	static const std::uint8_t TYPE_QUEEN = 8;
-	static const std::uint8_t TYPE_KING = 10;
-	static const std::uint8_t COLOR_BLACK = 0;
-	static const std::uint8_t COLOR_WHITE = 1;
+	static const std::uint8_t TYPE_PAWN = 0Ui8;
+	static const std::uint8_t TYPE_KNIGHT = 2Ui8;
+	static const std::uint8_t TYPE_BISHOP = 4Ui8;
+	static const std::uint8_t TYPE_ROOK = 6Ui8;
+	static const std::uint8_t TYPE_QUEEN = 8Ui8;
+	static const std::uint8_t TYPE_KING = 10Ui8;
+	static const std::uint8_t COLOR_BLACK = 0Ui8;
+	static const std::uint8_t COLOR_WHITE = 1Ui8;
 
 	Piece();
 	Piece(uint8_t piece_value);
@@ -28,8 +28,8 @@ public:
 	std::string ToString() const;
 	bool operator==(const Piece& that) const;
 private:
-	static const std::uint8_t MASK_COLOR = 0b00000001;
-	static const std::uint8_t MASK_TYPE = 0b11111110;
+	static const std::uint8_t MASK_COLOR = 0b00000001Ui8;
+	static const std::uint8_t MASK_TYPE = 0b11111110Ui8;
 	uint8_t value;
 };
 

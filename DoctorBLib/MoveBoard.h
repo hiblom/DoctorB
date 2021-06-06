@@ -1,5 +1,6 @@
 #pragma once
 #include "BitBoard.h"
+#include <array>
 
 class MoveBoard
 {
@@ -29,13 +30,13 @@ public:
 	BitBoard GetCastlingEmptySquares(const int index) const;
 	BitBoard&(BitBoard::*Forward[2])();
 private:
-	BitBoard king_moves[64];
-	BitBoard knight_moves[64];
-	BitBoard pawn_pushes[2][64];
-	BitBoard pawn_captures[2][64];
-	BitBoard rays[8][64];
-	BitBoard castling_safe_squares[4];
-	BitBoard castling_empty_squares[4];
+	std::array<BitBoard, 64> king_moves;
+	std::array<BitBoard, 64> knight_moves;
+	std::array<std::array<BitBoard, 64>, 2> pawn_pushes;
+	std::array< std::array<BitBoard, 64>, 2> pawn_captures;
+	std::array< std::array<BitBoard, 64>, 8> rays;
+	std::array<BitBoard, 4> castling_safe_squares;
+	std::array<BitBoard, 4> castling_empty_squares;
 
 	MoveBoard();
 	void Initialize();

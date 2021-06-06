@@ -75,16 +75,10 @@
     <ClInclude Include="Options.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="AlphaBeta.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="AlphaBetaOrder.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="AlphaBetaQuiesce.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MiniMax.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="SearchAlgorithm.h">
@@ -149,16 +143,10 @@
     <ClCompile Include="TranspositionTable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="AlphaBeta.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="AlphaBetaOrder.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="AlphaBetaQuiesce.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MiniMax.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="SearchAlgorithm.cpp">

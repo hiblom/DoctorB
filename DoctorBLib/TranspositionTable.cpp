@@ -64,7 +64,7 @@ bool TranspositionTable::FindScore(const uint64_t key, Score& score, uint16_t& r
 }
 
 int TranspositionTable::GetHashFull() {
-	return (int)(map->size() * 1000000 / max_size);
+	return static_cast<int>(map->size() * 1000000 / max_size);
 }
 
 void TranspositionTable::Clear() {

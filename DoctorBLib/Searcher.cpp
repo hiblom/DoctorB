@@ -5,8 +5,6 @@
 #include <algorithm>
 #include "MoveGenerator.h"
 #include "Evaluator.h"
-#include "MiniMax.h"
-#include "AlphaBeta.h"
 #include "AlphaBetaOrder.h"
 #include "AlphaBetaQuiesce.h"
 #include "Options.h"

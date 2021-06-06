@@ -19,7 +19,7 @@ Move SearchAlgorithm::GoDepth(uint64_t max_depth) {
 
 		auto end_time = chrono::system_clock::now();
 		chrono::duration<double> elapsed_seconds = end_time - start_time;
-		int nps = elapsed_seconds.count() > 0 ? (int)(node_count_ / elapsed_seconds.count()) : 0;
+		int nps = elapsed_seconds.count() > 0 ? static_cast<int>(node_count_ / elapsed_seconds.count()) : 0;
 
 		cout << "info depth " << iteration_depth << " score " << score.ToString(base_position_.GetActiveColor(), iteration_depth) << " nodes " << node_count_ << " nps " << nps;
 
@@ -61,8 +61,8 @@ Move SearchAlgorithm::GoTime(uint64_t max_duration) {
 
 		auto end_time = chrono::system_clock::now();
 		chrono::duration<double> elapsed_seconds = end_time - start_time;
-		duration = (int)(elapsed_seconds.count() * 1000);
-		int nps = elapsed_seconds.count() > 0 ? (int)(node_count_ / elapsed_seconds.count()) : 0;
+		duration = static_cast<int>(elapsed_seconds.count() * 1000);
+		int nps = elapsed_seconds.count() > 0 ? static_cast<int>(node_count_ / elapsed_seconds.count()) : 0;
 
 		cout << "info depth " << iteration_depth << " score " << score.ToString(base_position_.GetActiveColor(), iteration_depth) << " nodes " << node_count_ << " nps " << nps;
 

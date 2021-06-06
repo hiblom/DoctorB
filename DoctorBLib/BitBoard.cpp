@@ -27,7 +27,7 @@ bool BitBoard::NotEmpty() {
 }
 
 uint8_t BitBoard::PopCount() const {
-	return (uint8_t)(__popcnt64(value));
+	return static_cast<uint8_t>(__popcnt64(value));
 }
 
 BitBoard& BitBoard::Set(uint8_t square_value) {
@@ -105,7 +105,7 @@ bool BitBoard::GetSquares(std::vector<Square>& squares) const {
 	uint64_t mask = value;
 	unsigned long index;
 	while (_BitScanForward64(&index, mask)) {
-		squares.push_back(Square((uint8_t)index));
+		squares.push_back(Square(static_cast<uint8_t>(index)));
 		mask &= ~(1Ui64 << index);
 	}
 	return true;
@@ -117,7 +117,7 @@ bool BitBoard::PopLowestSquare(Square& square) {
 	
 	unsigned long index;
 	_BitScanForward64(&index, value);
-	square.SetValue((uint8_t)index);
+	square.SetValue(static_cast<uint8_t>(index));
 	value &= ~(1Ui64 << index);
 	return true;
 }
@@ -125,7 +125,7 @@ bool BitBoard::PopLowestSquare(Square& square) {
 bool BitBoard::GetLowestSquare(Square& square) const {
 	unsigned long index;
 	if (_BitScanForward64(&index, value)) {
-		square.SetValue((uint8_t)index);
+		square.SetValue(static_cast<uint8_t>(index));
 		return true;
 	}
 	return false;
@@ -134,7 +134,7 @@ bool BitBoard::GetLowestSquare(Square& square) const {
 bool BitBoard::GetHighestSquare(Square& square) const {
 	unsigned long index;
 	if (_BitScanReverse64(&index, value)) {
-		square.SetValue((uint8_t)index);
+		square.SetValue(static_cast<uint8_t>(index));
 		return true;
 	}
 	return false;

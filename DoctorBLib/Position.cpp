@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Position.h"
+#include <array>
 #include "Piece.h"
 #include "Move.h"
 #include "Constants.h"
@@ -73,7 +74,7 @@ uint8_t Position::GetActiveColor() const {
 void Position::SetCastlingStatus(int index, bool value) {
 	bool current_status = GetCastlingStatus(index);
 	if (value != current_status) {
-		castling_status_bits = (castling_status_bits & ~(1Ui8 << index)) | ((uint8_t)value << index);
+		castling_status_bits = (castling_status_bits & ~(1Ui8 << index)) | (static_cast<uint8_t>(value) << index);
 		hash_key ^= Zobrist::CASTLING_KEY[index];
 	}
 }
@@ -90,8 +91,8 @@ void Position::SetEpSquare(const Square& square) {
 	//polyglot hashing; only set ep square when there is an enemy pawn next to the moved pawn
 	bool setEpSquare = false;
 
-	uint8_t other_color = square.GetY() == 2 ? Piece::COLOR_BLACK : Piece::COLOR_WHITE;
-	uint8_t other_y = square.GetY() == 2 ? 3 : 4;
+	uint8_t other_color = square.GetY() == 2Ui8 ? Piece::COLOR_BLACK : Piece::COLOR_WHITE;
+	uint8_t other_y = square.GetY() == 2Ui8 ? 3Ui8 : 4Ui8;
 	Piece other_pawn = Piece(Piece::TYPE_PAWN, other_color);
 	if (square.GetX() > 0) {
 		Piece piece;
@@ -164,7 +165,7 @@ string Position::ToString() const {
 }
 
 bool Position::ApplyMove(const Move& move) {
-	static const uint8_t EP_RANK[2] = { 5Ui8, 2Ui8 };
+	static const array<uint8_t, 2> EP_RANK { { 5Ui8, 2Ui8 } };
 
 	uint8_t inactive_color = active_color ^ 1Ui8;
 

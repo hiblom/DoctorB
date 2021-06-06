@@ -13,5 +13,5 @@ private:
 	void See(const Position& position, const Square& square, Score& score);
 	void OrderMoves(const Position& position, std::vector<Move>& moves);
 
-	const int MAX_QUIESCE_DEPTH = 6;
+	const int MAX_QUIESCE_DEPTH { 6 };
 };

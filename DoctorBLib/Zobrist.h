@@ -7,13 +7,14 @@
 #endif
 
 #include <cstdint>
+#include <array>
 
 //the keys values are equal to the keys used in polyglot book format
 //reason is that we can use these books without recalculating the zobrist hashes
 //http://hgm.nubati.net/book_format.html
 
 namespace Zobrist {
-	const uint64_t PIECE_SQUARE_KEY[12][64] = {
+	const std::array<std::array<uint64_t, 64>, 12> PIECE_SQUARE_KEY { {
 		{
 			U64(0x9D39247E33776D41), U64(0x2AF7398005AAA5C7), U64(0x44DB015024623547), U64(0x9C15F73E62A76AE2),
 			U64(0x75834465489C0C89), U64(0x3290AC3A203001BF), U64(0x0FBBAD1F61042279), U64(0xE83A908FF2FB60CA),
@@ -230,18 +231,18 @@ namespace Zobrist {
 			U64(0xF1BCC3D275AFE51A), U64(0xE728E8C83C334074), U64(0x96FBF83A12884624), U64(0x81A1549FD6573DA5),
 			U64(0x5FA7867CAF35E149), U64(0x56986E2EF3ED091B), U64(0x917F1DD5F8886C61), U64(0xD20D8C88C8FFE65F)
 		}
-	};
+	} };
 
-	const uint64_t CASTLING_KEY[4] =
+	const std::array<uint64_t, 4> CASTLING_KEY {
 	{
 		U64(0x31D71DCE64B2C310), U64(0xF165B587DF898190), U64(0xA57E6339DD2CF3A0), U64(0x1EF6E6DBB1961EC9)
-	};
+	} };
 
-	const uint64_t EP_FILE_KEY[8] =
+	const std::array<uint64_t, 8> EP_FILE_KEY {
 	{
 		U64(0x70CC73D90BC26E24), U64(0xE21A6B35DF0C3AD7), U64(0x003A93D8B2806962), U64(0x1C99DED33CB890A1),
 		U64(0xCF3145DE0ADD4289), U64(0xD0E4427A5514FB72), U64(0x77C621CC9FB3A483), U64(0x67A34DAC4356550B),
-	};
+	} };
 
 	const uint64_t WHITE_TURN_KEY = U64(0xF8D626AAAF278509);
 }

@@ -110,10 +110,10 @@ Move Polyglot::convert_move(uint16_t polyglot_move) {
     const uint16_t PROMO_MASK = 0b0111000000000000;
     const uint8_t PROMO_OFFSET = 12;
 
-    Square square_to = Square((uint8_t)((polyglot_move & TO_MASK) >> TO_OFFSET));
-    Square square_from = Square((uint8_t)((polyglot_move & FROM_MASK) >> FROM_OFFSET));
+    Square square_to = Square(static_cast<uint8_t>((polyglot_move & TO_MASK) >> TO_OFFSET));
+    Square square_from = Square(static_cast<uint8_t>((polyglot_move & FROM_MASK) >> FROM_OFFSET));
 
-    uint8_t polyglot_promo_piece = (uint8_t)((polyglot_move & PROMO_MASK) >> PROMO_OFFSET);
+    uint8_t polyglot_promo_piece = static_cast<uint8_t>((polyglot_move & PROMO_MASK) >> PROMO_OFFSET);
     if (polyglot_promo_piece == 0)
         return Move(square_from, square_to);
 
@@ -136,10 +136,10 @@ int Polyglot::get_random(int max) {
 bool Polyglot::binary_search(uint64_t hash) {
 
     file_.seekg(0, ios::beg);
-    uint64_t min_pos = (uint64_t)file_.tellg();
+    uint64_t min_pos = static_cast<uint64_t>(file_.tellg());
 
     file_.seekg(0, ios::end);
-    uint64_t max_pos = (uint64_t)file_.tellg();
+    uint64_t max_pos = static_cast<uint64_t>(file_.tellg());
 
     uint64_t entry_count = (max_pos - min_pos) / sizeof(PolyglotEntry);
 

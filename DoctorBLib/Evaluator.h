@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <array>
 #include "Position.h"
 #include "Score.h"
 
@@ -13,8 +14,8 @@ public:
 private:
 	int GetMaterialCount();
 
-	static const int PIECE_SQUARE_START_VALUE[12][64];
-	static const int PIECE_SQUARE_END_VALUE[12][64];
+	static const std::array<std::array<int, 64>, 12> PIECE_SQUARE_START_VALUE;
+	static const std::array<std::array<int, 64>, 12> PIECE_SQUARE_END_VALUE;
 	static const int PIECE_START_TOTAL_VALUE;
 	const Position& position_;
 };

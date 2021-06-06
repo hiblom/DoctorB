@@ -7,7 +7,7 @@
 
 using namespace std;
 
-Perft::Perft(const Position& position) : position_(position) {
+Perft::Perft(const Position& position) : position_(position), depth_(0) {
 }
 
 Perft::~Perft() {

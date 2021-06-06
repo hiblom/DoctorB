@@ -151,7 +151,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="AlphaBetaQuiesce.h" />
-    <ClInclude Include="AlphaBeta.h" />
     <ClInclude Include="AlphaBetaOrder.h" />
     <ClInclude Include="App.h" />
     <ClInclude Include="BitBoard.h" />
@@ -159,7 +158,6 @@
     <ClInclude Include="Evaluator.h" />
     <ClInclude Include="Globals.h" />
     <ClInclude Include="HistoryMap.h" />
-    <ClInclude Include="MiniMax.h" />
     <ClInclude Include="Move.h" />
     <ClInclude Include="MoveBoard.h" />
     <ClInclude Include="MoveGenerator.h" />
@@ -182,13 +180,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AlphaBetaQuiesce.cpp" />
-    <ClCompile Include="AlphaBeta.cpp" />
     <ClCompile Include="AlphaBetaOrder.cpp" />
     <ClCompile Include="BitBoard.cpp" />
     <ClCompile Include="Evaluator.cpp" />
     <ClCompile Include="Globals.cpp" />
     <ClCompile Include="HistoryMap.cpp" />
-    <ClCompile Include="MiniMax.cpp" />
     <ClCompile Include="Move.cpp" />
     <ClCompile Include="MoveBoard.cpp" />
     <ClCompile Include="MoveGenerator.cpp" />
