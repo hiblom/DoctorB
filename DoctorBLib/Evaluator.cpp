@@ -20,7 +20,7 @@ int Evaluator::CompareScore(uint8_t color, Score score_1, Score score_2) {
 
 int Evaluator::GetMaterialCount() {
 	int result = 0;
-	for (uint8_t p = 0; p < 12; p++) {
+	for (uint8_t p = 0; p < 10; p++) { //don't count kings
 		result += position_.GetPieceCount(Piece(p));
 	}
 	return result;
@@ -43,8 +43,7 @@ void Evaluator::Evaluate(Score& score) {
 		}
 	}
 
-	// >>5 instead of /32
-	int value = piece_value + ((start_piece_square_value * material_count + end_piece_square_value * (32 - material_count)) >> 5);
+	int value = piece_value + ((start_piece_square_value * material_count + end_piece_square_value * (30 - material_count)) / 30);
 	//add random "noise" to prevent DoctorB from playing the same moves over and over
 	//noise band = 0..4
 	value += (rand() % 5);
