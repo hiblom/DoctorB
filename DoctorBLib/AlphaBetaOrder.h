@@ -7,6 +7,18 @@ public:
 	AlphaBetaOrder(const Position& base_position, HistoryMap& history);
 	~AlphaBetaOrder();
 private:
+	struct State {
+		Position position;
+		std::vector<Move> moves;
+		int move_index;
+		Score score;
+		std::vector<Move> variation;
+		State();
+		void generateMoves();
+		void evaluate();
+		Move& getActiveMove();
+	};
+
 	void loop(const uint64_t iteration_depth, Score& score, std::vector<Move>& pv);
 	void orderMoves(const Position& position, std::vector<Move>& moves);
 	void see(const Position & position, const Square & square, Score & score);
