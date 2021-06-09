@@ -6,6 +6,7 @@
 #include "MoveGenerator.h"
 #include "Evaluator.h"
 #include "TranspositionTable.h"
+#include "Constants.h"
 
 using namespace std;
 
@@ -27,10 +28,8 @@ Move& AlphaBetaOrder::State::getActiveMove() {
 	return moves[move_index];
 }
 
-
 AlphaBetaOrder::AlphaBetaOrder(const Position& base_position, HistoryMap& history) : SearchAlgorithm(base_position, history) {
 }
-
 
 AlphaBetaOrder::~AlphaBetaOrder() {
 }
@@ -139,7 +138,7 @@ void AlphaBetaOrder::loop(const uint64_t iteration_depth, Score& score, std::vec
 			if (current_state.moves.size() > 0) {
 				TranspositionTable::getInstance().setBestMove(current_state.position.getHashKey(), current_state.variation[0]);
 			}
-			TranspositionTable::getInstance().setScore(current_state.position.getHashKey(), current_state.score, (uint16_t)(iteration_depth - current_depth));
+			TranspositionTable::getInstance().setScore(current_state.position.getHashKey(), current_state.score, static_cast<uint16_t>(iteration_depth - current_depth));
 
 			current_depth--;
 			continue;
@@ -159,12 +158,13 @@ void AlphaBetaOrder::loop(const uint64_t iteration_depth, Score& score, std::vec
 	score.setValue(states[0].score.getValue());
 }
 
-
-//if position is in TT, put best move at first position
 void AlphaBetaOrder::orderMoves(const Position& position, std::vector<Move>& moves) {
 	if (moves.size() < 2)
 		return;
 
+	int start = 0;
+
+	//if position is in TT, put best move at first position
 	Move tt_move;
 	if (TranspositionTable::getInstance().findBestMove(position.getHashKey(), tt_move)) {
 		std::vector<Move>::iterator pos = find(moves.begin(), moves.end(), tt_move);
@@ -173,9 +173,27 @@ void AlphaBetaOrder::orderMoves(const Position& position, std::vector<Move>& mov
 			*pos = moves[0];
 			moves[0] = tt_move;
 		}
+		start = 1;
 	}
 
-	//TODO order rest of moves by capture MVV/LVA value
+	//simplesort! put captures and promotions at start
+	auto it_start = moves.begin() + start;
+	auto it_end = moves.end() - 1;
+	while (it_start < it_end) {
+		if (!it_end->isCapture() && !it_end->isPromotion()) {
+			it_end--;
+			continue;
+		}
+
+		if (it_start->isCapture() || it_start->isPromotion()) {
+			it_start++;
+			continue;
+		}
+
+		iter_swap(it_start, it_end);
+		it_start++;
+		it_end--;
+	}
 }
 
 //we only evaluate captures on the square that was last captured, in order
@@ -207,3 +225,4 @@ void AlphaBetaOrder::afterSearch() {
 void AlphaBetaOrder::afterIteration() {
 	cout << "hashfull " << TranspositionTable::getInstance().getHashFull() << endl;
 }
+

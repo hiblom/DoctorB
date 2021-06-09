@@ -1,5 +1,10 @@
 #pragma once
 #include "SearchAlgorithm.h"
+#include <vector>
+#include "HistoryMap.h"
+#include "Position.h"
+#include "Move.h"
+#include "Square.h"
 
 class AlphaBetaOrder : public SearchAlgorithm
 {
