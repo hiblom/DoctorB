@@ -3,6 +3,7 @@
 #include <iostream>
 #include <chrono>
 #include <algorithm>
+#include "Globals.h"
 
 using namespace std;
 
@@ -16,6 +17,9 @@ Move SearchAlgorithm::goDepth(uint64_t max_depth) {
 		vector<Move> pv(iteration_depth);
 		Score score;
 		loop(iteration_depth, score, pv);
+		
+		if (Globals::stop)
+			break;
 
 		auto end_time = chrono::system_clock::now();
 		chrono::duration<double> elapsed_seconds = end_time - start_time;
@@ -58,6 +62,9 @@ Move SearchAlgorithm::goTime(uint64_t max_duration) {
 		vector<Move> pv(iteration_depth);
 		Score score;
 		loop(iteration_depth, score, pv);
+
+		if (Globals::stop)
+			break;
 
 		auto end_time = chrono::system_clock::now();
 		chrono::duration<double> elapsed_seconds = end_time - start_time;

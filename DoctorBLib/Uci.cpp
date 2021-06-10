@@ -22,16 +22,35 @@ using namespace std;
 using namespace boost::algorithm;
 
 Uci::Uci() {
+	thread_pool_.resize(1);
 }
 
 Uci::~Uci() {
 }
 
 bool Uci::execute(string command) {
-
-	//to_lower(command); //cannot to_lower the command, because FEN is case sensitive
 	vector<string> command_parts;
 	split(command_parts, command, is_any_of(" "));
+
+	if (Globals::searching) {
+		//only allowed uci commands are stop and quit
+		if (iequals(command_parts[0], "stop")) {
+			Globals::stop = true;
+			searching_.wait();
+			Globals::stop = false;
+			return true;
+		}
+		else if (iequals(command_parts[0], "quit")) {
+			Globals::stop = true;
+			searching_.wait();
+			Globals::stop = false;
+			return false;
+		}
+		else {
+			cout << "Invalid command while searching" << endl;
+			return true;
+		}
+	}
 
 	if (iequals(command_parts[0], "uci")) {
 		executeUci();
@@ -129,6 +148,9 @@ void Uci::executeGo(const vector<string>& command_parts) {
 	if (iequals(command_parts[1], "depth")) {
 		goDepth(tokens);
 	}
+	if (iequals(command_parts[1], "infinite")) {
+		goDepth(tokens);
+	}
 	else if (iequals(command_parts[1], "wtime") || iequals(command_parts[1], "btime") || iequals(command_parts[1], "winc") || iequals(command_parts[1], "binc")) {
 		goTime(tokens);
 	}
@@ -183,19 +205,36 @@ void Uci::executeSetOption(const std::vector<std::string>& command_parts) {
 }
 
 void Uci::goDepth(const vector<string>& tokens) {
-	if (tokens.size() != 2) {
-		cout << "Number of depth parameters must be 1" << endl;
-		return;
+	int depth = 0;
+	if (iequals(tokens[0], "infinite")) {
+		if (tokens.size() != 1) {
+			cout << "No extra infinite parameters allowed" << endl;
+			return;
+		}
+		depth = INT_MAX; //not exactly infinite, but should be enough
+	}
+	else if (iequals(tokens[0], "infinite")) {
+		if (tokens.size() != 2) {
+			cout << "Number of depth parameters must be 1" << endl;
+			return;
+		}
+
+		int depth = stoi(tokens[1]);
+		if (depth < 1) {
+			cout << "Depth must be greater than 1" << endl;
+			return;
+		}
 	}
 
-	int depth = stoi(tokens[1]);
-	if (depth < 1) {
-		cout << "Depth must be greater than 1" << endl;
-		return;
-	}
+	Position& position = position_.value();
+	HistoryMap& history = history_;
 
-	Searcher search(position_.value(), history_);
-	search.goDepth(depth);
+	searching_ = thread_pool_.push([position, history, depth](int id) {
+		Globals::searching = true;
+		Searcher search(position, history);
+		search.goDepth(depth);
+		Globals::searching = false;
+	});
 }
 
 void Uci::goTime(const vector<string>& tokens) {
@@ -225,8 +264,15 @@ void Uci::goTime(const vector<string>& tokens) {
 		i++;
 	}
 
-	Searcher search(position_.value(), history_);
-	search.goTime(wtime, btime, winc, binc, movestogo);
+	Position& position = position_.value();
+	HistoryMap& history = history_;
+
+	searching_ = thread_pool_.push([position, history, wtime, btime, winc, binc, movestogo](int id) {
+		Globals::searching = true;
+		Searcher search(position, history);
+		search.goTime(wtime, btime, winc, binc, movestogo);
+		Globals::searching = false;
+	});
 }
 
 void Uci::goPerft(const vector<string>& tokens) {

@@ -7,6 +7,7 @@
 #include "Evaluator.h"
 #include "TranspositionTable.h"
 #include "Constants.h"
+#include "Globals.h"
 
 using namespace std;
 
@@ -28,7 +29,7 @@ Move& AlphaBetaOrder::State::getActiveMove() {
 	return moves[move_index];
 }
 
-AlphaBetaOrder::AlphaBetaOrder(const Position& base_position, HistoryMap& history) : SearchAlgorithm(base_position, history) {
+AlphaBetaOrder::AlphaBetaOrder(const Position& base_position, const HistoryMap& history) : SearchAlgorithm(base_position, history) {
 }
 
 AlphaBetaOrder::~AlphaBetaOrder() {
@@ -36,8 +37,9 @@ AlphaBetaOrder::~AlphaBetaOrder() {
 
 //use a loop (no recursion) to calculate the best move using the AlphaBeta algorithm with move ordering
 void AlphaBetaOrder::loop(const uint64_t iteration_depth, Score& score, std::vector<Move>& pv) {
+	//vector<State> states(iteration_depth + 1 + MAX_QUIESCE_DEPTH); //iteration_depth + 1 is needed for search up to horizon, the rest is reserved for qsearch
 	vector<State> states(iteration_depth + 1);
-	
+
 	Score see_score;
 	Score tt_score;
 	uint16_t tt_remaining_depth;
@@ -45,7 +47,7 @@ void AlphaBetaOrder::loop(const uint64_t iteration_depth, Score& score, std::vec
 	states[0].position = base_position_;
 
 	int current_depth = 0;
-	while (current_depth >= 0) {
+	while (!Globals::stop && current_depth >= 0) {
 		State& current_state = states[current_depth];
 
 		//examine three-fold repetition
@@ -154,8 +156,10 @@ void AlphaBetaOrder::loop(const uint64_t iteration_depth, Score& score, std::vec
 		states[current_depth].move_index = -1;
 	}
 
-	pv.assign(states[0].variation.begin(), states[0].variation.end());
-	score.setValue(states[0].score.getValue());
+	if (!Globals::stop) {
+		pv.assign(states[0].variation.begin(), states[0].variation.end());
+		score.setValue(states[0].score.getValue());
+	}
 }
 
 void AlphaBetaOrder::orderMoves(const Position& position, std::vector<Move>& moves) {

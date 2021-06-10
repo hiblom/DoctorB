@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <boost/optional.hpp>
+#include "ctpl.h"
 #include "Position.h"
 #include "HistoryMap.h"
 
@@ -14,6 +15,8 @@ public:
 private:
 	boost::optional<Position> position_;
 	HistoryMap history_;
+	ctpl::thread_pool thread_pool_;
+	std::future<void> searching_;
 	void executeUci();
 	void executeUciNewGame();
 	void executeIsReady();

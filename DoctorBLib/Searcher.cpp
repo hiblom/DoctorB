@@ -6,14 +6,13 @@
 #include "MoveGenerator.h"
 #include "Evaluator.h"
 #include "AlphaBetaOrder.h"
-#include "AlphaBetaQuiesce.h"
 #include "Options.h"
 #include "Polyglot.h"
 #include "Globals.h"
 
 using namespace std;
 
-Searcher::Searcher(const Position& base_position, HistoryMap& history) : base_position_(base_position), history_(history), node_count(0) {
+Searcher::Searcher(const Position& base_position, const HistoryMap& history) : base_position_(base_position), history_(history), node_count(0) {
 }
 
 void Searcher::goDepth(int depth) {

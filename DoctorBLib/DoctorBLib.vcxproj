@@ -150,11 +150,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="AlphaBetaQuiesce.h" />
     <ClInclude Include="AlphaBetaOrder.h" />
     <ClInclude Include="App.h" />
     <ClInclude Include="BitBoard.h" />
     <ClInclude Include="Constants.h" />
+    <ClInclude Include="ctpl.h" />
     <ClInclude Include="Evaluator.h" />
     <ClInclude Include="Globals.h" />
     <ClInclude Include="HistoryMap.h" />
@@ -179,7 +179,6 @@
     <ClInclude Include="Zobrist.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AlphaBetaQuiesce.cpp" />
     <ClCompile Include="AlphaBetaOrder.cpp" />
     <ClCompile Include="BitBoard.cpp" />
     <ClCompile Include="Evaluator.cpp" />

@@ -33,7 +33,7 @@ void HistoryMap::clear() {
 	map_.clear();
 }
 
-bool HistoryMap::isAtMax(const uint64_t hash_key) {
+bool HistoryMap::isAtMax(const uint64_t hash_key) const {
 	auto it = map_.find(hash_key);
 	if (it == map_.end())
 		return false;
