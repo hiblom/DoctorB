@@ -7,9 +7,9 @@
 
 using namespace std;
 
-Polyglot& Polyglot::get_instance() {
+Polyglot& Polyglot::getInstance() {
     if (instance_ == nullptr) {
-        instance_ = new Polyglot();
+        instance_ = unique_ptr<Polyglot>(new Polyglot());
     }
     return *instance_;
 }
@@ -38,12 +38,12 @@ bool Polyglot::open() {
     return true;
 }
 
-Move Polyglot::get_move(uint64_t hash) {
+Move Polyglot::getMove(uint64_t hash) {
     if (!file_ && file_.is_open()) {
         return Move();
     }
 
-    if (!binary_search(hash))
+    if (!binarySearch(hash))
         return Move();
 
     int count = 0;
@@ -53,7 +53,7 @@ Move Polyglot::get_move(uint64_t hash) {
     PolyglotEntry entry {};
 
     while (!file_.eof()) {
-        read_entry(entry);
+        readEntry(entry);
         count++;
 
         if (entry.hash != hash)
@@ -66,7 +66,7 @@ Move Polyglot::get_move(uint64_t hash) {
 
 
     //determine move (with rng)
-    int r = get_random(total_weight);
+    int r = getRandom(total_weight);
 
     uint16_t entry_move = 0;
     int running_weight = 0;
@@ -78,7 +78,7 @@ Move Polyglot::get_move(uint64_t hash) {
         }
     }
 
-    return convert_move(entry_move);
+    return convertMove(entry_move);
 }
 
 Polyglot::~Polyglot() {
@@ -91,7 +91,7 @@ Polyglot::Polyglot() {
     open();
 }
 
-void Polyglot::read_entry(PolyglotEntry& entry) {
+void Polyglot::readEntry(PolyglotEntry& entry) {
     file_.read((char*)&entry, sizeof(PolyglotEntry));
     
     //swap bytes because they are in the wrong order...little endian vs big endian
@@ -101,7 +101,7 @@ void Polyglot::read_entry(PolyglotEntry& entry) {
     //note: ignoring learn
 }
 
-Move Polyglot::convert_move(uint16_t polyglot_move) {
+Move Polyglot::convertMove(uint16_t polyglot_move) {
 
     const uint16_t TO_MASK = 0b0000000000111111;
     const uint8_t TO_OFFSET = 0;
@@ -110,10 +110,10 @@ Move Polyglot::convert_move(uint16_t polyglot_move) {
     const uint16_t PROMO_MASK = 0b0111000000000000;
     const uint8_t PROMO_OFFSET = 12;
 
-    Square square_to = Square((uint8_t)((polyglot_move & TO_MASK) >> TO_OFFSET));
-    Square square_from = Square((uint8_t)((polyglot_move & FROM_MASK) >> FROM_OFFSET));
+    Square square_to = Square(static_cast<uint8_t>((polyglot_move & TO_MASK) >> TO_OFFSET));
+    Square square_from = Square(static_cast<uint8_t>((polyglot_move & FROM_MASK) >> FROM_OFFSET));
 
-    uint8_t polyglot_promo_piece = (uint8_t)((polyglot_move & PROMO_MASK) >> PROMO_OFFSET);
+    uint8_t polyglot_promo_piece = static_cast<uint8_t>((polyglot_move & PROMO_MASK) >> PROMO_OFFSET);
     if (polyglot_promo_piece == 0)
         return Move(square_from, square_to);
 
@@ -129,17 +129,17 @@ Move Polyglot::convert_move(uint16_t polyglot_move) {
     return Move(square_from, square_to, Piece(piece_value));
 }
 
-int Polyglot::get_random(int max) {
+int Polyglot::getRandom(int max) {
     return (rand() * RAND_MAX + rand()) % max;
 }
 
-bool Polyglot::binary_search(uint64_t hash) {
+bool Polyglot::binarySearch(uint64_t hash) {
 
     file_.seekg(0, ios::beg);
-    uint64_t min_pos = (uint64_t)file_.tellg();
+    uint64_t min_pos = static_cast<uint64_t>(file_.tellg());
 
     file_.seekg(0, ios::end);
-    uint64_t max_pos = (uint64_t)file_.tellg();
+    uint64_t max_pos = static_cast<uint64_t>(file_.tellg());
 
     uint64_t entry_count = (max_pos - min_pos) / sizeof(PolyglotEntry);
 
@@ -151,7 +151,7 @@ bool Polyglot::binary_search(uint64_t hash) {
     while (max - min > 1) {
         mid = (min + max) / 2;
         file_.seekg(min_pos + mid * sizeof(PolyglotEntry));
-        read_entry(entry);
+        readEntry(entry);
         if (entry.hash < hash) {
             min = mid;
         }
@@ -167,7 +167,7 @@ bool Polyglot::binary_search(uint64_t hash) {
     //there might be multiple entries. go back until we hit another hash
     while (entry.hash == hash && mid-- > 0) {
         file_.seekg(min_pos + mid * sizeof(PolyglotEntry));
-        read_entry(entry);
+        readEntry(entry);
     }
     
     //set file pointer to start of hash series
@@ -175,4 +175,4 @@ bool Polyglot::binary_search(uint64_t hash) {
     return true;
 }
 
-Polyglot* Polyglot::instance_ = nullptr;
+unique_ptr<Polyglot> Polyglot::instance_ = nullptr;

@@ -22,57 +22,77 @@ using namespace std;
 using namespace boost::algorithm;
 
 Uci::Uci() {
+	thread_pool_.resize(1);
 }
 
 Uci::~Uci() {
 }
 
-bool Uci::Execute(string command) {
-
-	to_lower(command);
+bool Uci::execute(string command) {
 	vector<string> command_parts;
-	split(command_parts, command, boost::is_any_of(" "));
+	split(command_parts, command, is_any_of(" "));
 
-	if (command_parts[0] == "uci") {
+	if (Globals::searching) {
+		//only allowed uci commands are stop and quit
+		if (iequals(command_parts[0], "stop")) {
+			Globals::stop = true;
+			searching_.wait();
+			Globals::stop = false;
+			return true;
+		}
+		else if (iequals(command_parts[0], "quit")) {
+			Globals::stop = true;
+			searching_.wait();
+			Globals::stop = false;
+			return false;
+		}
+		else {
+			cout << "Invalid command while searching" << endl;
+			return true;
+		}
+	}
+
+	if (iequals(command_parts[0], "uci")) {
 		executeUci();
 		return true;
 	}
-	else if (command_parts[0] == "debug")
+	else if (iequals(command_parts[0], "debug")) {
 		return true;
-	else if (command_parts[0] == "isready") {
+	}
+	else if (iequals(command_parts[0],"isready")) {
 		executeIsReady();
 		return true;
 	}
-	else if (command_parts[0] == "setoption") {
+	else if (iequals(command_parts[0],"setoption")) {
 		executeSetOption(command_parts);
 		return true;
 	}
-	else if (command_parts[0] == "register")
+	else if (iequals(command_parts[0], "register")) {
 		return true;
-	else if (command_parts[0] == "ucinewgame") {
+	}
+	else if (iequals(command_parts[0],"ucinewgame")) {
 		executeUciNewGame();
 		return true;
 	}
-	else if (command_parts[0] == "position") {
+	else if (iequals(command_parts[0], "position")) {
 		executePosition(command_parts);
 		return true;
 	}
-	else if (command_parts[0] == "go") {
+	else if (iequals(command_parts[0], "go")) {
 		executeGo(command_parts);
 		return true;
 	}
-	else if (command_parts[0] == "stop")
-		return true;
-	else if (command_parts[0] == "ponderhit")
-		return true;
-	else if (command_parts[0] == "quit")
-		return false;
-	else if (command_parts[0] == "d") {
-		executeD();
+	else if (iequals(command_parts[0], "stop")) {
 		return true;
 	}
-	else if (command_parts[0] == "testpolyglot") {
-		TestPolyglot();
+	else if (iequals(command_parts[0], "ponderhit")) {
+		return true;
+	}
+	else if (iequals(command_parts[0], "quit")) {
+		return false;
+	}
+	else if (iequals(command_parts[0], "d")) {
+		executeD();
 		return true;
 	}
 	else {
@@ -84,7 +104,7 @@ bool Uci::Execute(string command) {
 void Uci::executeUci() {
 	cout << "id name " << App::Name << " " << App::Version << endl;
 	cout << "id author " << App::Author << endl;
-	cout << "option name Hash type spin default " << Constants::DEFAULT_HASH << " min 1 max 128" << endl;
+	cout << "option name Hash type spin default " << Constants::DEFAULT_HASH << " min 1 max 256" << endl;
 	cout << "option name OwnBook type check default " << (Constants::DEFAULT_OWN_BOOK ? "true" : "false") << endl;
 	cout << "option name OwnBookPath type string default " << Constants::DEFAULT_OWN_BOOK_PATH << endl;
 	cout << "uciok" << endl;
@@ -92,7 +112,7 @@ void Uci::executeUci() {
 
 void Uci::executeUciNewGame() {
 	position_.reset();
-	history_.Clear();
+	history_.clear();
 	Globals::out_of_book = false;
 }
 
@@ -109,10 +129,10 @@ void Uci::executePosition(const std::vector<std::string>& command_parts) {
 	position_ = Position();
 
 	vector<string> position_tokens(command_parts.begin() + 1, command_parts.end());
-	Parser::ParsePosition(position_tokens, position_.value(), history_);
+	Parser::parsePosition(position_tokens, position_.value(), history_);
 }
 
-void Uci::executeGo(const std::vector<std::string>& command_parts) {
+void Uci::executeGo(const vector<string>& command_parts) {
 	if (command_parts.size() < 2) {
 		cout << "Invalid go command" << endl;
 		return;
@@ -125,13 +145,19 @@ void Uci::executeGo(const std::vector<std::string>& command_parts) {
 
 	vector<string> tokens(command_parts.begin() + 1, command_parts.end());
 
-	if (command_parts[1] == "depth") {
+	if (iequals(command_parts[1], "depth")) {
 		goDepth(tokens);
 	}
-	else if (command_parts[1] == "wtime" || command_parts[1] == "btime" || command_parts[1] == "winc" || command_parts[1] == "binc") {
+	if (iequals(command_parts[1], "infinite")) {
+		goDepth(tokens);
+	}
+	else if (iequals(command_parts[1], "wtime") || iequals(command_parts[1], "btime") || iequals(command_parts[1], "winc") || iequals(command_parts[1], "binc")) {
 		goTime(tokens);
 	}
-	else if (command_parts[1] == "perft") {
+	else if (iequals(command_parts[1], "movetime")) {
+		goTime(tokens);
+	}
+	else if (iequals(command_parts[1], "perft")) {
 		goPerft(tokens);
 	}
 }
@@ -143,32 +169,32 @@ void Uci::executeSetOption(const std::vector<std::string>& command_parts) {
 	}
 
 	string name = command_parts[2];
-	if (name == "hash") {
+	if (iequals(name, "hash")) {
 		int hashValue = stoi(command_parts[4]);
-		if (hashValue < 1 || hashValue > 128) {
+		if (hashValue < 1 || hashValue > 256) {
 			cout << "Invalid Hash value" << endl;
 			return;
 		}
 
 		Options::Hash = hashValue;
-		TranspositionTable::GetInstance().Reset();
+		TranspositionTable::getInstance().reset();
 	}
-	else if (name == "ownbook") {
+	else if (iequals(name, "ownbook")) {
 		string ownBookValue = command_parts[4];
-		if (ownBookValue != "true" && ownBookValue != "false")
+		if (!iequals(ownBookValue, "true") && !iequals(ownBookValue, "false"))
 		{
 			cout << "Invalid OwnBook value" << endl;
 			return;
 		}
-		Options::OwnBook = (ownBookValue == "true");
+		Options::OwnBook = (iequals(ownBookValue, "true"));
 	}
-	else if (name == "ownbookpath") {
+	else if (iequals(name, "ownbookpath")) {
 		//filename could contain spaces, so there could be more than 5 command parts
 		vector<string> filename_parts(command_parts.begin() + 4, command_parts.end());
 		string filename = join(filename_parts, " ");
 
 		Options::OwnBookPath = filename;
-		if (!Polyglot::get_instance().open()) {
+		if (!Polyglot::getInstance().open()) {
 			cout << "Error opening file at provided OwnBookPath value" << endl;
 			return;
 		}
@@ -176,25 +202,39 @@ void Uci::executeSetOption(const std::vector<std::string>& command_parts) {
 	else {
 		cout << "Invalid option" << endl;
 	}
-
 }
 
-
-
 void Uci::goDepth(const vector<string>& tokens) {
-	if (tokens.size() != 2) {
-		cout << "Number of depth parameters must be 1" << endl;
-		return;
+	int depth = 0;
+	if (iequals(tokens[0], "infinite")) {
+		if (tokens.size() != 1) {
+			cout << "No extra infinite parameters allowed" << endl;
+			return;
+		}
+		depth = INT_MAX; //not exactly infinite, but should be enough
+	}
+	else if (iequals(tokens[0], "infinite")) {
+		if (tokens.size() != 2) {
+			cout << "Number of depth parameters must be 1" << endl;
+			return;
+		}
+
+		int depth = stoi(tokens[1]);
+		if (depth < 1) {
+			cout << "Depth must be greater than 1" << endl;
+			return;
+		}
 	}
 
-	int depth = stoi(tokens[1]);
-	if (depth < 1) {
-		cout << "Depth must be greater than 1" << endl;
-		return;
-	}
+	Position& position = position_.value();
+	HistoryMap& history = history_;
 
-	Searcher search(position_.value(), history_);
-	search.GoDepth(depth);
+	searching_ = thread_pool_.push([position, history, depth](int id) {
+		Globals::searching = true;
+		Searcher search(position, history);
+		search.goDepth(depth);
+		Globals::searching = false;
+	});
 }
 
 void Uci::goTime(const vector<string>& tokens) {
@@ -206,21 +246,33 @@ void Uci::goTime(const vector<string>& tokens) {
 
 	int i = 0;
 	while (i < tokens.size()) {
-		if (tokens[i] == "wtime") 
+		if (iequals(tokens[i], "wtime"))
 			wtime = stoi(tokens[++i]);
-		else if (tokens[i] == "btime")
+		else if (iequals(tokens[i], "btime"))
 			btime = stoi(tokens[++i]);
-		else if (tokens[i] == "winc")
+		else if (iequals(tokens[i], "winc"))
 			winc = stoi(tokens[++i]);
-		else if (tokens[i] == "binc")
+		else if (iequals(tokens[i], "binc"))
 			binc = stoi(tokens[++i]);
-		else if (tokens[i] == "movestogo")
+		else if (iequals(tokens[i], "movestogo"))
 			movestogo = stoi(tokens[++i]);
+		else if (iequals(tokens[i], "movetime")) {
+			wtime = stoi(tokens[++i]);
+			btime = wtime;
+			movestogo = 1;
+		}
 		i++;
 	}
 
-	Searcher search(position_.value(), history_);
-	search.GoTime(wtime, btime, winc, binc, movestogo);
+	Position& position = position_.value();
+	HistoryMap& history = history_;
+
+	searching_ = thread_pool_.push([position, history, wtime, btime, winc, binc, movestogo](int id) {
+		Globals::searching = true;
+		Searcher search(position, history);
+		search.goTime(wtime, btime, winc, binc, movestogo);
+		Globals::searching = false;
+	});
 }
 
 void Uci::goPerft(const vector<string>& tokens) {
@@ -238,8 +290,8 @@ void Uci::goPerft(const vector<string>& tokens) {
 	auto start_time = chrono::system_clock::now();
 
 	Perft perft(position_.value());
-	perft.SetDepth(depth);
-	uint64_t count = perft.Go();
+	perft.setDepth(depth);
+	uint64_t count = perft.go();
 
 	auto end_time = chrono::system_clock::now();
 
@@ -247,8 +299,8 @@ void Uci::goPerft(const vector<string>& tokens) {
 
 	cout 
 		<< "Perft result: " << count
-		<< " nodes, elapsed time: " << (int)(elapsed_seconds.count() * 1000)
-		<< " ms, nodes per second: " << (int)(count / elapsed_seconds.count()) << endl;
+		<< " nodes, elapsed time: " << static_cast<int>(elapsed_seconds.count() * 1000)
+		<< " ms, nodes per second: " << static_cast<int>(count / elapsed_seconds.count()) << endl;
 }
 
 void Uci::executeD() {
@@ -256,27 +308,11 @@ void Uci::executeD() {
 		cout << "No position set" << endl;
 		return;
 	}
-	cout << position_.value().ToString();
+	cout << position_.value().toString();
 	
 	Evaluator eval(position_.value());
 	Score score;
-	eval.Evaluate(score);
-	cout << "Evaluation: " << score.ToString(Piece::COLOR_WHITE, 1) << endl;
+	eval.evaluate(score);
+	cout << "Evaluation: " << score.toString(Piece::COLOR_WHITE, 1) << endl;
 
 }
-
-void Uci::TestPolyglot() {
-	if (!position_.has_value()) {
-		cout << "No position set" << endl;
-		return;
-	}
-
-	Polyglot& pg = Polyglot::get_instance();
-	Move mv = pg.get_move(position_.value().GetHashKey());
-
-	MoveGenerator move_gen(position_.value());
-	move_gen.SetMoveFlags(mv);
-
-	cout << mv.ToString() << endl;
-}
-

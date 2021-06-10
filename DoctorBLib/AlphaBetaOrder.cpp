@@ -6,174 +6,227 @@
 #include "MoveGenerator.h"
 #include "Evaluator.h"
 #include "TranspositionTable.h"
+#include "Constants.h"
+#include "Globals.h"
 
 using namespace std;
 
-AlphaBetaOrder::AlphaBetaOrder(const Position& base_position, HistoryMap& history) : SearchAlgorithm(base_position, history) {
+AlphaBetaOrder::State::State() : position(Position()), moves(vector<Move>()), move_index(-1), score(Score()), variation(vector<Move>()) {
+};
+
+void AlphaBetaOrder::State::generateMoves() {
+	moves.clear();
+	MoveGenerator move_gen(position);
+	move_gen.generateMoves(moves);
 }
 
+void AlphaBetaOrder::State::evaluate() {
+	Evaluator eval(position);
+	eval.evaluate(score);
+}
+
+Move& AlphaBetaOrder::State::getActiveMove() {
+	return moves[move_index];
+}
+
+AlphaBetaOrder::AlphaBetaOrder(const Position& base_position, const HistoryMap& history) : SearchAlgorithm(base_position, history) {
+}
 
 AlphaBetaOrder::~AlphaBetaOrder() {
 }
 
 //use a loop (no recursion) to calculate the best move using the AlphaBeta algorithm with move ordering
-void AlphaBetaOrder::Loop(const uint64_t iteration_depth, Score& score, std::vector<Move>& pv) {
-	vector<Position> depth_position(iteration_depth + 1);
-	vector<vector<Move>> depth_moves(iteration_depth, vector<Move>(128));
-	vector<int> depth_index(iteration_depth);
-	vector<Score> depth_score(iteration_depth + 1);
-	vector<vector<Move>> depth_variation(iteration_depth + 1);
+void AlphaBetaOrder::loop(const uint64_t iteration_depth, Score& score, std::vector<Move>& pv) {
+	//vector<State> states(iteration_depth + 1 + MAX_QUIESCE_DEPTH); //iteration_depth + 1 is needed for search up to horizon, the rest is reserved for qsearch
+	vector<State> states(iteration_depth + 1);
 
-	depth_position[0] = base_position_;
+	Score see_score;
+	Score tt_score;
+	uint16_t tt_remaining_depth;
 
-	int score_depth = 0;
-	int moves_depth = -1;
+	states[0].position = base_position_;
 
-	int depth = 0;
-	while (depth >= 0) {
-		Score tt_score;
-		uint16_t tt_remaining_depth;
+	int current_depth = 0;
+	while (!Globals::stop && current_depth >= 0) {
+		State& current_state = states[current_depth];
+
 		//examine three-fold repetition
-		if ((depth == 1 || depth == 2) && history_.IsAtMax(depth_position[depth].GetHashKey())) {
-			depth_score[depth] = Score(0);
-			score_depth = depth;
-			depth--;
-		}
-		else if (depth > 0 && TranspositionTable::GetInstance().FindScore(depth_position[depth].GetHashKey(), tt_score, tt_remaining_depth)) {
-			//see if position is in the TT with a score
-			if (tt_remaining_depth >= (iteration_depth - depth)) {
-				depth_score[depth] = tt_score;
-				score_depth = depth;
-				depth--;
+		if (current_state.move_index == -1) {
+			if ((current_depth == 1 || current_depth == 2) && history_.isAtMax(current_state.position.getHashKey())) {
+				current_state.score = Score(0);
+				current_depth--;
+				continue;
+			}
+
+			if (TranspositionTable::getInstance().findScore(current_state.position.getHashKey(), tt_score, tt_remaining_depth)) {
+				//see if position is in the TT with a score
+				if (tt_remaining_depth >= (iteration_depth - current_depth)) {
+					current_state.score = tt_score;
+					current_depth--;
+					continue;
+				}
 			}
 		}
-		else if (depth == iteration_depth) {
-			//evaluate
+
+		uint8_t active_color = current_state.position.getActiveColor();
+		uint8_t other_color = active_color ^ 1Ui8;
+
+		//evaluate
+		if (current_depth == iteration_depth) {
+			current_state.evaluate();
+
 			//go to SEE only when it was a capture
-			Move last_move = depth_moves[depth - 1][depth_index[depth - 1]];
-			if (last_move.IsCapture()) {
-				See(depth_position[depth], last_move.GetSquareTo(), depth_score[depth]);
+			Move last_move = states[current_depth - 1].getActiveMove();
+			if (last_move.isCapture()) {
+				see_score.setValue(current_state.score.getValue());
+				see(current_state.position, last_move.getSquareTo(), see_score);
+				//use the "worst" of the scores, current score and see score
+				if (Evaluator::compareScore(other_color, current_state.score, see_score) > 0) {
+					current_state.score = see_score;
+				}
 			}
-			else {
-				Evaluator eval(depth_position[depth]);
-				eval.Evaluate(depth_score[depth]);
-			}
-			score_depth = depth;
-			depth--;
+
+			current_depth--;
+			continue;
 		}
 
 		//compare scores
-		if (score_depth > depth) {
-			bool store_in_tt = depth < 6 || (iteration_depth - score_depth) < 2;
-			//store score in TT
-			if (store_in_tt)
-				TranspositionTable::GetInstance().SetScore(depth_position[depth].GetHashKey(), depth_score[score_depth], (uint16_t)(iteration_depth - score_depth));
+		if (current_state.move_index != -1) {
+			if (Evaluator::compareScore(active_color, states[current_depth + 1].score, current_state.score) > 0) {
+				current_state.score = states[current_depth + 1].score;
 
-			if (Evaluator::CompareScore(depth_position[depth].GetActiveColor(), depth_score[score_depth], depth_score[depth]) > 0) {
-				//store move in TT
-				if (store_in_tt)
-					TranspositionTable::GetInstance().SetBestMove(depth_position[depth].GetHashKey(), depth_moves[depth][depth_index[depth]]);
-
-				//alphabeta-cutoff? (by picking this move, the score would be worse than the current move from the parent's perspective, so the parent would never pick it)
-				if (depth > 0) {
-					if (Evaluator::CompareScore(depth_position[depth - 1].GetActiveColor(), depth_score[score_depth], depth_score[depth - 1]) < 0) {
-						score_depth -= 2;
-						depth--;
-						moves_depth--;
+				//alphabeta-cutoff: this move is too good, the other side has better options
+				if (current_depth > 0) {
+					if (Evaluator::compareScore(other_color, current_state.score, states[current_depth - 1].score) < 0) {
+						//store the move in the TT. it is obviously a good one!
+						TranspositionTable::getInstance().setBestMove(current_state.position.getHashKey(), current_state.getActiveMove());
+						
+						current_depth--;
 						continue;
 					}
 				}
-
-				depth_score[depth] = depth_score[score_depth];
-				depth_variation[depth][0] = depth_moves[depth][depth_index[depth]];
-				copy(depth_variation[score_depth].begin(), depth_variation[score_depth].end(), depth_variation[depth].begin() + 1);
+				
+				current_state.variation[0] = current_state.getActiveMove();
+				copy(states[current_depth + 1].variation.begin(), states[current_depth + 1].variation.end(), current_state.variation.begin() + 1);
 			}
-			score_depth--;
 		}
 
 		//generate moves
-		if (moves_depth < depth) {
-			MoveGenerator move_gen(depth_position[depth]);
-			depth_moves[depth].clear();
-			move_gen.GenerateMoves(depth_moves[depth]);
-			OrderMoves(depth_position[depth], depth_moves[depth]);
+		if (current_state.move_index == -1) {
+			MoveGenerator move_gen(current_state.position);
+			current_state.moves.clear();
+			move_gen.generateMoves(current_state.moves);
 			
-			if (depth_moves[depth].size() == 0) {
-				if (move_gen.IsCheck())
-					depth_score[depth] = Score::GetMateScore(depth_position[depth].GetActiveColor(), depth); //mate
-				else
-					depth_score[depth] = Score(0Ui64); //stale-mate
+			if (current_state.moves.size() == 0) {
+				if (move_gen.isCheck()) {
+					current_state.score = Score::getMateScore(active_color, current_depth); //mate
+				}
+				else {
+					current_state.score = Score(0Ui64); //stale-mate
+				}
 			}
-			else
-				depth_score[depth] = Score::GetStartScore(depth_position[depth].GetActiveColor());
+			else {
+				orderMoves(current_state.position, current_state.moves);
+				current_state.score = Score::getStartScore(active_color);
+			}
+			
+			current_state.variation = vector<Move>(iteration_depth - current_depth);
+		}
 
-			depth_variation[depth] = vector<Move>(iteration_depth - depth);
-			depth_index[depth] = 0;
-			moves_depth = depth;
-			score_depth = depth;
-		}
-		else {
-			depth_index[depth]++;
-		}
+		current_state.move_index++;
 
 		//reached end of moves
-		if (depth_index[depth] >= depth_moves[depth].size()) {
-			moves_depth--;
-			depth--;
+		if (current_state.move_index >= current_state.moves.size()) {
+			if (current_state.moves.size() > 0) {
+				TranspositionTable::getInstance().setBestMove(current_state.position.getHashKey(), current_state.variation[0]);
+			}
+			TranspositionTable::getInstance().setScore(current_state.position.getHashKey(), current_state.score, static_cast<uint16_t>(iteration_depth - current_depth));
+
+			current_depth--;
 			continue;
 		}
 
 		//apply move
-		Position new_position = Position(depth_position[depth]);
-		new_position.ApplyMove(depth_moves[depth][depth_index[depth]]);
+		Position new_position = Position(current_state.position);
+		new_position.applyMove(current_state.getActiveMove());
 		node_count_++;
 
-		depth_position[++depth] = new_position;
+		current_depth++;
+		states[current_depth].position = new_position;
+		states[current_depth].move_index = -1;
 	}
 
-	pv.assign(depth_variation[0].begin(), depth_variation[0].end());
-	score.SetValue(depth_score[0].GetValue());
+	if (!Globals::stop) {
+		pv.assign(states[0].variation.begin(), states[0].variation.end());
+		score.setValue(states[0].score.getValue());
+	}
 }
 
-
-//if position is in TT, put best move at first position
-void AlphaBetaOrder::OrderMoves(const Position& position, std::vector<Move>& moves) {
+void AlphaBetaOrder::orderMoves(const Position& position, std::vector<Move>& moves) {
 	if (moves.size() < 2)
 		return;
 
+	int start = 0;
+
+	//if position is in TT, put best move at first position
 	Move tt_move;
-	if (TranspositionTable::GetInstance().FindBestMove(position.GetHashKey(), tt_move)) {
+	if (TranspositionTable::getInstance().findBestMove(position.getHashKey(), tt_move)) {
 		std::vector<Move>::iterator pos = find(moves.begin(), moves.end(), tt_move);
 		if (pos != moves.begin() && pos != moves.end()) {
 			//swap first move and best move
 			*pos = moves[0];
 			moves[0] = tt_move;
 		}
+		start = 1;
+	}
+
+	//simplesort! put captures and promotions at start
+	auto it_start = moves.begin() + start;
+	auto it_end = moves.end() - 1;
+	while (it_start < it_end) {
+		if (!it_end->isCapture() && !it_end->isPromotion()) {
+			it_end--;
+			continue;
+		}
+
+		if (it_start->isCapture() || it_start->isPromotion()) {
+			it_start++;
+			continue;
+		}
+
+		iter_swap(it_start, it_end);
+		it_start++;
+		it_end--;
 	}
 }
 
-//for now, the quiescence routine is replaced by a static exchange evaluation
-//this means that we only evaluate captures on the square that was last captured, in order
+//we only evaluate captures on the square that was last captured, in order
 //of least valuable attacker to most valuable attacker
 //until we run out of captures on this square
 //then we take the evaluation of the remaining position
-void AlphaBetaOrder::See(const Position& position, const Square& square, Score& score) {
+//TODO simpler eval
+void AlphaBetaOrder::see(const Position& position, const Square& square, Score& score) {
 	Move lva_capture;
 	Position current_position(position);
+	bool captured = false;
 	while (true) {
 		MoveGenerator move_gen(current_position);
-		if (!move_gen.GetLvaCapture(square, lva_capture))
+		if (!move_gen.getLvaCapture(square, lva_capture))
 			break;
-		current_position.ApplyMove(lva_capture);
+		captured = true;
+		current_position.applyMove(lva_capture);
 	}
-	Evaluator eval(current_position);
-	eval.Evaluate(score);
+	if (captured) {
+		Evaluator eval(current_position);
+		eval.evaluate(score);
+	}
 }
 
-void AlphaBetaOrder::AfterSearch() {
-	TranspositionTable::GetInstance().Clear();
+void AlphaBetaOrder::afterSearch() {
+	TranspositionTable::getInstance().clear();
 }
 
-void AlphaBetaOrder::AfterIteration() {
-	cout << "hashfull " << TranspositionTable::GetInstance().GetHashFull() << endl;
+void AlphaBetaOrder::afterIteration() {
+	cout << "hashfull " << TranspositionTable::getInstance().getHashFull() << endl;
 }
+

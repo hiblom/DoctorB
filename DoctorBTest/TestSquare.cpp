@@ -18,7 +18,7 @@ namespace DoctorBTest {
 			Square square = Square(x, y);
 
 			//assert
-			Assert::AreEqual(uint8_t(y * 8 + x), square.GetValue());
+			Assert::AreEqual(uint8_t(y * 8 + x), square.getValue());
 		}
 
 		TEST_METHOD(TestSquareSetXy) {
@@ -28,10 +28,10 @@ namespace DoctorBTest {
 
 			//act
 			Square square = Square();
-			square.SetXy(x, y);
+			square.setXy(x, y);
 
 			//assert
-			Assert::AreEqual(uint8_t(y * 8 + x), square.GetValue());
+			Assert::AreEqual(uint8_t(y * 8 + x), square.getValue());
 		}
 
 		TEST_METHOD(TestSquareGetXy) {
@@ -43,8 +43,8 @@ namespace DoctorBTest {
 			Square square = Square(x, y);
 
 			//assert
-			Assert::AreEqual(x, square.GetX());
-			Assert::AreEqual(y, square.GetY());
+			Assert::AreEqual(x, square.getX());
+			Assert::AreEqual(y, square.getY());
 		}
 
 		TEST_METHOD(TestSquareEquals) {
@@ -68,7 +68,7 @@ namespace DoctorBTest {
 			Square square = Square(x, y);
 
 			//act
-			string notation = square.ToString();
+			string notation = square.toString();
 
 			//assert
 			Assert::AreEqual(string("a8"), notation);

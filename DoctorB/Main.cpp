@@ -18,13 +18,13 @@ int main() {
 	cout << "Input UCI command" << endl;
 
 	//initialize engine
-	srand(time(NULL));
+	srand(static_cast<unsigned int>(time(NULL)));
 	Uci uci;
 	
 	//main loop to receive commands
 	string line;
 	while (getline(cin, line)) {
-		if (!uci.Execute(line))
+		if (!uci.execute(line))
 			break;
 	}
 

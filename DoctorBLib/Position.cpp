@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Position.h"
+#include <array>
 #include "Piece.h"
 #include "Move.h"
 #include "Constants.h"
@@ -9,145 +10,150 @@ using namespace std;
 
 Position::Position() {
 	//empty board equals hash_key = 0, so no castling status, black to move(!), no pieces
-	castling_status_bits = 0Ui8;
-	active_color = Piece::COLOR_BLACK;
-	hash_key = 0Ui64;
-	halfmove_clock = 0;
+	castling_status_bits_ = 0Ui8;
+	active_color_ = Piece::COLOR_BLACK;
+	hash_key_ = 0Ui64;
+	halfmove_clock_ = 0;
 }
 
 Position::~Position() {
 }
 
-void Position::SetPiece(const Square& square, const Piece& piece) {
-	bit_boards[piece.GetValue()].Set(square.GetValue());
-	hash_key ^= Zobrist::PIECE_SQUARE_KEY[piece.GetValue()][square.GetValue()];
+void Position::setPiece(const Square& square, const Piece& piece) {
+	bit_boards_[piece.getValue()].set(square.getValue());
+	hash_key_ ^= Zobrist::PIECE_SQUARE_KEY[piece.getValue()][square.getValue()];
 }
 
-void Position::ClearSquare(const Square& square) {
+void Position::clearSquare(const Square& square) {
 	for (uint8_t p = 0; p <= 11; p++) {
-		if (bit_boards[p].Check(square.GetValue())) {
-			bit_boards[p].Clear(square.GetValue());
-			hash_key ^= Zobrist::PIECE_SQUARE_KEY[p][square.GetValue()];
+		if (bit_boards_[p].check(square.getValue())) {
+			bit_boards_[p].clear(square.getValue());
+			hash_key_ ^= Zobrist::PIECE_SQUARE_KEY[p][square.getValue()];
 			break;
 		}
 	}
 }
 
-void Position::ClearSquare(const Square& square, const Piece& piece) {
-	if (bit_boards[piece.GetValue()].Check(square.GetValue())) {
-		bit_boards[piece.GetValue()].Clear(square.GetValue());
-		hash_key ^= Zobrist::PIECE_SQUARE_KEY[piece.GetValue()][square.GetValue()];
+void Position::clearSquare(const Square& square, const Piece& piece) {
+	if (bit_boards_[piece.getValue()].check(square.getValue())) {
+		bit_boards_[piece.getValue()].clear(square.getValue());
+		hash_key_ ^= Zobrist::PIECE_SQUARE_KEY[piece.getValue()][square.getValue()];
 	}
 }
 
-bool Position::GetPiece(const Square & square, Piece& piece) const {
+bool Position::getPiece(const Square & square, Piece& piece) const {
 	for (uint8_t p = 0; p <= 11; p++) {
-		if (bit_boards[p].Check(square.GetValue())) {
-			piece.SetValue(p);
+		if (bit_boards_[p].check(square.getValue())) {
+			piece.setValue(p);
 			return true;
 		}
 	}
 	return false;
 }
 
-void Position::SetActiveColor(uint8_t color) {
-	if (color != active_color) {
-		active_color = color;
-		hash_key ^= Zobrist::WHITE_TURN_KEY;
+int Position::getPieceCount(const Piece& piece) const {
+	return bit_boards_[piece.getValue()].popCount();
+}
+
+void Position::setActiveColor(uint8_t color) {
+	if (color != active_color_) {
+		active_color_ = color;
+		hash_key_ ^= Zobrist::WHITE_TURN_KEY;
 	}
 }
 
-void Position::ToggleActiveColor() {
-	active_color ^= 1Ui8;
-	hash_key ^= Zobrist::WHITE_TURN_KEY;
+void Position::toggleActiveColor() {
+	active_color_ ^= 1Ui8;
+	hash_key_ ^= Zobrist::WHITE_TURN_KEY;
 }
 
-uint8_t Position::GetActiveColor() const {
-	return active_color;
+uint8_t Position::getActiveColor() const {
+	return active_color_;
 }
 
-void Position::SetCastlingStatus(int index, bool value) {
-	bool current_status = GetCastlingStatus(index);
+void Position::setCastlingStatus(int index, bool value) {
+	bool current_status = getCastlingStatus(index);
 	if (value != current_status) {
-		castling_status_bits = (castling_status_bits & ~(1Ui8 << index)) | ((uint8_t)value << index);
-		hash_key ^= Zobrist::CASTLING_KEY[index];
+		castling_status_bits_ = (castling_status_bits_ & ~(1Ui8 << index)) | (static_cast<uint8_t>(value) << index);
+		hash_key_ ^= Zobrist::CASTLING_KEY[index];
 	}
 }
 
-bool Position::GetCastlingStatus(int index) const {
-	return castling_status_bits & (1Ui8 << index);
+bool Position::getCastlingStatus(int index) const {
+	return castling_status_bits_ & (1Ui8 << index);
 }
 
-void Position::SetEpSquare(const Square& square) {
-	if (ep_square.has_value()) {
-		hash_key ^= Zobrist::EP_FILE_KEY[ep_square.value().GetX()];
+void Position::setEpSquare(const Square& square) {
+	if (ep_square_.has_value()) {
+		hash_key_ ^= Zobrist::EP_FILE_KEY[ep_square_.value().getX()];
+		ep_square_.reset();
 	}
 
 	//polyglot hashing; only set ep square when there is an enemy pawn next to the moved pawn
 	bool setEpSquare = false;
 
-	uint8_t other_color = square.GetY() == 2 ? Piece::COLOR_BLACK : Piece::COLOR_WHITE;
-	uint8_t other_y = square.GetY() == 2 ? 3 : 4;
+	uint8_t other_color = square.getY() == 2Ui8 ? Piece::COLOR_BLACK : Piece::COLOR_WHITE;
+	uint8_t other_y = square.getY() == 2Ui8 ? 3Ui8 : 4Ui8;
 	Piece other_pawn = Piece(Piece::TYPE_PAWN, other_color);
-	if (square.GetX() > 0) {
+	if (square.getX() > 0) {
 		Piece piece;
-		if (GetPiece(Square(square.GetX() - 1, other_y), piece)) {
-			if (piece.GetValue() == other_pawn.GetValue()) {
+		if (getPiece(Square(square.getX() - 1, other_y), piece)) {
+			if (piece.getValue() == other_pawn.getValue()) {
 				setEpSquare = true;
 			}
 		}
 	}
-	if (!setEpSquare && square.GetX() < 7) {
+	if (!setEpSquare && square.getX() < 7) {
 		Piece piece;
-		if (GetPiece(Square(square.GetX() + 1, other_y), piece)) {
-			if (piece.GetValue() == other_pawn.GetValue()) {
+		if (getPiece(Square(square.getX() + 1, other_y), piece)) {
+			if (piece.getValue() == other_pawn.getValue()) {
 				setEpSquare = true;
 			}
 		}
 	}
 
 	if (setEpSquare) {
-		ep_square = square;
-		hash_key ^= Zobrist::EP_FILE_KEY[square.GetX()];
+		ep_square_ = square;
+		hash_key_ ^= Zobrist::EP_FILE_KEY[square.getX()];
 	}
 }
 
-void Position::ResetEpSquare() {
-	if (ep_square.has_value()) {
-		hash_key ^= Zobrist::EP_FILE_KEY[ep_square.value().GetX()];
+void Position::resetEpSquare() {
+	if (ep_square_.has_value()) {
+		hash_key_ ^= Zobrist::EP_FILE_KEY[ep_square_.value().getX()];
 	}
-	ep_square.reset();
+	ep_square_.reset();
 }
 
-bool Position::GetEpSquare(Square& square) const {
-	if (ep_square.has_value()) {
-		square = ep_square.value();
+bool Position::getEpSquare(Square& square) const {
+	if (ep_square_.has_value()) {
+		square = ep_square_.value();
 		return true;
 	}
 
 	return false;
 }
 
-void Position::SetHalfmoveClock(uint16_t value) {
-	halfmove_clock = value;
+void Position::setHalfmoveClock(uint16_t value) {
+	halfmove_clock_ = value;
 }
 
-void Position::IncHalfmoveClock() {
-	halfmove_clock++;
+void Position::incHalfmoveClock() {
+	halfmove_clock_++;
 }
 
-uint16_t Position::GetHalfmoveClock() {
-	return halfmove_clock;
+uint16_t Position::getHalfmoveClock() {
+	return halfmove_clock_;
 }
 
-string Position::ToString() const {
+string Position::toString() const {
 	string result = "";
 	Piece piece;
 	for (uint8_t y = 7; 0 <= y && y <= 7; y--) {
 		result += to_string(y + 1) + ' ';
 		for (uint8_t x = 0; x <= 7; x++) {
-			if (GetPiece(Square(x, y), piece)) {
-				result += piece.ToChar();
+			if (getPiece(Square(x, y), piece)) {
+				result += piece.toChar();
 			}
 			else {
 				result += '.';
@@ -159,137 +165,141 @@ string Position::ToString() const {
 	return result;
 }
 
-bool Position::ApplyMove(const Move& move) {
-	static const uint8_t EP_RANK[2] = { 5Ui8, 2Ui8 };
+bool Position::applyMove(const Move& move) {
+	static const array<uint8_t, 2> EP_RANK { { 5Ui8, 2Ui8 } };
 
-	uint8_t inactive_color = active_color ^ 1Ui8;
+	uint8_t inactive_color = active_color_ ^ 1Ui8;
 
 	//get piece from move
 	Piece piece;
-	move.GetPiece(piece);
+	move.getPiece(piece);
 
 	//clear square from
-	ClearSquare(move.GetSquareFrom(), piece);
+	clearSquare(move.getSquareFrom(), piece);
 
 	Piece captured_piece;
-	bool is_capture = GetPiece(move.GetSquareTo(), captured_piece);
+	bool is_capture = getPiece(move.getSquareTo(), captured_piece);
 	//clear square to (the bitboard containing the captured piece differs from the bitboard containing the moving piece)
 	if (is_capture) {
-		ClearSquare(move.GetSquareTo(), captured_piece);
+		clearSquare(move.getSquareTo(), captured_piece);
 	}
 
 	//if move is promo, piece type will be set to promo piece type
-	move.GetPromoOrMovingPieceType(piece);
+	move.getPromoOrMovingPieceType(piece);
 
 	//set square to
-	SetPiece(move.GetSquareTo(), piece);
+	setPiece(move.getSquareTo(), piece);
 
 	//en-passant -> clear captured pawn, set capture flag
-	if (move.IsEpCapture()) {
-		ClearSquare(Square(move.GetSquareTo().GetX(), move.GetSquareFrom().GetY()), Piece(Piece::TYPE_PAWN, inactive_color));
+	if (move.isEpCapture()) {
+		clearSquare(Square(move.getSquareTo().getX(), move.getSquareFrom().getY()), Piece(Piece::TYPE_PAWN, inactive_color));
 		is_capture = true;
 	}
 
 	//castling
-	if (move.IsCastling()) {
-		if (move.GetSquareTo() == Square(Square::C1)) {
-			ClearSquare(Square(Square::A1), Piece(Piece::TYPE_ROOK, Piece::COLOR_WHITE));
-			SetPiece(Square(Square::D1), Piece(Piece::TYPE_ROOK, Piece::COLOR_WHITE));
-			SetCastlingStatus(Constants::CASTLING_WHITE_KINGSIDE, false);
-			SetCastlingStatus(Constants::CASTLING_WHITE_QUEENSIDE, false);
+	if (move.isCastling()) {
+		if (move.getSquareTo() == Square(Square::C1)) {
+			clearSquare(Square(Square::A1), Piece(Piece::TYPE_ROOK, Piece::COLOR_WHITE));
+			setPiece(Square(Square::D1), Piece(Piece::TYPE_ROOK, Piece::COLOR_WHITE));
+			setCastlingStatus(Constants::CASTLING_WHITE_KINGSIDE, false);
+			setCastlingStatus(Constants::CASTLING_WHITE_QUEENSIDE, false);
 		}
-		else if (move.GetSquareTo() == Square(Square::G1)) {
-			ClearSquare(Square(Square::H1), Piece(Piece::TYPE_ROOK, Piece::COLOR_WHITE));
-			SetPiece(Square(Square::F1), Piece(Piece::TYPE_ROOK, Piece::COLOR_WHITE));
-			SetCastlingStatus(Constants::CASTLING_WHITE_KINGSIDE, false);
-			SetCastlingStatus(Constants::CASTLING_WHITE_QUEENSIDE, false);
+		else if (move.getSquareTo() == Square(Square::G1)) {
+			clearSquare(Square(Square::H1), Piece(Piece::TYPE_ROOK, Piece::COLOR_WHITE));
+			setPiece(Square(Square::F1), Piece(Piece::TYPE_ROOK, Piece::COLOR_WHITE));
+			setCastlingStatus(Constants::CASTLING_WHITE_KINGSIDE, false);
+			setCastlingStatus(Constants::CASTLING_WHITE_QUEENSIDE, false);
 		}
-		else if (move.GetSquareTo() == Square(Square::C8)) {
-			ClearSquare(Square(Square::A8), Piece(Piece::TYPE_ROOK, Piece::COLOR_BLACK));
-			SetPiece(Square(Square::D8), Piece(Piece::TYPE_ROOK, Piece::COLOR_BLACK));
-			SetCastlingStatus(Constants::CASTLING_BLACK_KINGSIDE, false);
-			SetCastlingStatus(Constants::CASTLING_BLACK_QUEENSIDE, false);
+		else if (move.getSquareTo() == Square(Square::C8)) {
+			clearSquare(Square(Square::A8), Piece(Piece::TYPE_ROOK, Piece::COLOR_BLACK));
+			setPiece(Square(Square::D8), Piece(Piece::TYPE_ROOK, Piece::COLOR_BLACK));
+			setCastlingStatus(Constants::CASTLING_BLACK_KINGSIDE, false);
+			setCastlingStatus(Constants::CASTLING_BLACK_QUEENSIDE, false);
 		}
-		else if (move.GetSquareTo() == Square(Square::G8)) {
-			ClearSquare(Square(Square::H8), Piece(Piece::TYPE_ROOK, Piece::COLOR_BLACK));
-			SetPiece(Square(Square::F8), Piece(Piece::TYPE_ROOK, Piece::COLOR_BLACK));
-			SetCastlingStatus(Constants::CASTLING_BLACK_KINGSIDE, false);
-			SetCastlingStatus(Constants::CASTLING_BLACK_QUEENSIDE, false);
+		else if (move.getSquareTo() == Square(Square::G8)) {
+			clearSquare(Square(Square::H8), Piece(Piece::TYPE_ROOK, Piece::COLOR_BLACK));
+			setPiece(Square(Square::F8), Piece(Piece::TYPE_ROOK, Piece::COLOR_BLACK));
+			setCastlingStatus(Constants::CASTLING_BLACK_KINGSIDE, false);
+			setCastlingStatus(Constants::CASTLING_BLACK_QUEENSIDE, false);
 		}
 	}
 	else {
 		//reset castling status when king or rook moved or rook captured
-		bool castling_status_wq = GetCastlingStatus(Constants::CASTLING_WHITE_QUEENSIDE) &&
-			!(move.GetSquareFrom() == Square(Square::E1) || move.GetSquareFrom() == Square(Square::A1) || move.GetSquareTo() == Square(Square::A1));
-		SetCastlingStatus(Constants::CASTLING_WHITE_QUEENSIDE, castling_status_wq);
+		bool castling_status_wq = getCastlingStatus(Constants::CASTLING_WHITE_QUEENSIDE) &&
+			!(move.getSquareFrom() == Square(Square::E1) || move.getSquareFrom() == Square(Square::A1) || move.getSquareTo() == Square(Square::A1));
+		setCastlingStatus(Constants::CASTLING_WHITE_QUEENSIDE, castling_status_wq);
 
-		bool castling_status_wk = GetCastlingStatus(Constants::CASTLING_WHITE_KINGSIDE) &&
-			!(move.GetSquareFrom() == Square(Square::E1) || move.GetSquareFrom() == Square(Square::H1) || move.GetSquareTo() == Square(Square::H1));
-		SetCastlingStatus(Constants::CASTLING_WHITE_KINGSIDE, castling_status_wk);
+		bool castling_status_wk = getCastlingStatus(Constants::CASTLING_WHITE_KINGSIDE) &&
+			!(move.getSquareFrom() == Square(Square::E1) || move.getSquareFrom() == Square(Square::H1) || move.getSquareTo() == Square(Square::H1));
+		setCastlingStatus(Constants::CASTLING_WHITE_KINGSIDE, castling_status_wk);
 
 		bool castling_status_bq =
-			GetCastlingStatus(Constants::CASTLING_BLACK_QUEENSIDE) &&
-			!(move.GetSquareFrom() == Square(Square::E8) || move.GetSquareFrom() == Square(Square::A8) || move.GetSquareTo() == Square(Square::A8));
-		SetCastlingStatus(Constants::CASTLING_BLACK_QUEENSIDE, castling_status_bq);
+			getCastlingStatus(Constants::CASTLING_BLACK_QUEENSIDE) &&
+			!(move.getSquareFrom() == Square(Square::E8) || move.getSquareFrom() == Square(Square::A8) || move.getSquareTo() == Square(Square::A8));
+		setCastlingStatus(Constants::CASTLING_BLACK_QUEENSIDE, castling_status_bq);
 
 		bool castling_status_bk =
-			GetCastlingStatus(Constants::CASTLING_BLACK_KINGSIDE) &&
-			!(move.GetSquareFrom() == Square(Square::E8) || move.GetSquareFrom() == Square(Square::H8) || move.GetSquareTo() == Square(Square::H8));
-		SetCastlingStatus(Constants::CASTLING_BLACK_KINGSIDE, castling_status_bk);
+			getCastlingStatus(Constants::CASTLING_BLACK_KINGSIDE) &&
+			!(move.getSquareFrom() == Square(Square::E8) || move.getSquareFrom() == Square(Square::H8) || move.getSquareTo() == Square(Square::H8));
+		setCastlingStatus(Constants::CASTLING_BLACK_KINGSIDE, castling_status_bk);
 	}
 
-	if (move.IsDoublePush())
-		SetEpSquare(Square(move.GetSquareFrom().GetX(), EP_RANK[active_color]));
-	else
-		ResetEpSquare();
+	if (move.isDoublePush()) {
+		setEpSquare(Square(move.getSquareFrom().getX(), EP_RANK[active_color_]));
+	}
+	else {
+		resetEpSquare();
+	}
 
 	//increase/reset halfmove clock (reset when pawn moves or capture)
-	if (is_capture || move.IsPromotion() || piece.GetType() == Piece::TYPE_PAWN)
-		SetHalfmoveClock(0);
-	else
-		IncHalfmoveClock();
+	if (is_capture || move.isPromotion() || piece.getType() == Piece::TYPE_PAWN) {
+		setHalfmoveClock(0);
+	}
+	else {
+		incHalfmoveClock();
+	}
 
-	ToggleActiveColor();
+	toggleActiveColor();
 
 	return true;
 }
 
-bool Position::GetPieceSquares(const Piece& piece, vector<Square>& squares) const {
+bool Position::getPieceSquares(const Piece& piece, vector<Square>& squares) const {
 	squares.clear();
-	return bit_boards[piece.GetValue()].GetSquares(squares);
+	return bit_boards_[piece.getValue()].getSquares(squares);
 }
 
-bool Position::GetPieceSquare(const Piece & piece, Square& square) const {
-	return bit_boards[piece.GetValue()].GetLowestSquare(square);
+bool Position::getPieceSquare(const Piece & piece, Square& square) const {
+	return bit_boards_[piece.getValue()].getLowestSquare(square);
 }
 
-BitBoard Position::GetBitBoard(const Piece& piece) const {
-	return bit_boards[piece.GetValue()];
+BitBoard Position::getBitBoard(const Piece& piece) const {
+	return bit_boards_[piece.getValue()];
 }
 
 //for debugging purposes
-void Position::RecalculateHashKey() {
-	hash_key = 0Ui64;
+void Position::recalculateHashKey() {
+	hash_key_ = 0Ui64;
 	for (uint8_t p = 0; p < 12; p++) {
-		BitBoard b = GetBitBoard(p);
+		BitBoard b = getBitBoard(p);
 		Square s;
-		while (b.PopLowestSquare(s)) 
-			hash_key ^= Zobrist::PIECE_SQUARE_KEY[p][s.GetValue()];
+		while (b.popLowestSquare(s)) 
+			hash_key_ ^= Zobrist::PIECE_SQUARE_KEY[p][s.getValue()];
 	}
 
-	if (GetActiveColor() == Piece::COLOR_WHITE)
-		hash_key ^= Zobrist::WHITE_TURN_KEY;
+	if (getActiveColor() == Piece::COLOR_WHITE)
+		hash_key_ ^= Zobrist::WHITE_TURN_KEY;
 
 	for (int i = 0; i < 4; i++) {
-		if (GetCastlingStatus(i))
-			hash_key ^= Zobrist::CASTLING_KEY[i];
+		if (getCastlingStatus(i))
+			hash_key_ ^= Zobrist::CASTLING_KEY[i];
 	}
 
 	Square ep_square;
-	if (GetEpSquare(ep_square))
-		hash_key ^= Zobrist::EP_FILE_KEY[ep_square.GetX()];
+	if (getEpSquare(ep_square))
+		hash_key_ ^= Zobrist::EP_FILE_KEY[ep_square.getX()];
 }
 
-uint64_t Position::GetHashKey() const {
-	return hash_key;
+uint64_t Position::getHashKey() const {
+	return hash_key_;
 }

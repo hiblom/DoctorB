@@ -7,91 +7,64 @@
 
 using namespace std;
 
-Perft::Perft(const Position& position) : position_(position) {
+Perft::Perft(const Position& position) : position_(position), depth_(0) {
 }
 
 Perft::~Perft() {
 }
 
-void Perft::SetDepth(int value) {
+void Perft::setDepth(int value) {
 	depth_ = value;
 }
 
-uint64_t Perft::Go() {
-	return Count2(position_, depth_);
-}
-
-//Count function using recursion
-uint64_t Perft::Count(const Position& position, const int remaining_depth) const {
-	MoveGenerator move_gen(position);
-
-	if (remaining_depth == 0)
-		return 1Ui64;
-
+uint64_t Perft::go() const {
 	uint64_t result = 0;
-	vector<Move> raw_moves;
-	Position new_position;
-	move_gen.GenerateMoves(raw_moves);
-	for (Move raw_move : raw_moves) {
-		new_position = Position(position);
-		new_position.ApplyMove(raw_move);
-		uint64_t count = Count(new_position, remaining_depth - 1);
-		if (remaining_depth == depth_ && count > 0)
-			cout << raw_move.ToString() << ": " << count << endl;
-		result += count;
-	}
-	return result;
-}
+	array<uint64_t, 128> results {};
 
-//Count function using a loop instead of recursion
-uint64_t Perft::Count2(const Position& position, const int remaining_depth) const {
-	vector<uint64_t> results(128);
-	uint64_t result = 0;
-	
-	vector<Position> positions(depth_ + 1);
-	vector<vector<Move>> moves(depth_ + 1);
-	vector<int> move_indices(depth_ + 1, -1);
+	vector<State> states(depth_);
+	states[0].position = position_;
+	int max_depth = depth_ - 1;
 
-	int current_depth = remaining_depth;
-	positions[current_depth] = position;
-	
-	while (current_depth <= depth_) {
-		if (move_indices[current_depth] == -1) {
-			MoveGenerator move_gen(positions[current_depth]);
+	State& root_state = states[0];
+	int current_depth = 0;
+	while (current_depth >= 0) {
+		State& current_state = states[current_depth];
 
-			moves[current_depth].clear();
-			move_gen.GenerateMoves(moves[current_depth]);
-			if (current_depth == 1) {
-				if (depth_ == 1) {
-					for (int i = 0; i < moves[current_depth].size(); i++) {
-						results[i] = 1;
-					}
-					break;
-				}
-
-				results[move_indices[depth_]] += moves[current_depth].size();
-				current_depth++;
-				continue;
-
-			}
+		if (current_state.move_index == -1) {
+			current_state.generateMoves();
 		}
 
-		move_indices[current_depth]++;
-
-		if (move_indices[current_depth] >= moves[current_depth].size()) {
-			move_indices[current_depth] = -1;
-			current_depth++;
+		if (current_depth >= max_depth) {
+			if (current_depth > 0) {
+				results[root_state.move_index] += current_state.moves.size();
+			}
+			else {
+				for (int i = 0; i < current_state.moves.size(); i++) {
+					results[i] = 1;
+				}
+			}
+			current_state.move_index = -1;
+			current_depth--;
 			continue;
-		} 
+		}
 		
-		positions[current_depth - 1] = Position(positions[current_depth]);
-		positions[current_depth - 1].ApplyMove(moves[current_depth][move_indices[current_depth]]);
-		current_depth--;
+		current_state.move_index++;
+
+		if (current_state.move_index >= current_state.moves.size()) {
+			current_state.move_index = -1;
+			current_depth--;
+			continue;
+		}
+
+		current_depth++;
+		State& child_state = states[current_depth];
+		child_state.position = Position(current_state.position);
+		child_state.position.applyMove(current_state.moves[current_state.move_index]);
 	}
 
-	for (int i = 0; i < moves[depth_].size(); i++) {
+	for (int i = 0; i < states[0].moves.size(); i++) {
 		if (results[i]) {
-			cout << moves[depth_][i].ToString() << ": " << results[i] << endl;
+			cout << states[0].moves[i].toString() << ": " << results[i] << endl;
 			result += results[i];
 		}
 	}

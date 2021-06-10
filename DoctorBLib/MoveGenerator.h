@@ -9,20 +9,20 @@ public:
 	MoveGenerator(const Position& position);
 	MoveGenerator(const Position& position, const bool only_captures);
 	~MoveGenerator();
-	void GenerateMoves(std::vector<Move>& moves);
-	void GenerateKingMoves(std::vector<Move>& moves) const;
-	void GenerateKnightMoves(std::vector<Move>& moves) const;
-	void GeneratePawnMoves(std::vector<Move>& moves) const;
-	void GenerateRookMoves(std::vector<Move>& moves) const;
-	void GenerateBishopMoves(std::vector<Move>& moves) const;
-	void GenerateQueenMoves(std::vector<Move>& moves) const;
-	void GenerateDangerBoard();
-	bool IsCheck();
-	bool SetMoveFlags(Move& move);
-	void GenerateCheckInfo();
-	uint8_t GetCheckerCount();
-	BitBoard GetBlockBoard();
-	bool GetLvaCapture(const Square to_square, Move& move) const;
+	void generateMoves(std::vector<Move>& moves);
+	void generateKingMoves(std::vector<Move>& moves) const;
+	void generateKnightMoves(std::vector<Move>& moves) const;
+	void generatePawnMoves(std::vector<Move>& moves) const;
+	void generateRookMoves(std::vector<Move>& moves) const;
+	void generateBishopMoves(std::vector<Move>& moves) const;
+	void generateQueenMoves(std::vector<Move>& moves) const;
+	void generateDangerBoard();
+	bool isCheck();
+	bool setMoveFlags(Move& move);
+	void generateCheckInfo();
+	uint8_t getCheckerCount();
+	BitBoard getBlockBoard();
+	bool getLvaCapture(const Square to_square, Move& move) const;
 private:
 	const Position& position_;
 	const bool only_captures_;
@@ -38,14 +38,14 @@ private:
 	BitBoard captures_board;
 	std::map<uint8_t, BitBoard> pin_rays;
 
-	void Initialize();
-	void GenerateRayMoves(const Square& from_square, const uint8_t dir, bool(BitBoard::*find_nearest_square)(Square&) const, const Piece active_piece, const BitBoard pin_ray_board, std::vector<Move>& moves) const;
-	BitBoard GetCheckRayBoard(const Square king_square, const uint8_t dir, bool(BitBoard::* find_nearest_square)(Square &) const, const uint8_t rook_or_bishop_type) const;
-	bool CanCastle(const int castling_index) const;
-	BitBoard GenerateDangerRayBoard(const Square from_square, const uint8_t dir, bool(BitBoard::* find_nearest_square)(Square &) const, const BitBoard exclude_board) const;
-	void GeneratePinInfo();
-	void GeneratePinRayInfo(const Square king_square, const uint8_t dir, bool(BitBoard::*find_nearest_square)(Square&) const, const uint8_t rook_or_bishop_type);
-	bool CheckEpDiscoveredCheck(const Square ep_square, const Square capturing_square) const;
-	bool IsCapture(const Square to_square) const;
+	void initialize();
+	void generateRayMoves(const Square& from_square, const uint8_t dir, bool(BitBoard::*find_nearest_square)(Square&) const, const Piece active_piece, const BitBoard pin_ray_board, std::vector<Move>& moves) const;
+	BitBoard getCheckRayBoard(const Square king_square, const uint8_t dir, bool(BitBoard::* find_nearest_square)(Square &) const, const uint8_t rook_or_bishop_type) const;
+	bool canCastle(const int castling_index) const;
+	BitBoard generateDangerRayBoard(const Square from_square, const uint8_t dir, bool(BitBoard::* find_nearest_square)(Square &) const, const BitBoard exclude_board) const;
+	void generatePinInfo();
+	void generatePinRayInfo(const Square king_square, const uint8_t dir, bool(BitBoard::*find_nearest_square)(Square&) const, const uint8_t rook_or_bishop_type);
+	bool checkEpDiscoveredCheck(const Square ep_square, const Square capturing_square) const;
+	bool isCapture(const Square to_square) const;
 };
 

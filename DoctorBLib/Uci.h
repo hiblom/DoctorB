@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <boost/optional.hpp>
+#include "ctpl.h"
 #include "Position.h"
 #include "HistoryMap.h"
 
@@ -10,10 +11,12 @@ class Uci
 public:
 	Uci();
 	~Uci();
-	bool Execute(std::string command);
+	bool execute(std::string command);
 private:
 	boost::optional<Position> position_;
 	HistoryMap history_;
+	ctpl::thread_pool thread_pool_;
+	std::future<void> searching_;
 	void executeUci();
 	void executeUciNewGame();
 	void executeIsReady();
@@ -24,7 +27,4 @@ private:
 	void goTime(const std::vector<std::string>& tokens);
 	void goPerft(const std::vector<std::string>& tokens);
 	void executeD();
-
-	//temp
-	void TestPolyglot();
 };

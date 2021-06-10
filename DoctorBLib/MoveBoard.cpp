@@ -5,162 +5,162 @@
 #include "Constants.h"
 
 MoveBoard::MoveBoard() {
-	Initialize();
+	initialize();
 }
 
-void MoveBoard::InitializeKingMoves() {
+void MoveBoard::initializeKingMoves() {
 	for (uint8_t s = 0; s < 64; s++) {
-		king_moves[s].Set(s);
-		king_moves[s] |= king_moves[s].Clone().Left() | king_moves[s].Clone().Right();
-		king_moves[s] |= king_moves[s].Clone().Up() | king_moves[s].Clone().Down();
-		king_moves[s].Clear(s);
+		king_moves[s].set(s);
+		king_moves[s] |= king_moves[s].clone().left() | king_moves[s].clone().right();
+		king_moves[s] |= king_moves[s].clone().up() | king_moves[s].clone().down();
+		king_moves[s].clear(s);
 	}
 }
 
-void MoveBoard::InitializeKnightMoves() {
+void MoveBoard::initializeKnightMoves() {
 	for (uint8_t s = 0; s < 64; s++) {
 		BitBoard bb_vert;
-		bb_vert.Set(s);
-		bb_vert = bb_vert.Clone().Left() | bb_vert.Clone().Right();
-		bb_vert = bb_vert.Clone().Up().Up() | bb_vert.Clone().Down().Down();
+		bb_vert.set(s);
+		bb_vert = bb_vert.clone().left() | bb_vert.clone().right();
+		bb_vert = bb_vert.clone().up().up() | bb_vert.clone().down().down();
 
 		BitBoard bb_hor;
-		bb_hor.Set(s);
-		bb_hor = bb_hor.Clone().Up() | bb_hor.Clone().Down();
-		bb_hor = bb_hor.Clone().Left().Left() | bb_hor.Clone().Right().Right();
+		bb_hor.set(s);
+		bb_hor = bb_hor.clone().up() | bb_hor.clone().down();
+		bb_hor = bb_hor.clone().left().left() | bb_hor.clone().right().right();
 
 		knight_moves[s] = bb_vert | bb_hor;
 	}
 }
 
-void MoveBoard::InitializePawnPushes() {
+void MoveBoard::initializePawnPushes() {
 	for (uint8_t s = 0; s < 64; s++) {
 		//double push will be handled in move generator
-		pawn_pushes[Piece::COLOR_BLACK][s].Set(s).Down();
-		pawn_pushes[Piece::COLOR_WHITE][s].Set(s).Up();
+		pawn_pushes[Piece::COLOR_BLACK][s].set(s).down();
+		pawn_pushes[Piece::COLOR_WHITE][s].set(s).up();
 	}
 }
 
-void MoveBoard::InitializePawnCaptures() {
+void MoveBoard::initializePawnCaptures() {
 	for (uint8_t s = 0; s < 64; s++) {
 		BitBoard black_board;
-		black_board.Set(s);
-		pawn_captures[Piece::COLOR_BLACK][s] = black_board.Clone().Down().Left() | black_board.Clone().Down().Right();
+		black_board.set(s);
+		pawn_captures[Piece::COLOR_BLACK][s] = black_board.clone().down().left() | black_board.clone().down().right();
 
 		BitBoard white_board;
-		white_board.Set(s);
-		pawn_captures[Piece::COLOR_WHITE][s] = white_board.Clone().Up().Left() | white_board.Clone().Up().Right();
+		white_board.set(s);
+		pawn_captures[Piece::COLOR_WHITE][s] = white_board.clone().up().left() | white_board.clone().up().right();
 	}
 }
 
-void MoveBoard::InitializeRays() {
-	InitializeRayUp();
-	InitializeRayUpRight();
-	InitializeRayRight();
-	InitializeRayDownRight();
-	InitializeRayDown();
-	InitializeRayDownLeft();
-	InitializeRayLeft();
-	InitializeRayUpLeft();
+void MoveBoard::initializeRays() {
+	initializeRayUp();
+	initializeRayUpRight();
+	initializeRayRight();
+	initializeRayDownRight();
+	initializeRayDown();
+	initializeRayDownLeft();
+	initializeRayLeft();
+	initializeRayUpLeft();
 }
 
-void MoveBoard::InitializeRayUp() {
+void MoveBoard::initializeRayUp() {
 	for (uint8_t s = 0; s < 64; s++) {
-		BitBoard board = BitBoard().Set(s);
+		BitBoard board = BitBoard().set(s);
 		while (true) {
-			board.Up();
-			if (board.Empty())
+			board.up();
+			if (board.empty())
 				break;
 			rays[DIR_UP][s] |= board;
 		}
 	}
 }
 
-void MoveBoard::InitializeRayUpRight() {
+void MoveBoard::initializeRayUpRight() {
 	for (uint8_t s = 0; s < 64; s++) {
-		BitBoard board = BitBoard().Set(s);
+		BitBoard board = BitBoard().set(s);
 		while (true) {
-			board.Up().Right();
-			if (board.Empty())
+			board.up().right();
+			if (board.empty())
 				break;
 			rays[DIR_UP_RIGHT][s] |= board;
 		}
 	}
 }
 
-void MoveBoard::InitializeRayRight() {
+void MoveBoard::initializeRayRight() {
 	for (uint8_t s = 0; s < 64; s++) {
-		BitBoard board = BitBoard().Set(s);
+		BitBoard board = BitBoard().set(s);
 		while (true) {
-			board.Right();
-			if (board.Empty())
+			board.right();
+			if (board.empty())
 				break;
 			rays[DIR_RIGHT][s] |= board;
 		}
 	}
 }
 
-void MoveBoard::InitializeRayDownRight() {
+void MoveBoard::initializeRayDownRight() {
 	for (uint8_t s = 0; s < 64; s++) {
-		BitBoard board = BitBoard().Set(s);
+		BitBoard board = BitBoard().set(s);
 		while (true) {
-			board.Down().Right();
-			if (board.Empty())
+			board.down().right();
+			if (board.empty())
 				break;
 			rays[DIR_DOWN_RIGHT][s] |= board;
 		}
 	}
 }
 
-void MoveBoard::InitializeRayDown() {
+void MoveBoard::initializeRayDown() {
 	for (uint8_t s = 0; s < 64; s++) {
-		BitBoard board = BitBoard().Set(s);
+		BitBoard board = BitBoard().set(s);
 		while (true) {
-			board.Down();
-			if (board.Empty())
+			board.down();
+			if (board.empty())
 				break;
 			rays[DIR_DOWN][s] |= board;
 		}
 	}
 }
 
-void MoveBoard::InitializeRayDownLeft() {
+void MoveBoard::initializeRayDownLeft() {
 	for (uint8_t s = 0; s < 64; s++) {
-		BitBoard board = BitBoard().Set(s);
+		BitBoard board = BitBoard().set(s);
 		while (true) {
-			board.Down().Left();
-			if (board.Empty())
+			board.down().left();
+			if (board.empty())
 				break;
 			rays[DIR_DOWN_LEFT][s] |= board;
 		}
 	}
 }
 
-void MoveBoard::InitializeRayLeft() {
+void MoveBoard::initializeRayLeft() {
 	for (uint8_t s = 0; s < 64; s++) {
-		BitBoard board = BitBoard().Set(s);
+		BitBoard board = BitBoard().set(s);
 		while (true) {
-			board.Left();
-			if (board.Empty())
+			board.left();
+			if (board.empty())
 				break;
 			rays[DIR_LEFT][s] |= board;
 		}
 	}
 }
 
-void MoveBoard::InitializeRayUpLeft() {
+void MoveBoard::initializeRayUpLeft() {
 	for (uint8_t s = 0; s < 64; s++) {
-		BitBoard board = BitBoard().Set(s);
+		BitBoard board = BitBoard().set(s);
 		while (true) {
-			board.Up().Left();
-			if (board.Empty())
+			board.up().left();
+			if (board.empty())
 				break;
 			rays[DIR_UP_LEFT][s] |= board;
 		}
 	}
 }
 
-void MoveBoard::InitializeCastlingSquares() {
+void MoveBoard::initializeCastlingSquares() {
 	castling_safe_squares[Constants::CASTLING_WHITE_KINGSIDE] =   0b01110000Ui64;
 	castling_empty_squares[Constants::CASTLING_WHITE_KINGSIDE] =  0b01100000Ui64;
 	
@@ -174,48 +174,48 @@ void MoveBoard::InitializeCastlingSquares() {
 	castling_empty_squares[Constants::CASTLING_BLACK_QUEENSIDE] = 0b00001110Ui64 << 56;
 }
 
-MoveBoard& MoveBoard::GetInstance() {
+MoveBoard& MoveBoard::getInstance() {
 	static MoveBoard instance;
 	return instance;
 }
 
-void MoveBoard::Initialize() {
-	InitializeKingMoves();
-	InitializeKnightMoves();
-	InitializePawnPushes();
-	InitializePawnCaptures();
-	InitializeRays();
-	InitializeCastlingSquares();
+void MoveBoard::initialize() {
+	initializeKingMoves();
+	initializeKnightMoves();
+	initializePawnPushes();
+	initializePawnCaptures();
+	initializeRays();
+	initializeCastlingSquares();
 	
-	Forward[Piece::COLOR_BLACK] = &BitBoard::Down;
-	Forward[Piece::COLOR_WHITE] = &BitBoard::Up;
+	Forward[Piece::COLOR_BLACK] = &BitBoard::down;
+	Forward[Piece::COLOR_WHITE] = &BitBoard::up;
 }
 
-BitBoard MoveBoard::GetKingMoves(const Square square) const {
-	return king_moves[square.GetValue()];
+BitBoard MoveBoard::getKingMoves(const Square square) const {
+	return king_moves[square.getValue()];
 }
 
-BitBoard MoveBoard::GetKnightMoves(const Square square) const {
-	return knight_moves[square.GetValue()];
+BitBoard MoveBoard::getKnightMoves(const Square square) const {
+	return knight_moves[square.getValue()];
 }
 
-BitBoard MoveBoard::GetPawnPushes(const Square square, uint8_t color) const {
-	return pawn_pushes[color][square.GetValue()];
+BitBoard MoveBoard::getPawnPushes(const Square square, uint8_t color) const {
+	return pawn_pushes[color][square.getValue()];
 }
 
-BitBoard MoveBoard::GetPawnCaptures(const Square square, uint8_t color) const {
-	return pawn_captures[color][square.GetValue()];
+BitBoard MoveBoard::getPawnCaptures(const Square square, uint8_t color) const {
+	return pawn_captures[color][square.getValue()];
 }
 
-BitBoard MoveBoard::GetRay(const Square square, const uint8_t dir) const {
-	return rays[dir][square.GetValue()];
+BitBoard MoveBoard::getRay(const Square square, const uint8_t dir) const {
+	return rays[dir][square.getValue()];
 }
 
-BitBoard MoveBoard::GetCastlingEmptySquares(const int index) const {
+BitBoard MoveBoard::getCastlingEmptySquares(const int index) const {
 	return castling_empty_squares[index];
 }
 
-BitBoard MoveBoard::GetCastlingSafeSquares(const int index) const {
+BitBoard MoveBoard::getCastlingSafeSquares(const int index) const {
 	return castling_safe_squares[index];
 }
 

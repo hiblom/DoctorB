@@ -6,72 +6,73 @@
 #include "MoveGenerator.h"
 
 using namespace std;
+using namespace boost::algorithm;
 
-bool Parser::ParsePosition(const vector<string>& position_tokens, Position& position, HistoryMap& history) {
+bool Parser::parsePosition(const vector<string>& position_tokens, Position& position, HistoryMap& history) {
 	vector<string>::const_iterator moves_it = find(position_tokens.begin(), position_tokens.end(), "moves");
 
-	if (position_tokens[0] == "startpos") {
-		SetStartPos(position);
+	if (iequals(position_tokens[0], "startpos")) {
+		setStartPos(position);
 	}
-	else if (position_tokens[0] == "fen") {
+	else if (iequals(position_tokens[0], "fen")) {
 		if (position_tokens.size() < 3)
 			return false;
 
 		vector<string> fen_tokens(position_tokens.begin() + 1, moves_it);
-		if (!ParseFen(fen_tokens, position)) 
+		if (!parseFen(fen_tokens, position)) 
 			return false;
 	}
 
-	history.Clear();
-	history.Increase(position.GetHashKey());
+	history.clear();
+	history.increase(position.getHashKey());
 
 	//parse the moves
 	if (moves_it < position_tokens.end()) {
 		vector<string> move_tokens(moves_it + 1, position_tokens.end());
-		if (!ParsePositionMoves(move_tokens, position, history))
+		if (!parsePositionMoves(move_tokens, position, history))
 			return false;
 	}
 
 	return true;
 }
 
-bool Parser::ParsePiece(char c, Piece& piece) {
+bool Parser::parsePiece(char c, Piece& piece) {
 	size_t value = Constants::PIECE_CHARS.find(c);
 	if (value == std::string::npos)
 		return false;
 
-	piece = Piece((uint8_t)value);
+	piece = Piece(static_cast<uint8_t>(value));
 	return true;
 }
 
-bool Parser::ParseFen(const vector<string>& position_tokens, Position& position) {
+bool Parser::parseFen(const vector<string>& position_tokens, Position& position) {
 	size_t len = position_tokens.size();
 	if (len < 1)
 		return false;
 
-	if (!ParseFenPieces(position_tokens[0], position))
+	if (!parseFenPieces(position_tokens[0], position))
 		return false;
 
 	string color = len < 2 ? "w" : position_tokens[1];
-	if (!ParseFenActiveColor(color, position))
+	if (!parseFenActiveColor(color, position))
 		return false;
 
 	string castling_status = len < 3 ? "-" : position_tokens[2];
-	if (!ParseFenCastlingStatus(castling_status, position))
+	if (!parseFenCastlingStatus(castling_status, position))
 		return false;
 
 	string ep_square = len < 4 ? "-" : position_tokens[3];
-	if (!ParseFenEpSquare(ep_square, position))
+	if (!parseFenEpSquare(ep_square, position))
 		return false;
 
 	string halfmove_clock = len < 5 ? "0" : position_tokens[4];
-	if (!ParseFenHalfmoveClock(halfmove_clock, position))
+	if (!parseFenHalfmoveClock(halfmove_clock, position))
 		return false;
 
 	return true;
 }
 
-bool Parser::ParseFenPieces(string text, Position& position) {
+bool Parser::parseFenPieces(string text, Position& position) {
 	uint8_t y = 7;
 	uint8_t x = 0;
 
@@ -88,8 +89,8 @@ bool Parser::ParseFenPieces(string text, Position& position) {
 				x += (c - '0');
 			}
 			else {
-				if (ParsePiece(c, piece)) {
-					position.SetPiece(Square(x, y), piece);
+				if (parsePiece(c, piece)) {
+					position.setPiece(Square(x, y), piece);
 					x++;
 				}
 				else {
@@ -103,48 +104,48 @@ bool Parser::ParseFenPieces(string text, Position& position) {
 	return true;
 }
 
-bool Parser::ParseFenActiveColor(string text, Position& position) {
+bool Parser::parseFenActiveColor(string text, Position& position) {
 	if (text == "w") {
-		position.SetActiveColor(Piece::COLOR_WHITE);
+		position.setActiveColor(Piece::COLOR_WHITE);
 		return true;
 	}
 	else if (text == "b") {
-		position.SetActiveColor(Piece::COLOR_BLACK);
+		position.setActiveColor(Piece::COLOR_BLACK);
 		return true;
 	}
 	return false;
 }
 
-bool Parser::ParseFenCastlingStatus(string text, Position & position) {
-	position.SetCastlingStatus(Constants::CASTLING_WHITE_KINGSIDE, text.find('K') != string::npos);
-	position.SetCastlingStatus(Constants::CASTLING_WHITE_QUEENSIDE, text.find('Q') != string::npos);
-	position.SetCastlingStatus(Constants::CASTLING_BLACK_KINGSIDE, text.find('k') != string::npos);
-	position.SetCastlingStatus(Constants::CASTLING_BLACK_QUEENSIDE, text.find('q') != string::npos);
+bool Parser::parseFenCastlingStatus(string text, Position & position) {
+	position.setCastlingStatus(Constants::CASTLING_WHITE_KINGSIDE, text.find('K') != string::npos);
+	position.setCastlingStatus(Constants::CASTLING_WHITE_QUEENSIDE, text.find('Q') != string::npos);
+	position.setCastlingStatus(Constants::CASTLING_BLACK_KINGSIDE, text.find('k') != string::npos);
+	position.setCastlingStatus(Constants::CASTLING_BLACK_QUEENSIDE, text.find('q') != string::npos);
 	return true;
 }
 
-bool Parser::ParseFenEpSquare(string text, Position & position) {
+bool Parser::parseFenEpSquare(string text, Position & position) {
 	if (text == "-") {
-		position.ResetEpSquare();
+		position.resetEpSquare();
 		return true;
 	}
 	else {
 		Square ep_square;
-		if (ParseSquare(text, ep_square)) {
-			position.SetEpSquare(ep_square);
+		if (parseSquare(text, ep_square)) {
+			position.setEpSquare(ep_square);
 			return true;
 		}
 	}
 	return false;
 }
 
-bool Parser::ParseFenHalfmoveClock(string text, Position & position) {
+bool Parser::parseFenHalfmoveClock(string text, Position & position) {
 	try {
 		int value = stoi(text);
 		if (value < 0 || value > UINT16_MAX) {
 			return false;
 		}
-		position.SetHalfmoveClock(value);
+		position.setHalfmoveClock(value);
 		return true;
 	}
 	catch (exception) {
@@ -152,7 +153,7 @@ bool Parser::ParseFenHalfmoveClock(string text, Position & position) {
 	}
 }
 
-bool Parser::ParseSquare(string text, Square& square) {
+bool Parser::parseSquare(string text, Square& square) {
 	if (text.size() != 2)
 		return false;
 	
@@ -170,42 +171,42 @@ bool Parser::ParseSquare(string text, Square& square) {
 	else
 		return false;
 
-	square.SetXy(x, y);
+	square.setXy(x, y);
 	return true;
 }
 
-bool Parser::ParsePositionMoves(const vector<string>& tokens, Position& position, HistoryMap& history) {
+bool Parser::parsePositionMoves(const vector<string>& tokens, Position& position, HistoryMap& history) {
 	Move move;
 	for (string token : tokens) {
-		if (!ParseMove(token, move))
+		if (!parseMove(token, move))
 			return false;
 
 		MoveGenerator move_gen(position);
-		if (!move_gen.SetMoveFlags(move))
+		if (!move_gen.setMoveFlags(move))
 			return false;
 
-		if (!position.ApplyMove(move))
+		if (!position.applyMove(move))
 			return false;
 
-		if (position.GetHalfmoveClock() == 0)
-			history.Clear();
+		if (position.getHalfmoveClock() == 0)
+			history.clear();
 
-		history.Increase(position.GetHashKey());
+		history.increase(position.getHashKey());
 	}
 	return true;
 }
 
-bool Parser::ParseMove(std::string text, Move& move) {
+bool Parser::parseMove(std::string text, Move& move) {
 	size_t len = text.size();
 	if (len < 4 || len > 5)
 		return false;
 
 	Square square_from;
-	if (!ParseSquare(text.substr(0, 2), square_from))
+	if (!parseSquare(text.substr(0, 2), square_from))
 		return false;
 	
 	Square square_to;
-	if (!ParseSquare(text.substr(2, 2), square_to))
+	if (!parseSquare(text.substr(2, 2), square_to))
 		return false;
 
 	Piece promo_piece;
@@ -214,7 +215,7 @@ bool Parser::ParseMove(std::string text, Move& move) {
 	}
 	else {
 		Piece promo_piece;
-		if (!ParsePiece(text[4], promo_piece))
+		if (!parsePiece(text[4], promo_piece))
 			return false;
 
 		move = Move(square_from, square_to, promo_piece);
@@ -223,52 +224,52 @@ bool Parser::ParseMove(std::string text, Move& move) {
 	return true;
 }
 
-void Parser::SetStartPos(Position& position) {
-	position.SetPiece(Square(Square::A1), Piece(Piece::TYPE_ROOK, Piece::COLOR_WHITE));
-	position.SetPiece(Square(Square::B1), Piece(Piece::TYPE_KNIGHT, Piece::COLOR_WHITE));
-	position.SetPiece(Square(Square::C1), Piece(Piece::TYPE_BISHOP, Piece::COLOR_WHITE));
-	position.SetPiece(Square(Square::D1), Piece(Piece::TYPE_QUEEN, Piece::COLOR_WHITE));
-	position.SetPiece(Square(Square::E1), Piece(Piece::TYPE_KING, Piece::COLOR_WHITE));
-	position.SetPiece(Square(Square::F1), Piece(Piece::TYPE_BISHOP, Piece::COLOR_WHITE));
-	position.SetPiece(Square(Square::G1), Piece(Piece::TYPE_KNIGHT, Piece::COLOR_WHITE));
-	position.SetPiece(Square(Square::H1), Piece(Piece::TYPE_ROOK, Piece::COLOR_WHITE));
+void Parser::setStartPos(Position& position) {
+	position.setPiece(Square(Square::A1), Piece(Piece::TYPE_ROOK, Piece::COLOR_WHITE));
+	position.setPiece(Square(Square::B1), Piece(Piece::TYPE_KNIGHT, Piece::COLOR_WHITE));
+	position.setPiece(Square(Square::C1), Piece(Piece::TYPE_BISHOP, Piece::COLOR_WHITE));
+	position.setPiece(Square(Square::D1), Piece(Piece::TYPE_QUEEN, Piece::COLOR_WHITE));
+	position.setPiece(Square(Square::E1), Piece(Piece::TYPE_KING, Piece::COLOR_WHITE));
+	position.setPiece(Square(Square::F1), Piece(Piece::TYPE_BISHOP, Piece::COLOR_WHITE));
+	position.setPiece(Square(Square::G1), Piece(Piece::TYPE_KNIGHT, Piece::COLOR_WHITE));
+	position.setPiece(Square(Square::H1), Piece(Piece::TYPE_ROOK, Piece::COLOR_WHITE));
 
-	position.SetPiece(Square(Square::A2), Piece(Piece::TYPE_PAWN, Piece::COLOR_WHITE));
-	position.SetPiece(Square(Square::B2), Piece(Piece::TYPE_PAWN, Piece::COLOR_WHITE));
-	position.SetPiece(Square(Square::C2), Piece(Piece::TYPE_PAWN, Piece::COLOR_WHITE));
-	position.SetPiece(Square(Square::D2), Piece(Piece::TYPE_PAWN, Piece::COLOR_WHITE));
-	position.SetPiece(Square(Square::E2), Piece(Piece::TYPE_PAWN, Piece::COLOR_WHITE));
-	position.SetPiece(Square(Square::F2), Piece(Piece::TYPE_PAWN, Piece::COLOR_WHITE));
-	position.SetPiece(Square(Square::G2), Piece(Piece::TYPE_PAWN, Piece::COLOR_WHITE));
-	position.SetPiece(Square(Square::H2), Piece(Piece::TYPE_PAWN, Piece::COLOR_WHITE));
+	position.setPiece(Square(Square::A2), Piece(Piece::TYPE_PAWN, Piece::COLOR_WHITE));
+	position.setPiece(Square(Square::B2), Piece(Piece::TYPE_PAWN, Piece::COLOR_WHITE));
+	position.setPiece(Square(Square::C2), Piece(Piece::TYPE_PAWN, Piece::COLOR_WHITE));
+	position.setPiece(Square(Square::D2), Piece(Piece::TYPE_PAWN, Piece::COLOR_WHITE));
+	position.setPiece(Square(Square::E2), Piece(Piece::TYPE_PAWN, Piece::COLOR_WHITE));
+	position.setPiece(Square(Square::F2), Piece(Piece::TYPE_PAWN, Piece::COLOR_WHITE));
+	position.setPiece(Square(Square::G2), Piece(Piece::TYPE_PAWN, Piece::COLOR_WHITE));
+	position.setPiece(Square(Square::H2), Piece(Piece::TYPE_PAWN, Piece::COLOR_WHITE));
 
-	position.SetPiece(Square(Square::A7), Piece(Piece::TYPE_PAWN, Piece::COLOR_BLACK));
-	position.SetPiece(Square(Square::B7), Piece(Piece::TYPE_PAWN, Piece::COLOR_BLACK));
-	position.SetPiece(Square(Square::C7), Piece(Piece::TYPE_PAWN, Piece::COLOR_BLACK));
-	position.SetPiece(Square(Square::D7), Piece(Piece::TYPE_PAWN, Piece::COLOR_BLACK));
-	position.SetPiece(Square(Square::E7), Piece(Piece::TYPE_PAWN, Piece::COLOR_BLACK));
-	position.SetPiece(Square(Square::F7), Piece(Piece::TYPE_PAWN, Piece::COLOR_BLACK));
-	position.SetPiece(Square(Square::G7), Piece(Piece::TYPE_PAWN, Piece::COLOR_BLACK));
-	position.SetPiece(Square(Square::H7), Piece(Piece::TYPE_PAWN, Piece::COLOR_BLACK));
+	position.setPiece(Square(Square::A7), Piece(Piece::TYPE_PAWN, Piece::COLOR_BLACK));
+	position.setPiece(Square(Square::B7), Piece(Piece::TYPE_PAWN, Piece::COLOR_BLACK));
+	position.setPiece(Square(Square::C7), Piece(Piece::TYPE_PAWN, Piece::COLOR_BLACK));
+	position.setPiece(Square(Square::D7), Piece(Piece::TYPE_PAWN, Piece::COLOR_BLACK));
+	position.setPiece(Square(Square::E7), Piece(Piece::TYPE_PAWN, Piece::COLOR_BLACK));
+	position.setPiece(Square(Square::F7), Piece(Piece::TYPE_PAWN, Piece::COLOR_BLACK));
+	position.setPiece(Square(Square::G7), Piece(Piece::TYPE_PAWN, Piece::COLOR_BLACK));
+	position.setPiece(Square(Square::H7), Piece(Piece::TYPE_PAWN, Piece::COLOR_BLACK));
 
-	position.SetPiece(Square(Square::A8), Piece(Piece::TYPE_ROOK, Piece::COLOR_BLACK));
-	position.SetPiece(Square(Square::B8), Piece(Piece::TYPE_KNIGHT, Piece::COLOR_BLACK));
-	position.SetPiece(Square(Square::C8), Piece(Piece::TYPE_BISHOP, Piece::COLOR_BLACK));
-	position.SetPiece(Square(Square::D8), Piece(Piece::TYPE_QUEEN, Piece::COLOR_BLACK));
-	position.SetPiece(Square(Square::E8), Piece(Piece::TYPE_KING, Piece::COLOR_BLACK));
-	position.SetPiece(Square(Square::F8), Piece(Piece::TYPE_BISHOP, Piece::COLOR_BLACK));
-	position.SetPiece(Square(Square::G8), Piece(Piece::TYPE_KNIGHT, Piece::COLOR_BLACK));
-	position.SetPiece(Square(Square::H8), Piece(Piece::TYPE_ROOK, Piece::COLOR_BLACK));
+	position.setPiece(Square(Square::A8), Piece(Piece::TYPE_ROOK, Piece::COLOR_BLACK));
+	position.setPiece(Square(Square::B8), Piece(Piece::TYPE_KNIGHT, Piece::COLOR_BLACK));
+	position.setPiece(Square(Square::C8), Piece(Piece::TYPE_BISHOP, Piece::COLOR_BLACK));
+	position.setPiece(Square(Square::D8), Piece(Piece::TYPE_QUEEN, Piece::COLOR_BLACK));
+	position.setPiece(Square(Square::E8), Piece(Piece::TYPE_KING, Piece::COLOR_BLACK));
+	position.setPiece(Square(Square::F8), Piece(Piece::TYPE_BISHOP, Piece::COLOR_BLACK));
+	position.setPiece(Square(Square::G8), Piece(Piece::TYPE_KNIGHT, Piece::COLOR_BLACK));
+	position.setPiece(Square(Square::H8), Piece(Piece::TYPE_ROOK, Piece::COLOR_BLACK));
 
-	position.SetActiveColor(Piece::COLOR_WHITE);
+	position.setActiveColor(Piece::COLOR_WHITE);
 
-	position.SetCastlingStatus(Constants::CASTLING_WHITE_KINGSIDE, true);
-	position.SetCastlingStatus(Constants::CASTLING_WHITE_QUEENSIDE, true);
-	position.SetCastlingStatus(Constants::CASTLING_BLACK_KINGSIDE, true);
-	position.SetCastlingStatus(Constants::CASTLING_BLACK_QUEENSIDE, true);
+	position.setCastlingStatus(Constants::CASTLING_WHITE_KINGSIDE, true);
+	position.setCastlingStatus(Constants::CASTLING_WHITE_QUEENSIDE, true);
+	position.setCastlingStatus(Constants::CASTLING_BLACK_KINGSIDE, true);
+	position.setCastlingStatus(Constants::CASTLING_BLACK_QUEENSIDE, true);
 
-	position.ResetEpSquare();
+	position.resetEpSquare();
 
-	position.SetHalfmoveClock(0);
+	position.setHalfmoveClock(0);
 }
 

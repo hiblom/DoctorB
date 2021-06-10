@@ -82,15 +82,15 @@ public:
 	Square(uint8_t square_value);
 	Square(uint8_t x, uint8_t y);
 	~Square();
-	uint8_t GetValue() const;
-	void SetValue(uint8_t square_value);
-	void SetXy(uint8_t x, uint8_t y);
-	uint8_t GetX() const;
-	uint8_t GetY() const;
+	uint8_t getValue() const;
+	void setValue(uint8_t square_value);
+	void setXy(uint8_t x, uint8_t y);
+	uint8_t getX() const;
+	uint8_t getY() const;
 	bool operator==(const Square& that) const;
-	std::string ToString() const;
+	std::string toString() const;
 private:
 	static const uint8_t MASK_X = 0b00000111Ui8;
-	uint8_t value;
+	uint8_t value_;
 };
 

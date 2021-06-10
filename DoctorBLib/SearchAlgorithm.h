@@ -7,15 +7,15 @@
 
 class SearchAlgorithm {
 public:
-	SearchAlgorithm(const Position& base_position, HistoryMap& history) : base_position_(base_position), history_(history), node_count_(0) {};
-	Move GoDepth(uint64_t max_depth);
-	Move GoTime(uint64_t max_duration);
+	SearchAlgorithm(const Position& base_position, const HistoryMap& history) : base_position_(base_position), history_(history), node_count_(0) {};
+	Move goDepth(uint64_t max_depth);
+	Move goTime(uint64_t max_duration);
 protected:
 	const Position& base_position_;
-	HistoryMap& history_;
+	const HistoryMap& history_;
 	uint64_t node_count_;
-	virtual void Loop(const uint64_t iteration_depth, Score& score, std::vector<Move>& pv) = 0;
-	virtual void AfterSearch() {};
-	virtual void AfterIteration() {};
-	virtual int GetSearchTimeMultiplier() { return 30; }
+	virtual void loop(const uint64_t iteration_depth, Score& score, std::vector<Move>& pv) = 0;
+	virtual void afterSearch() {};
+	virtual void afterIteration() {};
+	virtual int getSearchTimeMultiplier() { return 30; }
 };
