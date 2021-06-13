@@ -213,13 +213,13 @@ void Uci::goDepth(const vector<string>& tokens) {
 		}
 		depth = INT_MAX; //not exactly infinite, but should be enough
 	}
-	else if (iequals(tokens[0], "infinite")) {
+	else if (iequals(tokens[0], "depth")) {
 		if (tokens.size() != 2) {
 			cout << "Number of depth parameters must be 1" << endl;
 			return;
 		}
 
-		int depth = stoi(tokens[1]);
+		depth = stoi(tokens[1]);
 		if (depth < 1) {
 			cout << "Depth must be greater than 1" << endl;
 			return;
