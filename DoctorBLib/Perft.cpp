@@ -4,6 +4,7 @@
 #include <iostream>
 #include "Move.h"
 #include "MoveGenerator.h"
+#include "Console.h"
 
 using namespace std;
 
@@ -64,7 +65,7 @@ uint64_t Perft::go() const {
 
 	for (int i = 0; i < states[0].moves.size(); i++) {
 		if (results[i]) {
-			cout << states[0].moves[i].toString() << ": " << results[i] << endl;
+			Console::getInstance() << states[0].moves[i].toString() << ": " << results[i] << endl;
 			result += results[i];
 		}
 	}

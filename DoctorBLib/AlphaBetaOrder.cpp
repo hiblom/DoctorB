@@ -8,6 +8,7 @@
 #include "TranspositionTable.h"
 #include "Constants.h"
 #include "Globals.h"
+#include "Console.h"
 
 using namespace std;
 
@@ -227,6 +228,6 @@ void AlphaBetaOrder::afterSearch() {
 }
 
 void AlphaBetaOrder::afterIteration() {
-	cout << "hashfull " << TranspositionTable::getInstance().getHashFull() << endl;
+	Console::getInstance() << "hashfull " << TranspositionTable::getInstance().getHashFull() << endl;
 }
 

@@ -1,0 +1,56 @@
+Welcome to DoctorB chess engine
+Input UCI command
+position startpod
+position startpos
+d
+8 rnbqkbnr
+7 pppppppp
+6 ........
+5 ........
+4 ........
+3 ........
+2 PPPPPPPP
+1 RNBQKBNR
+  abcdefgh
+Evaluation: cp 3
+uci
+id name DoctorB 1.3.0
+id author Hans Blom
+option name Hash type spin default 32 min 1 max 256
+option name OwnBook type check default false
+option name OwnBookPath type string default openings.bin
+uciok
+ucinewgame
+go depth 3
+No position set
+position startpos
+go depth 4
+bestmove 
+go depth 2
+bestmove 
+go depth 2
+bestmove 
+go depth 2
+bestmove 
+go depth 2
+Welcome to DoctorB chess engine
+Input UCI command
+position startpos
+go depth 3
+bestmove 
+go depth 3
+Welcome to DoctorB chess engine
+Input UCI command
+position startpos
+go depth 3
+Welcome to DoctorB chess engine
+Input UCI command
+position startpos
+go depth 3
+info depth 1 score cp 54 nodes 20 nps 3 pv e2e4
+hashfull 1
+info depth 2 score cp 0 nodes 162 nps 16 pv e2e4 e7e5
+hashfull 25
+info depth 3 score cp 53 nodes 780 nps 80 pv e2e4 d7d5 f1d3
+hashfull 71
+bestmove e2e4

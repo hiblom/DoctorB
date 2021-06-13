@@ -9,6 +9,7 @@
 #include "Options.h"
 #include "Polyglot.h"
 #include "Globals.h"
+#include "Console.h"
 
 using namespace std;
 
@@ -21,7 +22,7 @@ void Searcher::goDepth(int depth) {
 
 	AlphaBetaOrder search_algorithm = AlphaBetaOrder(base_position_, history_);
 	Move best_move = search_algorithm.goDepth(depth);
-	cout << "bestmove " << best_move.toString() << endl;
+	Console::getInstance() << "bestmove " << best_move.toString() << endl;
 }
 
 void Searcher::goTime(uint64_t wtime, uint64_t btime, uint64_t winc, uint64_t binc, uint64_t movestogo) {
@@ -31,7 +32,7 @@ void Searcher::goTime(uint64_t wtime, uint64_t btime, uint64_t winc, uint64_t bi
 	uint64_t max_duration = getMaxDuration(wtime, btime, winc, binc, movestogo);
 	AlphaBetaOrder search_algorithm = AlphaBetaOrder(base_position_, history_);
 	Move best_move = search_algorithm.goTime(max_duration);
-	cout << "bestmove " << best_move.toString() << endl;
+	Console::getInstance() << "bestmove " << best_move.toString() << endl;
 }
 
 Searcher::~Searcher() {
@@ -60,7 +61,7 @@ bool Searcher::bookMove() {
 
 	Move move = Polyglot::getInstance().getMove(base_position_.getHashKey());
 	if (move.isValid()) {
-		cout << "bestmove " << move.toString() << endl;
+		Console::getInstance() << "bestmove " << move.toString() << endl;
 		return true;
 	}
 	else {

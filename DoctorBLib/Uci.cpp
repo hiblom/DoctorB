@@ -17,6 +17,7 @@
 #include "TranspositionTable.h"
 #include "Globals.h"
 #include "Constants.h"
+#include "Console.h"
 
 using namespace std;
 using namespace boost::algorithm;
@@ -47,7 +48,7 @@ bool Uci::execute(string command) {
 			return false;
 		}
 		else {
-			cout << "Invalid command while searching" << endl;
+			Console::getInstance() << "Invalid command while searching" << endl;
 			return true;
 		}
 	}
@@ -96,18 +97,18 @@ bool Uci::execute(string command) {
 		return true;
 	}
 	else {
-		cout << "Invalid UCI command" << endl;
+		Console::getInstance() << "Invalid UCI command" << endl;
 		return true;
 	}
 }
 
 void Uci::executeUci() {
-	cout << "id name " << App::Name << " " << App::Version << endl;
-	cout << "id author " << App::Author << endl;
-	cout << "option name Hash type spin default " << Constants::DEFAULT_HASH << " min 1 max 256" << endl;
-	cout << "option name OwnBook type check default " << (Constants::DEFAULT_OWN_BOOK ? "true" : "false") << endl;
-	cout << "option name OwnBookPath type string default " << Constants::DEFAULT_OWN_BOOK_PATH << endl;
-	cout << "uciok" << endl;
+	Console::getInstance() << "id name " << App::Name << " " << App::Version << endl;
+	Console::getInstance() << "id author " << App::Author << endl;
+	Console::getInstance() << "option name Hash type spin default " << Constants::DEFAULT_HASH << " min 1 max 256" << endl;
+	Console::getInstance() << "option name OwnBook type check default " << (Constants::DEFAULT_OWN_BOOK ? "true" : "false") << endl;
+	Console::getInstance() << "option name OwnBookPath type string default " << Constants::DEFAULT_OWN_BOOK_PATH << endl;
+	Console::getInstance() << "uciok" << endl;
 }
 
 void Uci::executeUciNewGame() {
@@ -117,12 +118,12 @@ void Uci::executeUciNewGame() {
 }
 
 void Uci::executeIsReady() {
-	cout << "readyok" << endl;
+	Console::getInstance() << "readyok" << endl;
 }
 
 void Uci::executePosition(const std::vector<std::string>& command_parts) {
 	if (command_parts.size() < 2) {
-		cout << "Invalid position command" << endl;
+		Console::getInstance() << "Invalid position command" << endl;
 		return;
 	}
 
@@ -134,12 +135,12 @@ void Uci::executePosition(const std::vector<std::string>& command_parts) {
 
 void Uci::executeGo(const vector<string>& command_parts) {
 	if (command_parts.size() < 2) {
-		cout << "Invalid go command" << endl;
+		Console::getInstance() << "Invalid go command" << endl;
 		return;
 	}
 
 	if (!position_.has_value()) {
-		cout << "No position set" << endl;
+		Console::getInstance() << "No position set" << endl;
 		return;
 	}
 
@@ -164,7 +165,7 @@ void Uci::executeGo(const vector<string>& command_parts) {
 
 void Uci::executeSetOption(const std::vector<std::string>& command_parts) {
 	if (command_parts.size() < 5) {
-		cout << "Invalid setoption command" << endl;
+		Console::getInstance() << "Invalid setoption command" << endl;
 		return;
 	}
 
@@ -172,7 +173,7 @@ void Uci::executeSetOption(const std::vector<std::string>& command_parts) {
 	if (iequals(name, "hash")) {
 		int hashValue = stoi(command_parts[4]);
 		if (hashValue < 1 || hashValue > 256) {
-			cout << "Invalid Hash value" << endl;
+			Console::getInstance() << "Invalid Hash value" << endl;
 			return;
 		}
 
@@ -183,7 +184,7 @@ void Uci::executeSetOption(const std::vector<std::string>& command_parts) {
 		string ownBookValue = command_parts[4];
 		if (!iequals(ownBookValue, "true") && !iequals(ownBookValue, "false"))
 		{
-			cout << "Invalid OwnBook value" << endl;
+			Console::getInstance() << "Invalid OwnBook value" << endl;
 			return;
 		}
 		Options::OwnBook = (iequals(ownBookValue, "true"));
@@ -195,12 +196,12 @@ void Uci::executeSetOption(const std::vector<std::string>& command_parts) {
 
 		Options::OwnBookPath = filename;
 		if (!Polyglot::getInstance().open()) {
-			cout << "Error opening file at provided OwnBookPath value" << endl;
+			Console::getInstance() << "Error opening file at provided OwnBookPath value" << endl;
 			return;
 		}
 	}
 	else {
-		cout << "Invalid option" << endl;
+		Console::getInstance() << "Invalid option" << endl;
 	}
 }
 
@@ -208,20 +209,20 @@ void Uci::goDepth(const vector<string>& tokens) {
 	int depth = 0;
 	if (iequals(tokens[0], "infinite")) {
 		if (tokens.size() != 1) {
-			cout << "No extra infinite parameters allowed" << endl;
+			Console::getInstance() << "No extra infinite parameters allowed" << endl;
 			return;
 		}
 		depth = INT_MAX; //not exactly infinite, but should be enough
 	}
-	else if (iequals(tokens[0], "infinite")) {
+	else if (iequals(tokens[0], "depth")) {
 		if (tokens.size() != 2) {
-			cout << "Number of depth parameters must be 1" << endl;
+			Console::getInstance() << "Number of depth parameters must be 1" << endl;
 			return;
 		}
 
-		int depth = stoi(tokens[1]);
+		depth = stoi(tokens[1]);
 		if (depth < 1) {
-			cout << "Depth must be greater than 1" << endl;
+			Console::getInstance() << "Depth must be greater than 1" << endl;
 			return;
 		}
 	}
@@ -277,13 +278,13 @@ void Uci::goTime(const vector<string>& tokens) {
 
 void Uci::goPerft(const vector<string>& tokens) {
 	if (tokens.size() != 2) {
-		cout << "Number of perft parameters must be 1" << endl;
+		Console::getInstance() << "Number of perft parameters must be 1" << endl;
 		return;
 	}
 
 	int depth = stoi(tokens[1]);
 	if (depth < 1 || depth > 20) {
-		cout << "Perft depth must be between 1 and 20" << endl;
+		Console::getInstance() << "Perft depth must be between 1 and 20" << endl;
 		return;
 	}
 	
@@ -297,7 +298,7 @@ void Uci::goPerft(const vector<string>& tokens) {
 
 	chrono::duration<double> elapsed_seconds = end_time - start_time;
 
-	cout 
+	Console::getInstance() 
 		<< "Perft result: " << count
 		<< " nodes, elapsed time: " << static_cast<int>(elapsed_seconds.count() * 1000)
 		<< " ms, nodes per second: " << static_cast<int>(count / elapsed_seconds.count()) << endl;
@@ -305,14 +306,14 @@ void Uci::goPerft(const vector<string>& tokens) {
 
 void Uci::executeD() {
 	if (!position_.has_value()) {
-		cout << "No position set" << endl;
+		Console::getInstance() << "No position set" << endl;
 		return;
 	}
-	cout << position_.value().toString();
+	Console::getInstance() << position_.value().toString();
 	
 	Evaluator eval(position_.value());
 	Score score;
 	eval.evaluate(score);
-	cout << "Evaluation: " << score.toString(Piece::COLOR_WHITE, 1) << endl;
+	Console::getInstance() << "Evaluation: " << score.toString(Piece::COLOR_WHITE, 1) << endl;
 
 }

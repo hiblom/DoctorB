@@ -153,6 +153,7 @@
     <ClInclude Include="AlphaBetaOrder.h" />
     <ClInclude Include="App.h" />
     <ClInclude Include="BitBoard.h" />
+    <ClInclude Include="Console.h" />
     <ClInclude Include="Constants.h" />
     <ClInclude Include="ctpl.h" />
     <ClInclude Include="Evaluator.h" />
@@ -181,6 +182,7 @@
   <ItemGroup>
     <ClCompile Include="AlphaBetaOrder.cpp" />
     <ClCompile Include="BitBoard.cpp" />
+    <ClCompile Include="Console.cpp" />
     <ClCompile Include="Evaluator.cpp" />
     <ClCompile Include="Globals.cpp" />
     <ClCompile Include="HistoryMap.cpp" />

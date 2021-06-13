@@ -4,6 +4,7 @@
 #include <iostream>
 #include "Options.h"
 #include "Globals.h"
+#include "Console.h"
 
 using namespace std;
 
@@ -30,7 +31,7 @@ bool Polyglot::open() {
     filePath_ = Options::OwnBookPath;
     file_ = ifstream(filePath_, ios::in | ios::binary);
     if (!file_.is_open()) {
-        cout << "Could not open " << filePath_ << "; Ignoring book." << endl;
+        Console::getInstance() << "Could not open " << filePath_ << "; Ignoring book." << endl;
         Globals::out_of_book = true;
         return false;
     }
