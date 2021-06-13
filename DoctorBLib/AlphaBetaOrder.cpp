@@ -63,6 +63,7 @@ void AlphaBetaOrder::loop(const uint64_t iteration_depth, Score& score, std::vec
 				//see if position is in the TT with a score
 				if (tt_remaining_depth >= (iteration_depth - current_depth)) {
 					current_state.score = tt_score;
+					current_state.variation.clear(); //pv is not stored in tt
 					current_depth--;
 					continue;
 				}
@@ -107,8 +108,12 @@ void AlphaBetaOrder::loop(const uint64_t iteration_depth, Score& score, std::vec
 					}
 				}
 				
+				current_state.variation.resize(states[current_depth + 1].variation.size() + 1); //in case of a TT score-hit pv is shorter!
 				current_state.variation[0] = current_state.getActiveMove();
-				copy(states[current_depth + 1].variation.begin(), states[current_depth + 1].variation.end(), current_state.variation.begin() + 1);
+
+				if (states[current_depth + 1].variation.size() > 0) {
+					copy(states[current_depth + 1].variation.begin(), states[current_depth + 1].variation.end(), current_state.variation.begin() + 1);
+				}
 			}
 		}
 
