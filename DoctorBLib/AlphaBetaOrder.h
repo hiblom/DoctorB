@@ -1,5 +1,6 @@
 #pragma once
 #include "SearchAlgorithm.h"
+#include <array>
 #include <vector>
 #include "HistoryMap.h"
 #include "Position.h"
@@ -24,11 +25,11 @@ private:
 		Move& getActiveMove();
 	};
 
-	void loop(const uint64_t iteration_depth, Score& score, std::vector<Move>& pv);
+	void loop(const uint64_t iteration_depth, Score& score, std::vector<Move>& pv, std::array<int, 2>& bounds);
 	void orderMoves(const Position& position, std::vector<Move>& moves);
 	void see(const Position& position, const Square& square, Score& score);
 	void afterSearch();
 	void afterIteration();
-	int getSearchTimeMultiplier() { return 12; } //expected factor the next iteration takes over the last one
+	int getSearchTimeMultiplier() { return 10; } //expected factor the next iteration takes over the last one
 };
 

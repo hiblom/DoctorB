@@ -1,4 +1,5 @@
 #pragma once
+#include <array>
 #include <vector>
 #include "Position.h"
 #include "HistoryMap.h"
@@ -11,10 +12,11 @@ public:
 	Move goDepth(uint64_t max_depth);
 	Move goTime(uint64_t max_duration);
 protected:
+	static const std::array<uint64_t, 4> BOUND_INCREMENTS;
 	const Position& base_position_;
 	const HistoryMap& history_;
 	uint64_t node_count_;
-	virtual void loop(const uint64_t iteration_depth, Score& score, std::vector<Move>& pv) = 0;
+	virtual void loop(const uint64_t iteration_depth, Score& score, std::vector<Move>& pv, std::array<int, 2>& bounds) = 0;
 	virtual void afterSearch() {};
 	virtual void afterIteration() {};
 	virtual int getSearchTimeMultiplier() { return 30; }

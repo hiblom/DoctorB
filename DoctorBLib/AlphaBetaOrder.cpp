@@ -37,8 +37,7 @@ AlphaBetaOrder::~AlphaBetaOrder() {
 }
 
 //use a loop (no recursion) to calculate the best move using the AlphaBeta algorithm with move ordering
-void AlphaBetaOrder::loop(const uint64_t iteration_depth, Score& score, std::vector<Move>& pv) {
-	//vector<State> states(iteration_depth + 1 + MAX_QUIESCE_DEPTH); //iteration_depth + 1 is needed for search up to horizon, the rest is reserved for qsearch
+void AlphaBetaOrder::loop(const uint64_t iteration_depth, Score& score, vector<Move>& pv, array<int, 2>& bounds) {
 	vector<State> states(iteration_depth + 1);
 
 	Score see_score;
@@ -59,15 +58,15 @@ void AlphaBetaOrder::loop(const uint64_t iteration_depth, Score& score, std::vec
 				continue;
 			}
 
-			if (TranspositionTable::getInstance().findScore(current_state.position.getHashKey(), tt_score, tt_remaining_depth)) {
-				//see if position is in the TT with a score
-				if (tt_remaining_depth >= (iteration_depth - current_depth)) {
-					current_state.score = tt_score;
-					current_state.variation.clear(); //pv is not stored in tt
-					current_depth--;
-					continue;
-				}
-			}
+			//if (TranspositionTable::getInstance().findScore(current_state.position.getHashKey(), tt_score, tt_remaining_depth)) {
+			//	//see if position is in the TT with a score
+			//	if (tt_remaining_depth >= (iteration_depth - current_depth)) {
+			//		current_state.score = tt_score;
+			//		current_state.variation.clear(); //pv is not stored in tt
+			//		current_depth--;
+			//		continue;
+			//	}
+			//}
 		}
 
 		uint8_t active_color = current_state.position.getActiveColor();
@@ -99,7 +98,11 @@ void AlphaBetaOrder::loop(const uint64_t iteration_depth, Score& score, std::vec
 
 				//alphabeta-cutoff: this move is too good, the other side has better options
 				if (current_depth > 0) {
-					if (Evaluator::compareScore(other_color, current_state.score, states[current_depth - 1].score) < 0) {
+					//if (Evaluator::compareScore(other_color, current_state.score, states[current_depth - 1].score) < 0) {
+					//aspiration search: compare with bounds
+
+					if (Evaluator::compareScore(other_color, current_state.score, bounds[other_color]) < 0 ||
+						Evaluator::compareScore(other_color, current_state.score, states[current_depth - 1].score) < 0) {
 						//store the move in the TT. it is obviously a good one!
 						TranspositionTable::getInstance().setBestMove(current_state.position.getHashKey(), current_state.getActiveMove());
 						
@@ -134,6 +137,7 @@ void AlphaBetaOrder::loop(const uint64_t iteration_depth, Score& score, std::vec
 			else {
 				orderMoves(current_state.position, current_state.moves);
 				current_state.score = Score::getStartScore(active_color);
+				//current_state.score = bounds[active_color];
 			}
 			
 			current_state.variation = vector<Move>(iteration_depth - current_depth);
@@ -141,12 +145,13 @@ void AlphaBetaOrder::loop(const uint64_t iteration_depth, Score& score, std::vec
 
 		current_state.move_index++;
 
+
 		//reached end of moves
 		if (current_state.move_index >= current_state.moves.size()) {
 			if (current_state.moves.size() > 0) {
 				TranspositionTable::getInstance().setBestMove(current_state.position.getHashKey(), current_state.variation[0]);
 			}
-			TranspositionTable::getInstance().setScore(current_state.position.getHashKey(), current_state.score, static_cast<uint16_t>(iteration_depth - current_depth));
+			//TranspositionTable::getInstance().setScore(current_state.position.getHashKey(), current_state.score, static_cast<uint16_t>(iteration_depth - current_depth));
 
 			current_depth--;
 			continue;
