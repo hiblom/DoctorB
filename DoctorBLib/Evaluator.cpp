@@ -27,6 +27,12 @@ int Evaluator::getMaterialCount() {
 }
 
 void Evaluator::evaluate(Score& score) {
+	//50 move rule
+	if (position_.getHalfmoveClock() >= 100) {
+		score.setValue(0);
+		return;
+	}
+
 	int material_count = getMaterialCount();
 
 	//int64_t value = 0;
@@ -44,10 +50,13 @@ void Evaluator::evaluate(Score& score) {
 	}
 
 	int value = piece_value + ((start_piece_square_value * material_count + end_piece_square_value * (30 - material_count)) / 30);
+	//white gets a "tapered tempo penalty" of 50 cp (white moves are evaluated on a board with black to move)
+	//the more pieces on the board, the stronger the penalty, strongest at the start
+	value += TEMPO_PENALTY[position_.getActiveColor()] * material_count / 30;
 	//add random "noise" to prevent DoctorB from playing the same moves over and over
 	//noise band = 0..4
 	value += (rand() % 5);
-	return score.setValue(value);
+	score.setValue(value);
 }
 
 const int Evaluator::PIECE_START_TOTAL_VALUE {
@@ -56,6 +65,8 @@ const int Evaluator::PIECE_START_TOTAL_VALUE {
 	4 * Constants::PIECE_VALUES[Piece::TYPE_BISHOP | 1Ui8] +
 	4 * Constants::PIECE_VALUES[Piece::TYPE_ROOK | 1Ui8] +
 	2 * Constants::PIECE_VALUES[Piece::TYPE_QUEEN | 1Ui8] };
+
+const std::array<int, 2> Evaluator::TEMPO_PENALTY { -50, 0 };
 
 const std::array<std::array<int, 64>, 12> Evaluator::PIECE_SQUARE_START_VALUE{ {
 	{//black pawn

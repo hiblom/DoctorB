@@ -303,3 +303,7 @@ void Position::recalculateHashKey() {
 uint64_t Position::getHashKey() const {
 	return hash_key_;
 }
+
+uint16_t Position::getHalfmoveClock() const {
+	return halfmove_clock_;
+}

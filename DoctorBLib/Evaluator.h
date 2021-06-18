@@ -17,5 +17,6 @@ private:
 	static const std::array<std::array<int, 64>, 12> PIECE_SQUARE_START_VALUE;
 	static const std::array<std::array<int, 64>, 12> PIECE_SQUARE_END_VALUE;
 	static const int PIECE_START_TOTAL_VALUE;
+	static const std::array<int, 2> TEMPO_PENALTY;
 	const Position& position_;
 };

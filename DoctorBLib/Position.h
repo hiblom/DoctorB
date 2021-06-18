@@ -37,6 +37,7 @@ public:
 	BitBoard getBitBoard(const Piece& piece) const;
 	void recalculateHashKey();
 	uint64_t getHashKey() const;
+	uint16_t getHalfmoveClock() const;
 private:
 	std::array<BitBoard, 12> bit_boards_;
 	uint8_t active_color_;
