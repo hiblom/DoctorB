@@ -13,7 +13,7 @@ Score Score::getStartScore(uint8_t color) {
 Score Score::getMateScore(uint8_t color_against, uint32_t depth) {
 	static const array<int, 2> mult { { -1, 1 } };
 	static const array<int64_t, 2> START_SCORE{ { Score::BLACK_START_SCORE, Score::WHITE_START_SCORE } };
-	return Score(START_SCORE[color_against] + mult[color_against] *depth);
+	return Score(START_SCORE[color_against] + mult[color_against] * static_cast<int>(depth));
 }
 
 Score::Score() {
@@ -43,7 +43,7 @@ string Score::toString(uint8_t engine_color, uint32_t depth) {
 
 	mult *= (value_ > 0) ? 1 : -1;
 
-	int moves_to_mate = (depth - 1) / 2;
+	int moves_to_mate = (depth + 1) / 2;
 	return "mate " + to_string(mult * moves_to_mate);
 }
 
